@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AROM · 채용 대시보드</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#f2f3f8;--s1:#fff;--s2:#f0f1f7;--s3:#e8eaf2;
+  --b1:#dde0ec;--b2:#c8cce0;
+  --royal:#3C50C1;--blue:#2878c0;--ci-blue:#3AA9F6;
+  --purple:#6828a8;--indigo:#441F7D;
+  --ok:#287858;--ok-a:rgba(40,120,88,.1);
+  --warn:#a07828;--warn-a:rgba(160,120,40,.1);
+  --danger:#b83038;--danger-a:rgba(184,48,56,.1);
+  --t1:#1a1d2e;--t2:#4a5070;--t3:#7a809a;--t4:#c0c4d4;
+  --mono:'DM Mono',monospace;--sans:'Noto Sans KR',sans-serif;
+  --r8:8px;--r10:10px;--r12:12px;
+  --shadow:0 1px 4px rgba(60,80,193,.07),0 2px 12px rgba(60,80,193,.05);
+}
+body{font-family:var(--sans);background:var(--bg);color:var(--t1);font-size:13px;min-height:100vh;display:flex;flex-direction:column}
+
+/* HEADER */
+.hd{background:var(--indigo);padding:12px 24px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;border-bottom:1px solid rgba(255,255,255,.08)}
+.hd-left{display:flex;align-items:center;gap:16px}
+.logo{font-size:14px;font-weight:700;color:#fff;letter-spacing:-.3px}
+.logo em{color:#90d4ff;font-style:normal}
+.hd-title{font-size:13px;color:rgba(255,255,255,.6);border-left:1px solid rgba(255,255,255,.2);padding-left:16px}
+.hd-right{display:flex;align-items:center;gap:10px}
+.hd-chip{font-size:11px;padding:4px 12px;border-radius:20px;background:rgba(255,255,255,.12);color:rgba(255,255,255,.8);border:1px solid rgba(255,255,255,.15)}
+.hd-chip.active{background:rgba(58,169,246,.25);color:#90d4ff;border-color:rgba(58,169,246,.4)}
+
+/* FILTER BAR */
+.fb{background:var(--s1);border-bottom:1px solid var(--b1);padding:9px 24px;display:flex;align-items:center;gap:10px;flex-shrink:0}
+.fb-label{font-size:10px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;margin-right:4px}
+.sel{background:var(--s2);border:1px solid var(--b1);color:var(--t1);font-size:11px;padding:5px 10px;border-radius:var(--r8);outline:none;font-family:var(--sans);cursor:pointer}
+.sel:focus{border-color:var(--royal)}
+.fb-divider{width:1px;height:20px;background:var(--b1);margin:0 4px}
+.yr-btn{font-size:11px;font-weight:600;padding:5px 11px;border-radius:var(--r8);border:1px solid var(--b1);background:var(--s2);color:var(--t2);cursor:pointer;transition:.15s}
+.yr-btn.active{background:var(--royal);color:#fff;border-color:var(--royal)}
+.yr-btn:hover:not(.active){background:var(--s3);border-color:var(--b2)}
+
+/* MAIN */
+.main{flex:1;padding:16px 24px;display:flex;flex-direction:column;gap:12px;overflow:auto}
+
+/* KPI ROW */
+.kpi-row{display:grid;grid-template-columns:repeat(6,1fr);gap:10px}
+.kpi{background:var(--s1);border:1px solid var(--b1);border-radius:var(--r10);padding:14px 16px;box-shadow:var(--shadow)}
+.kpi-label{font-size:10px;color:var(--t3);margin-bottom:6px;font-weight:500}
+.kpi-value{font-size:24px;font-weight:700;font-family:var(--mono);letter-spacing:-.5px;color:var(--t1);line-height:1.1}
+.kpi-sub{font-size:10px;color:var(--t3);margin-top:4px;display:flex;align-items:center;gap:4px}
+.kpi-delta{font-size:10px;font-weight:700;padding:1px 6px;border-radius:4px}
+.kpi-delta.up{background:var(--ok-a);color:var(--ok)}
+.kpi-delta.dn{background:var(--danger-a);color:var(--danger)}
+.kpi-delta.neu{background:var(--warn-a);color:var(--warn)}
+.kpi.hl{border-left:3px solid var(--royal)}
+.kpi.hl .kpi-value{color:var(--royal)}
+
+/* CHART GRID */
+.grid-2{display:grid;grid-template-columns:1.6fr 1fr;gap:12px}
+.grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+.grid-2b{display:grid;grid-template-columns:1fr 1.4fr;gap:12px}
+
+.cc{background:var(--s1);border:1px solid var(--b1);border-radius:var(--r12);padding:16px 18px;box-shadow:var(--shadow);display:flex;flex-direction:column}
+.cc-hd{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px;flex-shrink:0}
+.cc-title{font-size:12px;font-weight:700;color:var(--t1)}
+.cc-sub{font-size:10px;color:var(--t3);margin-top:2px}
+.cc-leg{display:flex;gap:8px;flex-wrap:wrap}
+.leg{display:flex;align-items:center;gap:4px;font-size:10px;color:var(--t2)}
+.leg-dot{width:8px;height:8px;border-radius:50%}
+.leg-sq{width:10px;height:8px;border-radius:2px}
+.cw{flex:1;position:relative;min-height:140px}
+
+/* DEPT TABLE */
+.dept-table{width:100%;border-collapse:collapse;font-size:11px;margin-top:4px}
+.dept-table th{background:var(--s2);color:var(--t3);font-size:10px;font-weight:700;padding:7px 10px;text-align:left;border-bottom:1px solid var(--b1)}
+.dept-table th.r{text-align:right}
+.dept-table td{padding:8px 10px;border-bottom:1px solid var(--s2);color:var(--t1)}
+.dept-table td.r{text-align:right;font-family:var(--mono)}
+.dept-table tr:last-child td{border-bottom:none}
+.dept-table tr:hover td{background:var(--s2)}
+.dept-badge{font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px}
+
+/* ROUTE BARS */
+.route-list{display:flex;flex-direction:column;gap:7px;margin-top:6px}
+.route-row{display:flex;align-items:center;gap:8px}
+.route-name{font-size:11px;color:var(--t2);width:64px;flex-shrink:0;text-align:right}
+.route-track{flex:1;height:20px;background:var(--s2);border-radius:4px;overflow:hidden;position:relative}
+.route-fill{height:100%;border-radius:4px;display:flex;align-items:center;padding:0 8px;transition:width .6s ease}
+.route-pct{font-size:10px;font-weight:700;color:#fff;white-space:nowrap}
+.route-cnt{font-size:10px;color:var(--t3);width:36px;text-align:right;flex-shrink:0;font-family:var(--mono)}
+
+/* TYPE PIE LABELS */
+.type-wrap{display:flex;align-items:center;gap:16px;margin-top:8px}
+.type-legend{display:flex;flex-direction:column;gap:6px;flex:1}
+.type-item{display:flex;align-items:center;justify-content:space-between;font-size:11px}
+.type-label{display:flex;align-items:center;gap:6px;color:var(--t2)}
+.type-val{font-family:var(--mono);font-weight:700;color:var(--t1)}
+
+/* COST TABLE */
+.cost-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
+.cost-item{background:var(--s2);border-radius:var(--r8);padding:10px 12px}
+.cost-item-label{font-size:10px;color:var(--t3);margin-bottom:4px}
+.cost-item-val{font-size:16px;font-weight:700;font-family:var(--mono);color:var(--t1)}
+.cost-item-sub{font-size:10px;color:var(--t3);margin-top:2px}
+.cost-item.hl{background:rgba(60,80,193,.07);border:1px solid rgba(60,80,193,.15)}
+.cost-item.hl .cost-item-val{color:var(--royal)}
+
+/* FOOTER */
+.footer{padding:10px 24px;border-top:1px solid var(--b1);font-size:10px;color:var(--t3);display:flex;justify-content:space-between;background:var(--s1);flex-shrink:0}
+
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-thumb{background:var(--b2);border-radius:2px}
+</style>
+</head>
+<body>
+
+<div class="hd">
+  <div class="hd-left">
+    <div class="logo">AROM <em>HR</em></div>
+    <div class="hd-title">채용 현황 대시보드</div>
+  </div>
+  <div class="hd-right">
+    <span class="hd-chip active" id="hd-range">전체 '20~'25</span>
+    <span class="hd-chip" id="hd-date"></span>
+  </div>
+</div>
+
+<div class="fb">
+  <span class="fb-label">연도</span>
+  <button class="yr-btn active" onclick="setYear('all',this)">전체</button>
+  <button class="yr-btn" onclick="setYear(20,this)">'20</button>
+  <button class="yr-btn" onclick="setYear(21,this)">'21</button>
+  <button class="yr-btn" onclick="setYear(22,this)">'22</button>
+  <button class="yr-btn" onclick="setYear(23,this)">'23</button>
+  <button class="yr-btn" onclick="setYear(24,this)">'24</button>
+  <button class="yr-btn" onclick="setYear(25,this)">'25</button>
+  <div class="fb-divider"></div>
+  <span class="fb-label">부서</span>
+  <select class="sel" id="f-dept" onchange="render()">
+    <option value="">전체</option>
+    <option>부서 A</option><option>부서 B</option><option>부서 C</option>
+    <option>부서 D</option><option>부서 E</option><option>부서 F</option>
+  </select>
+  <div class="fb-divider"></div>
+  <span class="fb-label">근로형태</span>
+  <select class="sel" id="f-type" onchange="render()">
+    <option value="">전체</option>
+    <option>정규직/신입</option><option>정규직/경력</option><option>인턴</option><option>계약직</option>
+  </select>
+</div>
+
+<div class="main">
+  <!-- KPI -->
+  <div class="kpi-row">
+    <div class="kpi hl">
+      <div class="kpi-label">총 입사자 수</div>
+      <div class="kpi-value" id="k-total">-</div>
+      <div class="kpi-sub"><span class="kpi-delta" id="k-total-d">-</span> 전년 대비</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">정규직 신입</div>
+      <div class="kpi-value" id="k-new">-</div>
+      <div class="kpi-sub"><span class="kpi-delta" id="k-new-d">-</span> 비중</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">정규직 경력</div>
+      <div class="kpi-value" id="k-exp">-</div>
+      <div class="kpi-sub"><span class="kpi-delta" id="k-exp-d">-</span> 비중</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">인턴/계약직</div>
+      <div class="kpi-value" id="k-intern">-</div>
+      <div class="kpi-sub"><span class="kpi-delta" id="k-intern-d">-</span> 비중</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">총 채용 비용</div>
+      <div class="kpi-value" id="k-cost">-</div>
+      <div class="kpi-sub"><span class="kpi-delta" id="k-cost-d">-</span> 만원</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">1인당 채용 비용</div>
+      <div class="kpi-value" id="k-cost1">-</div>
+      <div class="kpi-sub">만원 / 인</div>
+    </div>
+  </div>
+
+  <!-- ROW 1 -->
+  <div class="grid-2">
+    <div class="cc">
+      <div class="cc-hd">
+        <div>
+          <div class="cc-title">연도별 입사자 추이</div>
+          <div class="cc-sub">근로형태별 누적 (명)</div>
+        </div>
+        <div class="cc-leg">
+          <span class="leg"><span class="leg-sq" style="background:#3C50C1"></span>정규/신입</span>
+          <span class="leg"><span class="leg-sq" style="background:#2878c0"></span>정규/경력</span>
+          <span class="leg"><span class="leg-sq" style="background:#6828a8"></span>인턴</span>
+          <span class="leg"><span class="leg-sq" style="background:#a07828"></span>계약직</span>
+        </div>
+      </div>
+      <div class="cw"><canvas id="chart-trend"></canvas></div>
+    </div>
+    <div class="cc">
+      <div class="cc-hd">
+        <div>
+          <div class="cc-title">채용 경로 비중</div>
+          <div class="cc-sub" id="route-sub">전체 기간 기준</div>
+        </div>
+      </div>
+      <div class="route-list" id="route-list"></div>
+    </div>
+  </div>
+
+  <!-- ROW 2 -->
+  <div class="grid-3">
+    <div class="cc">
+      <div class="cc-hd">
+        <div>
+          <div class="cc-title">근로형태 구성</div>
+          <div class="cc-sub" id="type-sub">비율 기준</div>
+        </div>
+      </div>
+      <div class="type-wrap">
+        <div style="width:120px;height:120px;flex-shrink:0;position:relative"><canvas id="chart-type"></canvas></div>
+        <div class="type-legend" id="type-legend"></div>
+      </div>
+    </div>
+
+    <div class="cc">
+      <div class="cc-hd">
+        <div>
+          <div class="cc-title">부서별 채용 현황</div>
+          <div class="cc-sub">입사자 수 기준</div>
+        </div>
+      </div>
+      <div class="cw" style="min-height:120px"><canvas id="chart-dept"></canvas></div>
+    </div>
+
+    <div class="cc">
+      <div class="cc-hd">
+        <div>
+          <div class="cc-title">채용 비용 분석</div>
+          <div class="cc-sub" id="cost-sub">공고비 + 수수료 (만원)</div>
+        </div>
+      </div>
+      <div class="cost-grid" id="cost-grid"></div>
+    </div>
+  </div>
+
+  <!-- ROW 3 -->
+  <div class="grid-2b">
+    <div class="cc">
+      <div class="cc-hd">
+        <div>
+          <div class="cc-title">연도별 채용 비용 추이</div>
+          <div class="cc-sub">공고비 vs 수수료 (만원)</div>
+        </div>
+        <div class="cc-leg">
+          <span class="leg"><span class="leg-sq" style="background:#3C50C1"></span>공고비</span>
+          <span class="leg"><span class="leg-sq" style="background:#3AA9F6"></span>수수료</span>
+        </div>
+      </div>
+      <div class="cw"><canvas id="chart-cost"></canvas></div>
+    </div>
+
+    <div class="cc">
+      <div class="cc-hd">
+        <div>
+          <div class="cc-title">부서별 상세 현황</div>
+          <div class="cc-sub">입사자 수 · 비용 · 경력 비중</div>
+        </div>
+      </div>
+      <div style="overflow-x:auto">
+        <table class="dept-table" id="dept-table">
+          <thead><tr>
+            <th>부서</th><th class="r">입사자</th><th class="r">신입</th><th class="r">경력</th><th class="r">경력비중</th><th class="r">채용비용(만)</th><th class="r">1인당(만)</th>
+          </tr></thead>
+          <tbody id="dept-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="footer">
+  <span>※ 본 대시보드는 포트폴리오용 더미 데이터 기반입니다. 실제 수치와 무관합니다.</span>
+  <span>HR 담당 · Moonjeah &nbsp;|&nbsp; AROM 경영지원팀</span>
+</div>
+
+<script>
+// ── 더미 데이터 ──────────────────────────────────────────────────────
+const YEARS = [20,21,22,23,24,25];
+const DEPTS = ['부서 A','부서 B','부서 C','부서 D','부서 E','부서 F'];
+const TYPES = ['정규직/신입','정규직/경력','인턴','계약직'];
+const ROUTES = ['경로 A','경로 B','경로 C','경로 D','경로 E','경로 F'];
+const DEPT_COLORS = ['#3C50C1','#2878c0','#6828a8','#287858','#a07828','#b83038'];
+const TYPE_COLORS = ['#3C50C1','#2878c0','#6828a8','#a07828'];
+const ROUTE_COLORS = ['#3C50C1','#2878c0','#3AA9F6','#6828a8','#287858','#441F7D'];
+
+// 연도별 · 부서별 · 근로형태별 입사자 (더미)
+const RAW = [];
+const SEED = [
+  // yr, dept, type, count, adCost(만), fee(만)
+  [20,'부서 A','정규직/신입',5,120,150],[20,'부서 A','정규직/경력',8,80,420],
+  [20,'부서 B','정규직/신입',3,60,90],[20,'부서 B','정규직/경력',6,50,310],
+  [20,'부서 C','정규직/경력',4,40,220],[20,'부서 C','인턴',2,0,0],
+  [20,'부서 D','정규직/신입',2,30,60],[20,'부서 D','정규직/경력',3,30,160],
+  [20,'부서 E','정규직/경력',2,20,110],[20,'부서 F','계약직',1,0,0],
+  [21,'부서 A','정규직/신입',7,150,210],[21,'부서 A','정규직/경력',10,100,540],
+  [21,'부서 B','정규직/신입',4,80,120],[21,'부서 B','정규직/경력',8,60,420],
+  [21,'부서 C','정규직/경력',6,50,330],[21,'부서 C','인턴',3,0,0],
+  [21,'부서 D','정규직/신입',3,40,90],[21,'부서 D','정규직/경력',5,40,260],
+  [21,'부서 E','정규직/경력',4,30,220],[21,'부서 F','계약직',2,0,0],[21,'부서 F','정규직/신입',1,20,30],
+  [22,'부서 A','정규직/신입',6,130,180],[22,'부서 A','정규직/경력',9,90,480],
+  [22,'부서 B','정규직/신입',5,90,150],[22,'부서 B','정규직/경력',7,55,370],
+  [22,'부서 C','정규직/경력',8,60,440],[22,'부서 C','인턴',4,0,0],
+  [22,'부서 D','정규직/신입',4,50,120],[22,'부서 D','정규직/경력',6,45,320],
+  [22,'부서 E','정규직/경력',5,35,275],[22,'부서 E','인턴',2,0,0],
+  [22,'부서 F','계약직',3,0,0],[22,'부서 F','정규직/신입',2,30,60],
+  [23,'부서 A','정규직/신입',8,170,240],[23,'부서 A','정규직/경력',12,110,650],
+  [23,'부서 B','정규직/신입',5,95,150],[23,'부서 B','정규직/경력',9,65,480],
+  [23,'부서 C','정규직/경력',10,70,550],[23,'부서 C','인턴',5,0,0],
+  [23,'부서 D','정규직/신입',4,55,120],[23,'부서 D','정규직/경력',7,50,370],
+  [23,'부서 E','정규직/경력',6,40,330],[23,'부서 E','인턴',3,0,0],
+  [23,'부서 F','계약직',2,0,0],[23,'부서 F','정규직/신입',3,45,90],[23,'부서 F','정규직/경력',2,20,110],
+  [24,'부서 A','정규직/신입',10,200,300],[24,'부서 A','정규직/경력',14,130,760],
+  [24,'부서 B','정규직/신입',6,110,180],[24,'부서 B','정규직/경력',10,75,530],
+  [24,'부서 C','정규직/경력',12,80,660],[24,'부서 C','인턴',6,0,0],
+  [24,'부서 D','정규직/신입',5,65,150],[24,'부서 D','정규직/경력',8,60,420],
+  [24,'부서 E','정규직/경력',7,45,385],[24,'부서 E','인턴',4,0,0],
+  [24,'부서 F','계약직',3,0,0],[24,'부서 F','정규직/신입',4,55,120],[24,'부서 F','정규직/경력',3,30,165],
+  [25,'부서 A','정규직/신입',9,190,270],[25,'부서 A','정규직/경력',13,120,705],
+  [25,'부서 B','정규직/신입',6,105,180],[25,'부서 B','정규직/경력',11,80,580],
+  [25,'부서 C','정규직/경력',11,75,605],[25,'부서 C','인턴',5,0,0],
+  [25,'부서 D','정규직/신입',6,70,180],[25,'부서 D','정규직/경력',9,65,475],
+  [25,'부서 E','정규직/경력',8,50,440],[25,'부서 E','인턴',4,0,0],
+  [25,'부서 F','계약직',4,0,0],[25,'부서 F','정규직/신입',5,65,150],[25,'부서 F','정규직/경력',4,35,220],
+];
+
+// 채용 경로 더미 (연도별)
+const ROUTE_DATA = {
+  20:{A:18,B:6,C:4,D:5,E:1,F:2},
+  21:{A:22,B:8,C:5,D:9,E:2,F:3},
+  22:{A:25,B:9,C:7,D:11,E:3,F:4},
+  23:{A:28,B:10,C:8,D:14,E:5,F:5},
+  24:{A:32,B:11,C:9,D:18,E:7,F:6},
+  25:{A:30,B:10,C:8,D:20,E:9,F:6},
+};
+
+// ── 상태 ──────────────────────────────────────────────────────────────
+let selYear = 'all';
+let charts = {};
+
+// ── 날짜 ──────────────────────────────────────────────────────────────
+const d = new Date();
+document.getElementById('hd-date').textContent =
+  `${d.getFullYear()}.${String(d.getMonth()+1).padStart(2,'0')}.${String(d.getDate()).padStart(2,'0')}`;
+
+// ── 필터 함수 ─────────────────────────────────────────────────────────
+function filtered(){
+  const dept = document.getElementById('f-dept').value;
+  const type = document.getElementById('f-type').value;
+  return SEED.filter(r=>
+    (selYear==='all'||r[0]===selYear) &&
+    (!dept||r[1]===dept) &&
+    (!type||r[2]===type)
+  );
+}
+
+function setYear(yr, el){
+  selYear = yr;
+  document.querySelectorAll('.yr-btn').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+  const label = yr==='all'?"전체 '20~'25":`'${yr}년`;
+  document.getElementById('hd-range').textContent = label;
+  render();
+}
+
+function fw(n){return Math.round(n).toLocaleString();}
+function fp(n){return n.toFixed(1)+'%';}
+
+// ── KPI ───────────────────────────────────────────────────────────────
+function renderKPI(data){
+  const total = data.reduce((s,r)=>s+r[3],0);
+  const newC  = data.filter(r=>r[2]==='정규직/신입').reduce((s,r)=>s+r[3],0);
+  const expC  = data.filter(r=>r[2]==='정규직/경력').reduce((s,r)=>s+r[3],0);
+  const intC  = data.filter(r=>r[2]==='인턴'||r[2]==='계약직').reduce((s,r)=>s+r[3],0);
+  const cost  = data.reduce((s,r)=>s+r[4]+r[5],0);
+  const cost1 = total>0?Math.round(cost/total):0;
+
+  // 전년 대비 (연도 단일 선택 시)
+  let prevTotal = null;
+  if(selYear!=='all'){
+    const prevYr = selYear-1;
+    const dept = document.getElementById('f-dept').value;
+    const type = document.getElementById('f-type').value;
+    prevTotal = SEED.filter(r=>r[0]===prevYr&&(!dept||r[1]===dept)&&(!type||r[2]===type)).reduce((s,r)=>s+r[3],0);
+  }
+
+  document.getElementById('k-total').textContent = total+'명';
+  if(prevTotal!==null){
+    const diff = total - prevTotal;
+    const el = document.getElementById('k-total-d');
+    el.textContent = (diff>=0?'+':'')+diff+'명';
+    el.className = 'kpi-delta '+(diff>0?'up':diff<0?'dn':'neu');
+  } else {
+    document.getElementById('k-total-d').textContent = '';
+  }
+
+  document.getElementById('k-new').textContent = newC+'명';
+  document.getElementById('k-new-d').textContent = total>0?fp(newC/total*100):'-';
+  document.getElementById('k-new-d').className='kpi-delta neu';
+
+  document.getElementById('k-exp').textContent = expC+'명';
+  document.getElementById('k-exp-d').textContent = total>0?fp(expC/total*100):'-';
+  document.getElementById('k-exp-d').className='kpi-delta neu';
+
+  document.getElementById('k-intern').textContent = intC+'명';
+  document.getElementById('k-intern-d').textContent = total>0?fp(intC/total*100):'-';
+  document.getElementById('k-intern-d').className='kpi-delta neu';
+
+  document.getElementById('k-cost').textContent = fw(cost);
+  document.getElementById('k-cost-d').textContent = fw(cost)+'만원';
+  document.getElementById('k-cost-d').className='kpi-delta neu';
+
+  document.getElementById('k-cost1').textContent = fw(cost1);
+}
+
+// ── 연도별 추이 차트 ─────────────────────────────────────────────────
+function renderTrend(){
+  if(charts.trend){charts.trend.destroy();}
+  const dept = document.getElementById('f-dept').value;
+  const type = document.getElementById('f-type').value;
+
+  const yrs = selYear==='all'?YEARS:[selYear];
+  const typeList = type?[type]:TYPES;
+
+  const datasets = typeList.map((t,i)=>({
+    label:t,
+    data:yrs.map(yr=>SEED.filter(r=>r[0]===yr&&r[2]===t&&(!dept||r[1]===dept)).reduce((s,r)=>s+r[3],0)),
+    backgroundColor:TYPE_COLORS[TYPES.indexOf(t)],
+    borderRadius:3, borderSkipped:false, stack:'s'
+  }));
+
+  const ctx = document.getElementById('chart-trend').getContext('2d');
+  charts.trend = new Chart(ctx,{
+    type:'bar',
+    data:{labels:yrs.map(y=>"'"+y),datasets},
+    options:{
+      responsive:true,maintainAspectRatio:false,animation:{duration:400},
+      plugins:{legend:{display:false},
+        tooltip:{backgroundColor:'#fff',borderColor:'#dde0ec',borderWidth:1,
+          titleColor:'#1a1d2e',bodyColor:'#4a5070',padding:10,
+          callbacks:{label:c=>c.dataset.label+': '+c.raw+'명'}}},
+      scales:{
+        x:{stacked:true,ticks:{color:'#7a809a',font:{size:11}},grid:{display:false}},
+        y:{stacked:true,ticks:{color:'#7a809a',font:{size:10},callback:v=>v+'명'},
+          grid:{color:'rgba(0,0,0,0.04)'}}
+      }
+    }
+  });
+}
+
+// ── 채용 경로 ─────────────────────────────────────────────────────────
+function renderRoute(data){
+  const totals = {A:0,B:0,C:0,D:0,E:0,F:0};
+  const yrs = selYear==='all'?YEARS:[selYear];
+  yrs.forEach(yr=>{
+    Object.entries(ROUTE_DATA[yr]).forEach(([k,v])=>{ totals[k]=(totals[k]||0)+v; });
+  });
+  const grandTotal = Object.values(totals).reduce((s,v)=>s+v,0);
+  const sorted = Object.entries(totals).sort((a,b)=>b[1]-a[1]);
+
+  const rNames = ['경로 A','경로 B','경로 C','경로 D','경로 E','경로 F'];
+  const html = sorted.map(([k,v],i)=>{
+    const pct = grandTotal>0?v/grandTotal*100:0;
+    const col = ROUTE_COLORS[i%ROUTE_COLORS.length];
+    return `<div class="route-row">
+      <div class="route-name">${'경로 '+k}</div>
+      <div class="route-track">
+        <div class="route-fill" style="width:${pct}%;background:${col}">
+          ${pct>8?`<span class="route-pct">${pct.toFixed(0)}%</span>`:''}
+        </div>
+      </div>
+      <div class="route-cnt">${v}명</div>
+    </div>`;
+  }).join('');
+  document.getElementById('route-list').innerHTML = html;
+  document.getElementById('route-sub').textContent = selYear==='all'?`전체 기간 기준`:`'${selYear}년 기준`;
+}
+
+// ── 근로형태 파이 ─────────────────────────────────────────────────────
+function renderType(data){
+  if(charts.type){charts.type.destroy();}
+  const counts = TYPES.map(t=>data.filter(r=>r[2]===t).reduce((s,r)=>s+r[3],0));
+  const total = counts.reduce((s,v)=>s+v,0);
+
+  const ctx = document.getElementById('chart-type').getContext('2d');
+  charts.type = new Chart(ctx,{
+    type:'doughnut',
+    data:{labels:TYPES,datasets:[{data:counts,backgroundColor:TYPE_COLORS,borderWidth:2,borderColor:'#fff',hoverOffset:4}]},
+    options:{responsive:true,maintainAspectRatio:false,cutout:'68%',
+      plugins:{legend:{display:false},tooltip:{backgroundColor:'#fff',borderColor:'#dde0ec',borderWidth:1,
+        titleColor:'#1a1d2e',bodyColor:'#4a5070',
+        callbacks:{label:c=>c.label+': '+c.raw+'명 ('+fp(c.raw/total*100)+')'}}}}
+  });
+
+  document.getElementById('type-legend').innerHTML = TYPES.map((t,i)=>`
+    <div class="type-item">
+      <span class="type-label"><span style="width:8px;height:8px;border-radius:50%;background:${TYPE_COLORS[i]};display:inline-block"></span>${t}</span>
+      <span class="type-val">${counts[i]}명</span>
+    </div>`).join('');
+  document.getElementById('type-sub').textContent = total+'명 기준';
+}
+
+// ── 부서별 가로막대 ───────────────────────────────────────────────────
+function renderDept(data){
+  if(charts.dept){charts.dept.destroy();}
+  const counts = DEPTS.map(d=>data.filter(r=>r[1]===d).reduce((s,r)=>s+r[3],0));
+  const ctx = document.getElementById('chart-dept').getContext('2d');
+  charts.dept = new Chart(ctx,{
+    type:'bar',
+    data:{labels:DEPTS,datasets:[{data:counts,backgroundColor:DEPT_COLORS,borderRadius:4,borderSkipped:false}]},
+    options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,animation:{duration:400},
+      plugins:{legend:{display:false},tooltip:{backgroundColor:'#fff',borderColor:'#dde0ec',borderWidth:1,
+        titleColor:'#1a1d2e',bodyColor:'#4a5070',
+        callbacks:{label:c=>c.raw+'명'}}},
+      scales:{
+        x:{ticks:{color:'#7a809a',font:{size:10},callback:v=>v+'명'},grid:{color:'rgba(0,0,0,0.04)'}},
+        y:{ticks:{color:'#4a5070',font:{size:11}},grid:{display:false}}
+      }}
+  });
+}
+
+// ── 채용 비용 카드 ────────────────────────────────────────────────────
+function renderCostGrid(data){
+  const ad   = data.reduce((s,r)=>s+r[4],0);
+  const fee  = data.reduce((s,r)=>s+r[5],0);
+  const total= ad+fee;
+  const cnt  = data.reduce((s,r)=>s+r[3],0);
+  document.getElementById('cost-grid').innerHTML = `
+    <div class="cost-item hl"><div class="cost-item-label">총 채용 비용</div><div class="cost-item-val">${fw(total)}</div><div class="cost-item-sub">만원</div></div>
+    <div class="cost-item"><div class="cost-item-label">공고비</div><div class="cost-item-val">${fw(ad)}</div><div class="cost-item-sub">${total>0?fp(ad/total*100):'-'} 비중</div></div>
+    <div class="cost-item"><div class="cost-item-label">수수료</div><div class="cost-item-val">${fw(fee)}</div><div class="cost-item-sub">${total>0?fp(fee/total*100):'-'} 비중</div></div>
+    <div class="cost-item"><div class="cost-item-label">1인당 비용</div><div class="cost-item-val">${cnt>0?fw(total/cnt):'-'}</div><div class="cost-item-sub">만원/인</div></div>
+  `;
+  document.getElementById('cost-sub').textContent = `공고비 ${fw(ad)}만 + 수수료 ${fw(fee)}만`;
+}
+
+// ── 연도별 비용 추이 ──────────────────────────────────────────────────
+function renderCostTrend(){
+  if(charts.cost){charts.cost.destroy();}
+  const dept = document.getElementById('f-dept').value;
+  const type = document.getElementById('f-type').value;
+  const yrs = YEARS;
+  const adData = yrs.map(yr=>SEED.filter(r=>r[0]===yr&&(!dept||r[1]===dept)&&(!type||r[2]===type)).reduce((s,r)=>s+r[4],0));
+  const feeData= yrs.map(yr=>SEED.filter(r=>r[0]===yr&&(!dept||r[1]===dept)&&(!type||r[2]===type)).reduce((s,r)=>s+r[5],0));
+  const ctx = document.getElementById('chart-cost').getContext('2d');
+  charts.cost = new Chart(ctx,{
+    type:'bar',
+    data:{labels:yrs.map(y=>"'"+y),datasets:[
+      {label:'공고비',data:adData,backgroundColor:'#3C50C1',borderRadius:3,borderSkipped:false,stack:'s'},
+      {label:'수수료',data:feeData,backgroundColor:'#3AA9F6',borderRadius:3,borderSkipped:false,stack:'s'},
+    ]},
+    options:{responsive:true,maintainAspectRatio:false,animation:{duration:400},
+      plugins:{legend:{display:false},tooltip:{backgroundColor:'#fff',borderColor:'#dde0ec',borderWidth:1,
+        titleColor:'#1a1d2e',bodyColor:'#4a5070',
+        callbacks:{label:c=>c.dataset.label+': '+fw(c.raw)+'만원'}}},
+      scales:{
+        x:{stacked:true,ticks:{color:'#7a809a',font:{size:11}},grid:{display:false}},
+        y:{stacked:true,ticks:{color:'#7a809a',font:{size:10},callback:v=>fw(v)+'만'},
+          grid:{color:'rgba(0,0,0,0.04)'}}
+      }}
+  });
+}
+
+// ── 부서별 상세 테이블 ────────────────────────────────────────────────
+function renderDeptTable(data){
+  const rows = DEPTS.map((dept,i)=>{
+    const dr = data.filter(r=>r[1]===dept);
+    const cnt = dr.reduce((s,r)=>s+r[3],0);
+    const newC= dr.filter(r=>r[2]==='정규직/신입').reduce((s,r)=>s+r[3],0);
+    const expC= dr.filter(r=>r[2]==='정규직/경력').reduce((s,r)=>s+r[3],0);
+    const cost= dr.reduce((s,r)=>s+r[4]+r[5],0);
+    const cost1= cnt>0?Math.round(cost/cnt):0;
+    const expPct= cnt>0?expC/cnt*100:0;
+    const col = DEPT_COLORS[i];
+    return {dept,cnt,newC,expC,expPct,cost,cost1,col};
+  }).filter(r=>r.cnt>0).sort((a,b)=>b.cnt-a.cnt);
+
+  document.getElementById('dept-tbody').innerHTML = rows.map(r=>`
+    <tr>
+      <td><span class="dept-badge" style="background:${r.col}22;color:${r.col}">${r.dept}</span></td>
+      <td class="r" style="font-weight:700">${r.cnt}명</td>
+      <td class="r">${r.newC}명</td>
+      <td class="r">${r.expC}명</td>
+      <td class="r" style="color:${r.expPct>60?'var(--ok)':'var(--t2)'}">${fp(r.expPct)}</td>
+      <td class="r">${fw(r.cost)}</td>
+      <td class="r">${fw(r.cost1)}</td>
+    </tr>`).join('');
+}
+
+// ── 전체 렌더 ─────────────────────────────────────────────────────────
+function render(){
+  const data = filtered();
+  renderKPI(data);
+  renderTrend();
+  renderRoute(data);
+  renderType(data);
+  renderDept(data);
+  renderCostGrid(data);
+  renderCostTrend();
+  renderDeptTable(data);
+}
+
+render();
+</script>
+</body>
+</html>
