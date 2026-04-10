@@ -1,0 +1,1401 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MOON · 연봉 조정 BI</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#f2f3f8;--s1:#ffffff;--s2:#f0f1f7;--s3:#e8eaf2;
+  --b1:#dde0ec;--b2:#c8cce0;--b3:#b0b6d0;
+  --floor:#b83038;--floor-a:rgba(184,48,56,.08);--floor-b:rgba(184,48,56,.22);
+  --cap:#a07828;--cap-a:rgba(160,120,40,.08);--cap-b:rgba(160,120,40,.22);
+  --ok:#287858;--ok-a:rgba(40,120,88,.08);--ok-b:rgba(40,120,88,.22);
+  --adj:#3C50C1;--adj-a:rgba(60,80,193,.08);--adj-b:rgba(60,80,193,.25);
+  --promo:#7c3aed;--promo-a:rgba(124,58,237,.08);--promo-b:rgba(124,58,237,.25);
+  --warn:#c05000;--warn-a:rgba(192,80,0,.09);--warn-b:rgba(192,80,0,.28);
+  --blue:#2878c0;--blue-a:rgba(40,120,192,.08);
+  --ci-blue:#3AA9F6;--ci-purple:#6828a8;--ci-royal:#3C50C1;--ci-indigo:#441F7D;
+  --t1:#1a1d2e;--t2:#4a5070;--t3:#7a809a;--t4:#c0c4d4;
+  --mono:'DM Mono',monospace;--sans:'Noto Sans KR',sans-serif;
+  --r6:6px;--r8:8px;--r10:10px;
+}
+body{font-family:var(--sans);background:var(--bg);color:var(--t1);font-size:13px;height:100vh;display:flex;flex-direction:column;overflow:hidden}
+
+/* ── HEADER ── */
+.hd{background:var(--ci-royal);border-bottom:1px solid #2a3e8a;padding:10px 20px;display:flex;align-items:center;gap:16px;flex-shrink:0}
+.logo{font-size:13px;font-weight:700;color:#fff;white-space:nowrap;letter-spacing:-.2px;flex-shrink:0}
+.logo em{color:#90d4ff;font-style:normal}
+.hd-kpis{display:flex;gap:0;flex:1;overflow:hidden}
+.hkpi{padding:0 11px;border-left:1px solid rgba(255,255,255,.15);display:flex;flex-direction:column;align-items:center;flex-shrink:0}
+.hkpi-v{font-size:15px;font-weight:700;font-family:var(--mono);color:#fff;line-height:1.1;white-space:nowrap}
+.hkpi-l{font-size:9px;color:rgba(255,255,255,.5);margin-top:2px;white-space:nowrap}
+.hkpi.f .hkpi-v{color:#ffb0b8}
+.hkpi.c .hkpi-v{color:#ffd898}
+.hkpi.o .hkpi-v{color:#90ddb8}
+.hkpi.a .hkpi-v{color:#ffb0b8;font-size:12px}
+.hkpi.adj-kpi .hkpi-v{color:#a0c8ff;font-size:12px}
+.hkpi.promo-kpi .hkpi-v{color:#d0b0ff;font-size:12px}
+.hd-right{display:flex;gap:6px;align-items:center;flex-shrink:0}
+.sel{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);color:#fff;font-size:11px;padding:4px 8px;border-radius:var(--r6);outline:none;font-family:var(--sans);cursor:pointer}
+.sel option{background:#3C50C1;color:#fff}
+.btn-tab{font-size:11px;font-weight:600;padding:4px 10px;border-radius:var(--r6);border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.1);color:#fff;cursor:pointer;transition:all .15s;white-space:nowrap}
+.btn-tab.active{background:#fff;color:var(--ci-royal)}
+.btn-tab:hover:not(.active){background:rgba(255,255,255,.2)}
+.btn-scenario{font-size:10px;padding:4px 9px;border-radius:var(--r6);border:1px solid rgba(255,220,80,.35);background:rgba(255,220,80,.1);color:#ffe878;cursor:pointer;white-space:nowrap}
+.btn-scenario:hover{background:rgba(255,220,80,.2)}
+
+/* ── GAUGE BAR ── */
+.gauge-bar{background:var(--ci-indigo);border-bottom:1px solid #2a1860;padding:5px 20px;display:flex;align-items:center;gap:16px;flex-shrink:0}
+.gb-label{font-size:10px;color:rgba(255,220,80,.9);white-space:nowrap;font-weight:700;flex-shrink:0}
+.gb-sub{font-size:9px;color:rgba(255,255,255,.45);margin-top:1px}
+.gb-groups{display:flex;gap:12px;flex:1;align-items:center}
+.gb-item{display:flex;align-items:center;gap:6px;flex:1}
+.gb-name{font-size:10px;color:rgba(255,255,255,.55);width:60px;flex-shrink:0;text-align:right}
+.gb-track{flex:1;height:5px;background:rgba(255,255,255,.1);border-radius:3px;position:relative}
+.gb-fill{height:100%;border-radius:3px;transition:width .3s,background .3s;max-width:100%}
+.gb-limit{position:absolute;top:-3px;width:1.5px;height:11px;background:rgba(255,220,80,.7);border-radius:1px;left:33.3%}
+.gb-pct{font-size:10px;font-family:var(--mono);font-weight:700;width:44px;text-align:right;flex-shrink:0}
+.gb-warn{font-size:9px;padding:1px 5px;border-radius:3px;background:rgba(255,60,60,.25);color:#ffb0b0;font-weight:600;display:none;flex-shrink:0}
+.gb-warn.on{display:inline}
+
+/* ── MAIN LAYOUT ── */
+.main{display:flex;flex:1;overflow:hidden}
+
+/* ── LEFT PANEL ── */
+.lp{width:256px;flex-shrink:0;background:var(--s1);border-right:1px solid var(--b1);display:flex;flex-direction:column;overflow:hidden}
+.lp-hd{padding:8px 11px;border-bottom:1px solid var(--b1);background:var(--s2);display:flex;align-items:center;justify-content:space-between}
+.lp-title{font-size:10px;font-weight:700;color:var(--t2);letter-spacing:.4px;text-transform:uppercase}
+.lp-cnt{font-size:10px;color:var(--t3);font-family:var(--mono)}
+.lp-search{padding:6px 9px;border-bottom:1px solid var(--b1)}
+.lp-search input{width:100%;background:var(--s2);border:1px solid var(--b1);color:var(--t1);font-size:12px;padding:5px 8px;border-radius:var(--r6);outline:none;font-family:var(--sans)}
+.lp-search input:focus{border-color:var(--blue)}
+.emp-list{flex:1;overflow-y:auto;padding:4px}
+.ei{padding:7px 8px;border-radius:var(--r8);cursor:pointer;display:flex;align-items:center;gap:7px;margin-bottom:1px;transition:background .1s;position:relative}
+.ei:hover{background:var(--s2)}
+.ei.active{background:var(--adj-a);outline:1px solid var(--adj-b)}
+.ei-av{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0}
+.ei-body{flex:1;min-width:0}
+.ei-name{font-size:12px;font-weight:600;color:var(--t1);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:flex;align-items:center;gap:4px}
+.ei-sub{font-size:10px;color:var(--t3);margin-top:1px;display:flex;align-items:center;gap:3px}
+.ei-badges{display:flex;gap:3px;align-items:center;flex-shrink:0}
+.ei-st{font-size:9px;font-weight:600;padding:2px 5px;border-radius:8px}
+.st-f{background:var(--floor-a);color:var(--floor);outline:1px solid var(--floor-b)}
+.st-c{background:var(--cap-a);color:var(--cap);outline:1px solid var(--cap-b)}
+.st-o{background:var(--ok-a);color:var(--ok);outline:1px solid var(--ok-b)}
+.st-adj{background:var(--adj-a);color:var(--adj);outline:1px solid var(--adj-b)}
+.st-promo{background:var(--promo-a);color:var(--promo);outline:1px solid var(--promo-b)}
+.ei-dot{width:6px;height:6px;border-radius:50%;background:var(--ci-royal);position:absolute;top:5px;right:5px}
+.new-tag{font-size:9px;padding:1px 4px;border-radius:3px;background:rgba(40,120,192,.1);color:var(--blue);font-weight:500}
+.promo-tag{font-size:9px;padding:1px 4px;border-radius:3px;background:var(--promo-a);color:var(--promo);font-weight:500}
+.warn-tag{font-size:9px;padding:1px 4px;border-radius:3px;background:var(--warn-a);color:var(--warn);font-weight:700}
+
+/* ── RIGHT PANEL ── */
+.rp{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0}
+
+/* ── PROFILE ── */
+.pf{background:var(--s1);border-bottom:1px solid var(--b1);padding:10px 16px;flex-shrink:0}
+.pf-empty{display:flex;align-items:center;gap:10px;color:var(--t3);padding:6px 0}
+.pf-row{display:flex;gap:12px;align-items:flex-start}
+.pf-av{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;flex-shrink:0}
+.pf-info{flex:1;min-width:0}
+.pf-name{font-size:14px;font-weight:700;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.pf-dept{font-size:11px;color:var(--t2);margin-top:2px}
+.pf-stats{display:flex;margin-top:7px;gap:0;flex-wrap:wrap}
+.ps{padding:0 11px;border-right:1px solid var(--b1);text-align:center}
+.ps:first-child{padding-left:0}
+.ps:last-child{border-right:none}
+.ps-v{font-size:13px;font-weight:700;font-family:var(--mono);color:var(--t1)}
+.ps-l{font-size:10px;color:var(--t3);margin-top:1px}
+
+/* ── ADJUST BOX ── */
+.adj-box{background:var(--adj-a);border:1px solid var(--adj-b);border-radius:var(--r8);padding:9px 12px;min-width:260px;flex-shrink:0}
+.adj-title{font-size:10px;font-weight:700;color:var(--adj);letter-spacing:.3px;text-transform:uppercase;margin-bottom:7px;display:flex;align-items:center;justify-content:space-between}
+.adj-row{display:flex;align-items:center;gap:7px;margin-bottom:5px}
+.adj-label{font-size:11px;color:var(--t2);width:54px;flex-shrink:0}
+.adj-input{background:#fff;border:1px solid var(--b2);border-radius:var(--r6);padding:4px 8px;font-size:13px;font-family:var(--mono);font-weight:600;color:var(--t1);width:82px;outline:none;text-align:right}
+.adj-input:focus{border-color:var(--ci-royal)}
+.adj-unit{font-size:11px;color:var(--t2);flex-shrink:0}
+.adj-result{display:flex;gap:10px;flex-wrap:wrap;margin-top:5px;padding-top:5px;border-top:1px solid var(--adj-b)}
+.ar-item{text-align:center}
+.ar-v{font-size:12px;font-weight:700;font-family:var(--mono)}
+.ar-l{font-size:9px;color:var(--t2);margin-top:1px}
+.btn-reset{font-size:10px;padding:3px 8px;border-radius:var(--r6);border:1px solid var(--floor-b);background:var(--floor-a);color:var(--floor);cursor:pointer}
+.btn-reset:hover{background:var(--floor-b)}
+
+/* ── PROMO BOX ── */
+.promo-box{background:var(--promo-a);border:1px solid var(--promo-b);border-radius:var(--r8);padding:9px 12px;min-width:160px;flex-shrink:0}
+.promo-title{font-size:10px;font-weight:700;color:var(--promo);letter-spacing:.3px;text-transform:uppercase;margin-bottom:7px}
+.promo-cand-info{font-size:11px;color:var(--promo);margin-bottom:6px;font-weight:600}
+.promo-check-row{display:flex;align-items:center;gap:6px;margin-bottom:4px}
+.promo-check-row input[type=checkbox]{width:14px;height:14px;accent-color:var(--promo);cursor:pointer}
+.promo-check-row label{font-size:11px;color:var(--t1);cursor:pointer}
+.promo-bonus-info{font-size:10px;color:var(--t2);margin-top:4px;padding-top:4px;border-top:1px solid var(--promo-b)}
+
+/* ── REVERSE WARN ── */
+.rev-warn-box{background:var(--warn-a);border:1px solid var(--warn-b);border-radius:var(--r6);padding:5px 10px;margin-top:5px;display:none}
+.rev-warn-box.on{display:block}
+.rev-warn-title{font-size:10px;font-weight:700;color:var(--warn);margin-bottom:2px}
+.rev-warn-list{font-size:10px;color:var(--warn);line-height:1.6}
+
+/* ── CHART AREA ── */
+.ca{flex:1;padding:10px 14px;display:flex;flex-direction:column;gap:8px;overflow:hidden;background:var(--bg)}
+.crow{display:flex;gap:10px;flex:1;min-height:0}
+.cc{background:var(--s1);border:1px solid var(--b1);border-radius:var(--r10);padding:11px 13px;display:flex;flex-direction:column;overflow:hidden}
+.cc.main-chart{flex:2.6}
+.cc.side-chart{flex:1.1}
+.cc-hd{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:7px;flex-shrink:0}
+.cc-title{font-size:11px;font-weight:700;color:var(--t1)}
+.cc-sub{font-size:10px;color:var(--t3);margin-top:1px}
+.cc-leg{display:flex;gap:6px;flex-wrap:wrap}
+.leg{display:flex;align-items:center;gap:3px;font-size:10px;color:var(--t2)}
+.leg-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.leg-line{width:11px;height:1.5px;border-radius:1px;flex-shrink:0}
+.cw{flex:1;position:relative;min-height:0}
+
+/* ── BOTTOM TABLE ── */
+.bt-wrap{background:var(--s1);border-top:1px solid var(--b1);flex-shrink:0;max-height:185px;display:flex;flex-direction:column}
+.bt-hd{padding:7px 14px;border-bottom:1px solid var(--b1);background:var(--s2);display:flex;align-items:center;gap:14px;flex-shrink:0}
+.bt-title{font-size:11px;font-weight:700;color:var(--t1);flex-shrink:0}
+.bt-sums{display:flex;gap:14px;align-items:center;flex:1;flex-wrap:wrap}
+.bt-si{font-size:11px;color:var(--t2);white-space:nowrap}
+.bt-si span{font-family:var(--mono);font-weight:700;color:var(--t1);margin-left:3px}
+.bt-si.hi span{color:var(--ci-royal)}
+.bt-si.promo span{color:var(--promo)}
+.bt-actions{display:flex;gap:6px;flex-shrink:0}
+.btn-csv{font-size:10px;padding:4px 10px;border-radius:var(--r6);border:1px solid var(--adj-b);background:var(--adj-a);color:var(--adj);cursor:pointer;font-weight:600}
+.btn-csv:hover{background:var(--adj-b)}
+.bt-scroll{overflow-y:auto;flex:1}
+.bt-table{width:100%;border-collapse:collapse;font-size:11px;table-layout:fixed}
+.bt-table th{background:var(--s2);color:var(--t2);font-size:10px;font-weight:700;padding:5px 8px;text-align:left;border-bottom:1px solid var(--b1);white-space:nowrap;position:sticky;top:0;overflow:hidden;text-overflow:ellipsis}
+.bt-table th.r{text-align:right}
+.bt-table td{padding:6px 8px;border-bottom:1px solid var(--s2);color:var(--t1);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bt-table td.r{text-align:right;font-family:var(--mono)}
+.bt-table tr:hover td{background:var(--s2)}
+.adj-tag{font-size:9px;padding:1px 5px;border-radius:3px;background:var(--adj-a);color:var(--adj);font-weight:600;outline:1px solid var(--adj-b)}
+.promo-badge-sm{font-size:9px;padding:1px 5px;border-radius:3px;background:var(--promo-a);color:var(--promo);font-weight:600;outline:1px solid var(--promo-b)}
+
+/* ── SCENARIO MODAL ── */
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:1000;display:none;align-items:center;justify-content:center}
+.modal-bg.on{display:flex}
+.modal{background:var(--s1);border:1px solid var(--b1);border-radius:var(--r10);padding:20px;width:360px;max-height:80vh;overflow-y:auto}
+.modal-title{font-size:14px;font-weight:700;color:var(--t1);margin-bottom:14px}
+.modal-close{float:right;font-size:18px;color:var(--t3);cursor:pointer;line-height:1}
+.scenario-list{display:flex;flex-direction:column;gap:8px;margin-bottom:14px}
+.scenario-item{background:var(--s2);border:1px solid var(--b1);border-radius:var(--r8);padding:10px 12px;display:flex;align-items:center;justify-content:space-between}
+.sc-info{font-size:12px;color:var(--t1)}
+.sc-info span{font-size:10px;color:var(--t3);margin-left:6px;font-family:var(--mono)}
+.sc-actions{display:flex;gap:6px}
+.btn-sm{font-size:10px;padding:3px 8px;border-radius:5px;border:1px solid var(--b2);background:var(--s1);color:var(--t1);cursor:pointer}
+.btn-sm.load{border-color:var(--adj-b);color:var(--adj);background:var(--adj-a)}
+.btn-sm.del{border-color:var(--floor-b);color:var(--floor);background:var(--floor-a)}
+.btn-save-new{width:100%;padding:8px;border-radius:var(--r8);border:1px solid var(--adj-b);background:var(--adj-a);color:var(--adj);font-size:12px;font-weight:700;cursor:pointer;margin-top:6px}
+.btn-save-new:hover{background:var(--adj-b)}
+.sc-name-input{width:100%;background:var(--s2);border:1px solid var(--b1);color:var(--t1);font-size:12px;padding:6px 9px;border-radius:var(--r6);outline:none;margin-bottom:8px;font-family:var(--sans)}
+.sc-name-input:focus{border-color:var(--blue)}
+
+/* ── SUMMARY PANEL ── */
+.sum-panel{display:none;flex:1;flex-direction:column;overflow:hidden}
+.sum-panel.active{display:flex}
+.sum-kpi{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;padding:12px 14px;flex-shrink:0}
+.sk{background:var(--s1);border:1px solid var(--b1);border-radius:var(--r8);padding:10px 12px}
+.sk-v{font-size:18px;font-weight:700;font-family:var(--mono);color:var(--t1)}
+.sk-l{font-size:10px;color:var(--t3);margin-top:2px}
+.sk.hl .sk-v{color:var(--ci-royal)}
+.sk.fl .sk-v{color:var(--floor)}
+.sk.ok .sk-v{color:var(--ok)}
+.sk.promo .sk-v{color:var(--promo)}
+.sum-section{padding:0 14px 6px;flex-shrink:0}
+.sum-section-title{font-size:11px;font-weight:700;color:var(--t2);margin-bottom:6px;padding-bottom:4px;border-bottom:1px solid var(--b1)}
+
+/* ── GRADE SECTION ── */
+.grade-panel{background:var(--s1);border-bottom:1px solid var(--b1);padding:8px 14px;flex-shrink:0;display:none}
+.grade-panel.active{display:block}
+.grade-row{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.grade-title{font-size:10px;font-weight:700;color:var(--t2);letter-spacing:.3px;text-transform:uppercase;flex-shrink:0;width:60px}
+.grade-depts{display:flex;gap:16px;flex:1;flex-wrap:wrap}
+.grade-dept-group{display:flex;flex-direction:column;gap:3px}
+.grade-dept-name{font-size:10px;font-weight:700;color:var(--t2);margin-bottom:2px}
+.grade-btns{display:flex;gap:3px}
+.grade-btn{font-size:10px;padding:2px 8px;border-radius:4px;border:1px solid var(--b2);background:var(--s2);color:var(--t2);cursor:pointer;font-weight:600;transition:all .1s}
+.grade-btn.A{border-color:#8040d0;background:rgba(128,64,208,.08);color:#6028a8}
+.grade-btn.B{border-color:#2060a8;background:rgba(32,96,168,.08);color:#1850a0}
+.grade-btn.C{border-color:#287858;background:rgba(40,120,88,.08);color:#206048}
+.grade-btn.D{border-color:#b83038;background:rgba(184,48,56,.08);color:#902030}
+.grade-dist{font-size:10px;color:var(--t3);margin-left:4px}
+.grade-dist.over{color:var(--floor);font-weight:700}
+
+/* ── DEPT PILLS ── */
+.dp{font-size:10px;padding:1px 6px;border-radius:3px;font-weight:500}
+.d-sol{background:rgba(100,70,200,.1);color:#5030a0}
+.d-cloud{background:rgba(40,120,192,.1);color:#1850a0}
+.d-tel{background:rgba(30,120,80,.1);color:#186050}
+.d-mgmt{background:rgba(160,120,40,.1);color:#806020}
+.d-strat{background:rgba(150,50,120,.1);color:#802060}
+
+.sb{font-size:10px;font-weight:600;padding:2px 7px;border-radius:8px}
+.sum-table-wrap{flex:1;overflow:auto;padding:0 14px 12px}
+.sum-table{width:100%;border-collapse:collapse;font-size:11px;table-layout:fixed}
+.sum-table th{background:var(--ci-royal);color:#fff;font-size:10px;font-weight:700;padding:6px 8px;text-align:left;white-space:nowrap;position:sticky;top:0;overflow:hidden;text-overflow:ellipsis}
+.sum-table th.r{text-align:right}
+.sum-table td{padding:6px 8px;border-bottom:1px solid var(--b1);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--t1)}
+.sum-table td.r{text-align:right;font-family:var(--mono)}
+.sum-table tr:hover td{background:var(--s2)}
+.sum-table tr.adj-row td{background:rgba(60,80,193,.03)}
+.sum-table tr.promo-row td{background:rgba(124,58,237,.03)}
+
+/* ── DRAG HANDLE ── */
+.drag-h{width:5px;background:var(--b1);cursor:col-resize;flex-shrink:0;transition:background .15s;position:relative;z-index:10}
+.drag-h:hover,.drag-h.dragging{background:var(--ci-royal)}
+.drag-h::after{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:1px;height:32px;background:var(--b3);border-radius:1px}
+.drag-v{height:5px;background:var(--b1);cursor:row-resize;flex-shrink:0;transition:background .15s;position:relative;z-index:10}
+.drag-v:hover,.drag-v.dragging{background:var(--ci-royal)}
+.drag-v::after{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);height:1px;width:32px;background:var(--b3);border-radius:1px}
+
+/* ── LAYOUT PRESETS ── */
+.preset-bar{background:var(--s2);border-bottom:1px solid var(--b1);padding:4px 16px;display:flex;align-items:center;gap:6px;flex-shrink:0}
+.preset-label{font-size:10px;color:var(--t3);font-weight:600;margin-right:4px;letter-spacing:.3px}
+.btn-preset{font-size:10px;padding:3px 10px;border-radius:5px;border:1px solid var(--b2);background:var(--s1);color:var(--t2);cursor:pointer;transition:all .1s;white-space:nowrap}
+.btn-preset:hover{border-color:var(--ci-royal);color:var(--ci-royal)}
+.btn-preset.active{background:var(--ci-royal);color:#fff;border-color:var(--ci-royal)}
+.preset-divider{width:1px;height:14px;background:var(--b1);margin:0 4px}
+.kbd-hint{font-size:10px;color:var(--t4);margin-left:auto;display:flex;align-items:center;gap:4px}
+.kbd{font-size:9px;padding:1px 5px;border-radius:3px;background:var(--s3);border:1px solid var(--b2);color:var(--t3);font-family:var(--mono)}
+
+/* ── PRINT ── */
+@media print{
+  .hd,.gauge-bar,.preset-bar,.lp,.drag-h,.drag-v,.adj-box,.promo-box,.btn-csv,.btn-tab,.btn-scenario,.sel,.bt-actions{display:none!important}
+  body{height:auto;overflow:visible;font-size:12px}
+  .main{display:block;height:auto;overflow:visible}
+  .rp{display:block!important;height:auto;overflow:visible}
+  .ca{height:320px;padding:8px}
+  .crow{height:300px}
+  .bt-wrap{max-height:none;page-break-inside:avoid}
+  .pf{border:1px solid #ddd;border-radius:6px;margin-bottom:8px}
+  .cc{border:1px solid #ddd}
+}
+
+::-webkit-scrollbar{width:3px;height:3px}
+::-webkit-scrollbar-thumb{background:var(--b2);border-radius:2px}
+::-webkit-scrollbar-track{background:transparent}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="hd">
+  <div class="logo">MOON <em>HR · BI</em></div>
+  <div class="hd-kpis">
+    <div class="hkpi f"><div class="hkpi-v" id="h-floor">-</div><div class="hkpi-l">Floor 미달</div></div>
+    <div class="hkpi c"><div class="hkpi-v" id="h-cap">-</div><div class="hkpi-l">Cap 초과</div></div>
+    <div class="hkpi o"><div class="hkpi-v" id="h-ok">-</div><div class="hkpi-l">정상</div></div>
+    <div class="hkpi a"><div class="hkpi-v" id="h-need-adj">-</div><div class="hkpi-l">조정 필요액</div></div>
+    <div class="hkpi adj-kpi"><div class="hkpi-v" id="h-adj-cnt">0명</div><div class="hkpi-l">조정 완료</div></div>
+    <div class="hkpi adj-kpi"><div class="hkpi-v" id="h-adj-total">-</div><div class="hkpi-l">추가 인건비(조정)</div></div>
+    <div class="hkpi promo-kpi"><div class="hkpi-v" id="h-promo-cnt">0명</div><div class="hkpi-l">진급 확정</div></div>
+    <div class="hkpi promo-kpi"><div class="hkpi-v" id="h-promo-total">-</div><div class="hkpi-l">진급수당 합계</div></div>
+    <div class="hkpi adj-kpi"><div class="hkpi-v" id="h-grand-total">-</div><div class="hkpi-l">총 추가 인건비</div></div>
+  </div>
+  <div class="hd-right">
+    <select class="sel" id="f-dept" onchange="go()">
+      <option value="">전체 부서</option>
+      <option>부서A</option><option>부서B</option>
+      <option>부서C</option><option>경영지원</option>
+    </select>
+    <select class="sel" id="f-rank" onchange="go()">
+      <option value="">전체 직급</option>
+      <option>부장</option><option>차장</option><option>과장</option><option>대리</option><option>사원</option>
+    </select>
+    <select class="sel" id="f-status" onchange="go()">
+      <option value="">전체 상태</option>
+      <option value="Floor 미달">Floor 미달</option>
+      <option value="Cap 초과">Cap 초과</option>
+      <option value="정상">정상</option>
+      <option value="조정완료">조정 완료</option>
+      <option value="진급대상">진급 대상</option>
+    </select>
+    <button class="btn-tab active" id="tab-pos" onclick="switchTab('pos')">포지셔닝</button>
+    <button class="btn-tab" id="tab-sum" onclick="switchTab('sum')">조정 요약</button>
+    <button class="btn-scenario" onclick="openScenario()">📋 시나리오</button>
+  </div>
+</div>
+
+<!-- GAUGE BAR -->
+<div class="gauge-bar">
+  <div>
+    <div class="gb-label">5.0% 한도</div>
+    <div class="gb-sub">인건비 기준</div>
+  </div>
+  <div class="gb-groups">
+    <div class="gb-item">
+      <div class="gb-name">전사</div>
+      <div class="gb-track">
+        <div class="gb-fill" id="gf-all" style="background:#60c8a0;width:0%"></div>
+        <div class="gb-limit"></div>
+      </div>
+      <div class="gb-pct" id="gp-all" style="color:rgba(255,255,255,.7)">-</div>
+      <span class="gb-warn" id="gw-all">초과!</span>
+    </div>
+    <div class="gb-item">
+      <div class="gb-name" style="width:50px">솔루션</div>
+      <div class="gb-track"><div class="gb-fill" id="gf-sol" style="background:#7090e0;width:0%"></div><div class="gb-limit"></div></div>
+      <div class="gb-pct" id="gp-sol" style="color:rgba(255,255,255,.6);font-size:10px">-</div>
+      <span class="gb-warn" id="gw-sol">초과</span>
+    </div>
+    <div class="gb-item">
+      <div class="gb-name" style="width:50px">클라우드</div>
+      <div class="gb-track"><div class="gb-fill" id="gf-cloud" style="background:#7090e0;width:0%"></div><div class="gb-limit"></div></div>
+      <div class="gb-pct" id="gp-cloud" style="color:rgba(255,255,255,.6);font-size:10px">-</div>
+      <span class="gb-warn" id="gw-cloud">초과</span>
+    </div>
+    <div class="gb-item">
+      <div class="gb-name" style="width:50px">통신응용</div>
+      <div class="gb-track"><div class="gb-fill" id="gf-tel" style="background:#7090e0;width:0%"></div><div class="gb-limit"></div></div>
+      <div class="gb-pct" id="gp-tel" style="color:rgba(255,255,255,.6);font-size:10px">-</div>
+      <span class="gb-warn" id="gw-tel">초과</span>
+    </div>
+    <div class="gb-item">
+      <div class="gb-name" style="width:50px">경영지원</div>
+      <div class="gb-track"><div class="gb-fill" id="gf-mgmt" style="background:#7090e0;width:0%"></div><div class="gb-limit"></div></div>
+      <div class="gb-pct" id="gp-mgmt" style="color:rgba(255,255,255,.6);font-size:10px">-</div>
+      <span class="gb-warn" id="gw-mgmt">초과</span>
+    </div>
+  </div>
+</div>
+
+<!-- PRESET BAR -->
+<div class="preset-bar">
+  <span class="preset-label">레이아웃</span>
+  <button class="btn-preset active" id="pr-default" onclick="applyPreset('default')">기본</button>
+  <button class="btn-preset" id="pr-chart" onclick="applyPreset('chart')">차트 집중</button>
+  <button class="btn-preset" id="pr-table" onclick="applyPreset('table')">테이블 집중</button>
+  <button class="btn-preset" id="pr-report" onclick="applyPreset('report')">보고용</button>
+  <div class="preset-divider"></div>
+  <button class="btn-preset" onclick="window.print()">🖨 인쇄</button>
+  <div class="kbd-hint">
+    <span class="kbd">↑↓</span>직원이동
+    <span class="kbd">Enter</span>선택
+    <span class="kbd">Esc</span>해제
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+  <!-- LEFT PANEL -->
+  <div class="lp" id="lp-panel">
+    <div class="lp-hd"><span class="lp-title">직원 목록</span><span class="lp-cnt" id="lp-cnt"></span></div>
+    <div class="lp-search"><input type="text" id="search-input" placeholder="이름 검색..." oninput="go()"></div>
+    <div class="emp-list" id="emp-list"></div>
+  </div>
+
+  <!-- DRAG: LEFT ↔ RIGHT -->
+  <div class="drag-h" id="drag-lr" onmousedown="startDragLR(event)"></div>
+
+  <!-- RIGHT: POSITIONING TAB -->
+  <div class="rp" id="rp-pos">
+
+    <!-- PROFILE -->
+    <div class="pf" id="pf">
+      <div class="pf-empty">
+        <span style="font-size:18px;opacity:.3">←</span>
+        <div><div style="color:var(--t2);font-size:13px">직원을 선택하세요</div><div style="font-size:11px;color:var(--t3);margin-top:2px">좌측 목록 클릭 → 포지셔닝 차트 + 연봉 조정</div></div>
+      </div>
+    </div>
+
+    <!-- CHARTS -->
+    <div class="ca" id="ca-panel">
+      <div class="crow">
+        <div class="cc main-chart">
+          <div class="cc-hd">
+            <div>
+              <div class="cc-title">연봉 포지셔닝 차트 · 총경력(만년수) 기준</div>
+              <div class="cc-sub">직급별 테이블 최소기준 커브 · 조정 시 점 실시간 이동</div>
+            </div>
+            <div class="cc-leg">
+              <span class="leg"><span class="leg-line" style="background:#8b5050"></span>부장</span>
+              <span class="leg"><span class="leg-line" style="background:#4050a0"></span>차장</span>
+              <span class="leg"><span class="leg-line" style="background:#306080"></span>과장</span>
+              <span class="leg"><span class="leg-line" style="background:#287858"></span>대리</span>
+              <span class="leg"><span class="leg-line" style="background:#806030"></span>사원</span>
+              <span class="leg"><span class="leg-dot" style="background:#b0b8d0"></span>동료</span>
+              <span class="leg"><span class="leg-dot" style="background:#1a1d2e;width:10px;height:10px"></span>본인</span>
+              <span class="leg"><span class="leg-dot" style="background:var(--ci-royal);width:10px;height:10px"></span>조정후</span>
+            </div>
+          </div>
+          <div class="cw"><canvas id="chart-pos"></canvas></div>
+        </div>
+        <div class="cc side-chart">
+          <div class="cc-hd">
+            <div>
+              <div class="cc-title">직급 내 연봉 분포</div>
+              <div class="cc-sub" id="dist-sub">직원 선택 시 표시</div>
+            </div>
+          </div>
+          <div class="cw"><canvas id="chart-dist"></canvas></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- BOTTOM TABLE -->
+    <div class="bt-wrap" id="bt-panel">
+    <!-- DRAG: CHART ↕ TABLE -->
+    <div class="drag-v" id="drag-ud" onmousedown="startDragUD(event)"></div>
+      <div class="bt-hd">
+        <div class="bt-title">조정 내역</div>
+        <div class="bt-sums">
+          <div class="bt-si">조정 인원<span id="bt-n">0명</span></div>
+          <div class="bt-si">조정 전 합계<span id="bt-before">-</span></div>
+          <div class="bt-si">조정 후 합계<span id="bt-after">-</span></div>
+          <div class="bt-si hi">추가 인건비<span id="bt-delta">-</span></div>
+          <div class="bt-si promo">진급수당 합계<span id="bt-promo-total">-</span></div>
+          <div class="bt-si hi">총 추가 인건비<span id="bt-grand">-</span></div>
+        </div>
+        <div class="bt-actions">
+          <button class="btn-csv" onclick="exportCSV()">CSV 다운로드</button>
+        </div>
+      </div>
+      <div class="bt-scroll">
+        <table class="bt-table">
+          <colgroup>
+            <col style="width:70px"><col style="width:54px"><col style="width:44px"><col style="width:68px">
+            <col style="width:72px"><col style="width:72px"><col style="width:52px"><col style="width:60px">
+            <col style="width:72px"><col style="width:60px"><col style="width:80px"><col style="width:64px">
+          </colgroup>
+          <thead><tr>
+            <th>사업부</th><th>이름</th><th>직급</th><th>총경력</th>
+            <th class="r">현 연봉</th><th class="r">조정 연봉</th>
+            <th class="r">인상률</th><th class="r">인상액</th>
+            <th class="r">테이블 최소</th><th class="r">테이블 대비</th>
+            <th>상태 변화</th><th class="r">진급수당</th>
+          </tr></thead>
+          <tbody id="bt-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+  </div><!-- /rp-pos -->
+
+  <!-- RIGHT: SUMMARY TAB -->
+  <div class="rp sum-panel" id="rp-sum">
+    <div class="sum-kpi">
+      <div class="sk hl"><div class="sk-v" id="s-grand">-</div><div class="sk-l">총 추가 인건비</div></div>
+      <div class="sk hl"><div class="sk-v" id="s-adj-amt">-</div><div class="sk-l">연봉 조정 합계</div></div>
+      <div class="sk promo"><div class="sk-v" id="s-promo-amt">-</div><div class="sk-l">진급수당 합계</div></div>
+      <div class="sk fl"><div class="sk-v" id="s-still-floor">-</div><div class="sk-l">미달 미조정 잔여</div></div>
+      <div class="sk ok"><div class="sk-v" id="s-rev-cnt">-</div><div class="sk-l">역전 잔여 건수</div></div>
+    </div>
+    <div class="sum-table-wrap">
+      <table class="sum-table">
+        <colgroup>
+          <col style="width:80px"><col style="width:60px"><col style="width:48px"><col style="width:76px">
+          <col style="width:76px"><col style="width:76px"><col style="width:56px"><col style="width:68px">
+          <col style="width:76px"><col style="width:68px"><col style="width:80px"><col style="width:68px"><col style="width:60px">
+        </colgroup>
+        <thead><tr>
+          <th>사업부</th><th>이름</th><th>직급</th><th>총경력</th>
+          <th class="r">현 연봉</th><th class="r">조정 연봉</th>
+          <th class="r">인상률</th><th class="r">인상액</th>
+          <th class="r">테이블 최소</th><th class="r">테이블 대비%</th>
+          <th>상태</th><th class="r">진급수당</th><th>고과</th>
+        </tr></thead>
+        <tbody id="sum-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+
+</div><!-- /main -->
+
+<!-- SCENARIO MODAL -->
+<div class="modal-bg" id="modal-bg" onclick="if(event.target===this)closeScenario()">
+  <div class="modal">
+    <div class="modal-title">📋 시나리오 저장/불러오기 <span class="modal-close" onclick="closeScenario()">×</span></div>
+    <div class="scenario-list" id="scenario-list"></div>
+    <input class="sc-name-input" id="sc-name" type="text" placeholder="시나리오 이름 입력 (예: 1안, 보수안...)">
+    <button class="btn-save-new" onclick="saveScenario()">현재 조정 내역 저장</button>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════════
+// DATA
+// ══════════════════════════════════════════════
+const RANK_MAP = {'선임':'대리','전임':'대리'};
+const RANK_COLORS = {'부장':'#8b5050','차장':'#4050a0','과장':'#306080','대리':'#287858','사원':'#806030'};
+const AV_COLORS = ['#3C50C1','#2878c0','#6828a8','#287858','#b83038','#a07828','#3a80b0','#5040a0'];
+const DEPT_CLS = {'부서A':'d-sol','부서B':'d-cloud','부서C':'d-tel','HR팀':'d-mgmt','피플팀':'d-strat'};
+const DEPT_GROUP = {'부서A':'부서A','부서B':'부서B','부서C':'부서C','HR팀':'경영지원','피플팀':'경영지원'};
+const DEPT_GAUGE_ID = {'부서A':'sol','부서B':'cloud','부서C':'tel','경영지원':'mgmt'};
+const TBL = {
+  '부장':[[19,73000000],[20,75000000],[21,76500000],[22,78000000],[23,79500000],[24,81000000],[25,82500000],[26,84500000]],
+  '차장':[[14,64000000],[15,66000000],[16,68000000],[17,70000000],[18,72000000]],
+  '과장':[[9,53000000],[10,55000000],[11,57500000],[12,60000000],[13,62000000]],
+  '대리':[[4,42000000],[5,44000000],[6,46000000],[7,48500000],[8,51000000]],
+  '사원':[[1,35000000],[2,37500000],[3,40000000]],
+};
+// 직급별 테이블 최대값 (직급 상한)
+const TBL_MAX = {'부장':84500000,'차장':72000000,'과장':62000000,'대리':51000000,'사원':40000000};
+
+// 진급 보조지표: 총경력 기준 (참고용)
+const PROMO_MIN = {'사원':3,'대리':9,'과장':14,'차장':19};
+const PROMO_TO  = {'사원':'대리','대리':'과장','과장':'차장','차장':'부장'};
+const PROMO_BONUS = {'사원':1000000,'대리':1000000,'과장':2000000,'차장':2000000};
+
+const DATA = [
+  {no:1,n:'김지아',r:'차장',d:'HR팀',tc:'24년 4개월',ty:24,py:4.0,sal:62200000,tm:72000000,pp:3600000,nh:false},
+  {no:2,n:'Moonjeah',r:'대리',d:'HR팀',tc:'8년 1개월',ty:8,py:0.17,sal:42400000,tm:51000000,pp:0,nh:true},
+  {no:3,n:'이수연',r:'대리',d:'HR팀',tc:'5년 2개월',ty:5,py:0.92,sal:40500000,tm:44000000,pp:0,nh:false},
+  {no:4,n:'박예진',r:'차장',d:'피플팀',tc:'21년 7개월',ty:21,py:6.0,sal:74300000,tm:72000000,pp:0,nh:false},
+  {no:5,n:'최준혁',r:'대리',d:'피플팀',tc:'9년 1개월',ty:9,py:6.0,sal:51100000,tm:51000000,pp:0,nh:false},
+  {no:6,n:'이하영',r:'부장',d:'부서A',tc:'24년 9개월',ty:24,py:3.17,sal:74300000,tm:81000000,pp:3600000,nh:true},
+  {no:7,n:'윤지훈',r:'부장',d:'부서A',tc:'19년 5개월',ty:19,py:1.75,sal:105200000,tm:73000000,pp:3600000,nh:false},
+  {no:8,n:'장민석',r:'차장',d:'부서A',tc:'11년 4개월',ty:11,py:1.33,sal:70700000,tm:64000000,pp:0,nh:true},
+  {no:9,n:'한도윤',r:'과장',d:'부서A',tc:'11년 2개월',ty:11,py:4.0,sal:68200000,tm:57500000,pp:0,nh:false},
+  {no:10,n:'오다혜',r:'과장',d:'부서A',tc:'9년 5개월',ty:9,py:2.92,sal:61800000,tm:53000000,pp:0,nh:false},
+  {no:11,n:'정수아',r:'과장',d:'부서A',tc:'7년 4개월',ty:7,py:1.5,sal:56000000,tm:53000000,pp:0,nh:true},
+  {no:12,n:'조규남',r:'과장',d:'부서A',tc:'8년 10개월',ty:8,py:1.75,sal:65800000,tm:53000000,pp:0,nh:false},
+  {no:13,n:'임동규',r:'선임',d:'부서A',tc:'5년 3개월',ty:5,py:1.58,sal:51000000,tm:44000000,pp:0,nh:false},
+  {no:14,n:'권미경',r:'과장',d:'부서A',tc:'9년 1개월',ty:9,py:0.17,sal:48200000,tm:53000000,pp:0,nh:true},
+  {no:15,n:'서준우',r:'대리',d:'부서A',tc:'5년 11개월',ty:5,py:2.92,sal:51100000,tm:44000000,pp:0,nh:false},
+  {no:16,n:'김영준',r:'대리',d:'부서A',tc:'4년 10개월',ty:4,py:1.75,sal:45700000,tm:42000000,pp:0,nh:false},
+  {no:17,n:'문유덕',r:'대리',d:'부서A',tc:'5년 6개월',ty:5,py:1.58,sal:39100000,tm:44000000,pp:0,nh:true},
+  {no:18,n:'남영준',r:'대리',d:'부서A',tc:'5년 10개월',ty:5,py:1.58,sal:45200000,tm:44000000,pp:0,nh:true},
+  {no:19,n:'오세신',r:'전임',d:'부서A',tc:'4년 2개월',ty:4,py:1.58,sal:46700000,tm:42000000,pp:0,nh:false},
+  {no:20,n:'이세경',r:'대리',d:'부서A',tc:'4년 2개월',ty:4,py:0.92,sal:37000000,tm:42000000,pp:0,nh:false},
+  {no:21,n:'정동우',r:'전임',d:'부서A',tc:'4년 2개월',ty:4,py:1.58,sal:47500000,tm:42000000,pp:0,nh:false},
+  {no:22,n:'류종석',r:'대리',d:'부서A',tc:'4년 11개월',ty:4,py:1.75,sal:43100000,tm:42000000,pp:0,nh:false},
+  {no:23,n:'강영재',r:'대리',d:'부서A',tc:'4년 1개월',ty:4,py:0.92,sal:38500000,tm:42000000,pp:0,nh:false},
+  {no:24,n:'한현아',r:'대리',d:'부서A',tc:'4년 0개월',ty:4,py:0.92,sal:39600000,tm:42000000,pp:0,nh:false},
+  {no:25,n:'임성민',r:'대리',d:'부서A',tc:'7년 1개월',ty:7,py:1.75,sal:47200000,tm:48500000,pp:0,nh:false},
+  {no:26,n:'조범서',r:'사원',d:'부서A',tc:'2년 8개월',ty:2,py:1.58,sal:36700000,tm:37500000,pp:0,nh:true},
+  {no:27,n:'배성진',r:'사원',d:'부서A',tc:'1년 9개월',ty:1,py:1.17,sal:33400000,tm:35000000,pp:0,nh:false},
+  {no:28,n:'신혜윤',r:'사원',d:'부서A',tc:'0년 9개월',ty:0,py:0.17,sal:33300000,tm:35000000,pp:0,nh:false},
+  {no:29,n:'고우성',r:'부장',d:'부서B',tc:'22년 7개월',ty:22,py:4.17,sal:91400000,tm:78000000,pp:3600000,nh:true},
+  {no:30,n:'오현조',r:'차장',d:'부서B',tc:'19년 0개월',ty:19,py:3.25,sal:76300000,tm:72000000,pp:3600000,nh:true},
+  {no:31,n:'이수자',r:'차장',d:'부서B',tc:'19년 10개월',ty:19,py:4.17,sal:75800000,tm:72000000,pp:0,nh:true},
+  {no:32,n:'전호진',r:'차장',d:'부서B',tc:'13년 8개월',ty:13,py:4.0,sal:76700000,tm:64000000,pp:3600000,nh:false},
+  {no:33,n:'박형기',r:'차장',d:'부서B',tc:'16년 3개월',ty:16,py:4.0,sal:77700000,tm:68000000,pp:3600000,nh:false},
+  {no:34,n:'장준영',r:'차장',d:'부서B',tc:'15년 0개월',ty:15,py:3.25,sal:69800000,tm:66000000,pp:0,nh:false},
+  {no:35,n:'송희진',r:'과장',d:'부서B',tc:'9년 11개월',ty:9,py:1.75,sal:59700000,tm:53000000,pp:0,nh:false},
+  {no:36,n:'민동준',r:'대리',d:'부서B',tc:'5년 11개월',ty:5,py:2.92,sal:57800000,tm:44000000,pp:0,nh:false},
+  {no:37,n:'안지나',r:'대리',d:'부서B',tc:'6년 1개월',ty:6,py:2.92,sal:54200000,tm:46000000,pp:0,nh:false},
+  {no:38,n:'최민',r:'대리',d:'부서B',tc:'5년 6개월',ty:5,py:2.92,sal:58200000,tm:44000000,pp:0,nh:false},
+  {no:39,n:'황정우',r:'대리',d:'부서B',tc:'5년 6개월',ty:5,py:2.92,sal:57000000,tm:44000000,pp:0,nh:false},
+  {no:40,n:'유성탁',r:'대리',d:'부서B',tc:'4년 11개월',ty:4,py:1.75,sal:46200000,tm:42000000,pp:0,nh:false},
+  {no:41,n:'채현익',r:'대리',d:'부서B',tc:'4년 11개월',ty:4,py:1.75,sal:46900000,tm:42000000,pp:0,nh:false},
+  {no:42,n:'신현규',r:'대리',d:'부서B',tc:'4년 10개월',ty:4,py:1.75,sal:43600000,tm:42000000,pp:0,nh:false},
+  {no:43,n:'이혜지',r:'대리',d:'부서B',tc:'4년 10개월',ty:4,py:1.75,sal:43900000,tm:42000000,pp:0,nh:false},
+  {no:44,n:'천도훈',r:'대리',d:'부서B',tc:'4년 8개월',ty:4,py:1.75,sal:42800000,tm:42000000,pp:0,nh:false},
+  {no:45,n:'조민호',r:'대리',d:'부서B',tc:'4년 2개월',ty:4,py:0.92,sal:37000000,tm:42000000,pp:0,nh:false},
+  {no:46,n:'하원경',r:'대리',d:'부서B',tc:'4년 4개월',ty:4,py:1.75,sal:50000000,tm:42000000,pp:0,nh:false},
+  {no:47,n:'문현',r:'대리',d:'부서B',tc:'4년 4개월',ty:4,py:1.17,sal:38100000,tm:42000000,pp:0,nh:true},
+  {no:48,n:'원세현',r:'사원',d:'부서B',tc:'0년 9개월',ty:0,py:0.17,sal:34100000,tm:35000000,pp:0,nh:false},
+  {no:49,n:'나승화',r:'부장',d:'부서C',tc:'25년 7개월',ty:25,py:0,sal:92600000,tm:82500000,pp:0,nh:false},
+  {no:50,n:'마재복',r:'부장',d:'부서C',tc:'25년 2개월',ty:25,py:0,sal:90600000,tm:82500000,pp:0,nh:false},
+  {no:51,n:'위재현',r:'부장',d:'부서C',tc:'24년 11개월',ty:24,py:3.33,sal:76400000,tm:81000000,pp:0,nh:true},
+  {no:52,n:'곽도영',r:'차장',d:'부서C',tc:'28년 1개월',ty:28,py:11.0,sal:82600000,tm:72000000,pp:0,nh:true},
+  {no:53,n:'방민석',r:'차장',d:'부서C',tc:'17년 8개월',ty:17,py:3.92,sal:79700000,tm:70000000,pp:3600000,nh:false},
+  {no:54,n:'태현우',r:'차장',d:'부서C',tc:'13년 11개월',ty:13,py:4.0,sal:74100000,tm:64000000,pp:0,nh:false},
+  {no:55,n:'류세민',r:'차장',d:'부서C',tc:'12년 0개월',ty:12,py:4.0,sal:68500000,tm:64000000,pp:0,nh:false},
+  {no:56,n:'구상현',r:'대리',d:'부서C',tc:'4년 1개월',ty:4,py:2.92,sal:42400000,tm:42000000,pp:0,nh:false},
+  {no:57,n:'석원식',r:'대리',d:'부서C',tc:'6년 3개월',ty:6,py:2.92,sal:44200000,tm:46000000,pp:0,nh:false},
+  {no:58,n:'탁효근',r:'대리',d:'부서C',tc:'5년 11개월',ty:5,py:2.92,sal:47500000,tm:44000000,pp:0,nh:false},
+  {no:59,n:'봉영헌',r:'대리',d:'부서C',tc:'4년 6개월',ty:4,py:0.92,sal:39000000,tm:42000000,pp:0,nh:false},
+  {no:60,n:'엄순빈',r:'대리',d:'부서C',tc:'4년 6개월',ty:4,py:0.92,sal:37400000,tm:42000000,pp:0,nh:false},
+  {no:61,n:'도건희',r:'대리',d:'부서C',tc:'4년 0개월',ty:4,py:0.92,sal:40800000,tm:42000000,pp:0,nh:false},
+  {no:62,n:'갈혜성',r:'대리',d:'부서C',tc:'4년 1개월',ty:4,py:0.92,sal:38700000,tm:42000000,pp:0,nh:false},
+  {no:63,n:'남성현',r:'사원',d:'부서C',tc:'3년 9개월',ty:3,py:3.75,sal:38600000,tm:40000000,pp:0,nh:false},
+  {no:64,n:'기준호',r:'사원',d:'부서C',tc:'3년 9개월',ty:3,py:3.75,sal:41100000,tm:40000000,pp:0,nh:false},
+  {no:65,n:'마혜지',r:'사원',d:'부서C',tc:'3년 8개월',ty:3,py:3.67,sal:39500000,tm:40000000,pp:0,nh:false},
+  {no:66,n:'서주양',r:'사원',d:'부서C',tc:'2년 6개월',ty:2,py:2.5,sal:36300000,tm:37500000,pp:0,nh:false},
+];
+
+// 진급 보조지표 자동계산 (참고용)
+DATA.forEach(d=>{
+  const rk = RANK_MAP[d.r]||d.r;
+  const min = PROMO_MIN[rk];
+  d.isPromoCand = min!=null && d.ty>=min;
+  d.promoTo = d.isPromoCand ? PROMO_TO[rk] : '';
+  d.promoBonusAmt = d.isPromoCand ? (PROMO_BONUS[rk]||0) : 0;
+  d.df = d.sal - d.tm;
+  d.st = d.df<0?'Floor 미달':d.df>5000000?'Cap 초과':'정상';
+});
+
+// ══════════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════════
+const ADJ = {};      // no → {rate, newSal}
+const PROMO = {};    // no → true (Moon이 수동 확정한 진급자)
+const GRADE = {};    // no → 'A'|'B'|'C'|'D'
+let sel = null, posC = null, distC = null;
+
+// ══════════════════════════════════════════════
+// HELPERS
+// ══════════════════════════════════════════════
+const fw = n => Math.round(n/10000).toLocaleString()+'만';
+const rdsp = r => RANK_MAP[r]||r;
+const effSal = d => ADJ[d.no] ? ADJ[d.no].newSal : d.sal;
+const effSt = d => {
+  if(ADJ[d.no]) return '조정완료';
+  return d.st;
+};
+function calcStatus(sal,tm){
+  const df=sal-tm;
+  if(df<0)return 'Floor 미달';
+  if(df>5000000)return 'Cap 초과';
+  return '정상';
+}
+function stCls(st){
+  return st==='Floor 미달'?'st-f':st==='Cap 초과'?'st-c':st==='조정완료'?'st-adj':st==='진급대상'?'st-promo':'st-o';
+}
+function stColor(st){
+  return st==='Floor 미달'?'var(--floor)':st==='Cap 초과'?'var(--cap)':st==='조정완료'||st==='정상'?'var(--ok)':'var(--ok)';
+}
+function deptShort(d){return {'부서A':'부서A','부서B':'부서B','부서C':'부서C','HR팀':'HR','피플팀':'People'}[d]||d;}
+function deptCls(d){return DEPT_CLS[d]||'d-sol';}
+
+// ══════════════════════════════════════════════
+// 역전 감지
+// ══════════════════════════════════════════════
+function detectReversals(targetNo){
+  // 대상자 기준으로 같은 직급 내 경력 역전 감지
+  const target = DATA.find(d=>d.no===targetNo);
+  if(!target) return [];
+  const rk = rdsp(target.r);
+  const targetSal = ADJ[targetNo] ? ADJ[targetNo].newSal : target.sal;
+  const reversals = [];
+  DATA.filter(d=>rdsp(d.r)===rk && d.no!==targetNo).forEach(peer=>{
+    const peerSal = effSal(peer);
+    // 경력이 낮은데 연봉이 높은 경우 → 역전
+    if(target.ty > peer.ty && targetSal < peerSal){
+      reversals.push({name:peer.n, peerSal, peerTy:peer.ty, msg:`${peer.n}(${peer.ty}년)보다 경력 많은데 연봉 낮음`});
+    }
+    if(target.ty < peer.ty && targetSal > peerSal){
+      reversals.push({name:peer.n, peerSal, peerTy:peer.ty, msg:`${peer.n}(${peer.ty}년)보다 경력 적은데 연봉 높음`});
+    }
+  });
+  return reversals;
+}
+
+function countAllReversals(){
+  let count = 0;
+  const seen = new Set();
+  DATA.forEach(d=>{
+    const rk = rdsp(d.r);
+    const dSal = effSal(d);
+    DATA.filter(q=>rdsp(q.r)===rk && q.no!==d.no).forEach(q=>{
+      const key = [Math.min(d.no,q.no),Math.max(d.no,q.no)].join('-');
+      if(seen.has(key)) return;
+      seen.add(key);
+      const qSal = effSal(q);
+      if(d.ty > q.ty && dSal < qSal) count++;
+    });
+  });
+  return count;
+}
+
+// ══════════════════════════════════════════════
+// KPI
+// ══════════════════════════════════════════════
+function updateKPI(){
+  const f = DATA.filter(d=>d.st==='Floor 미달');
+  const c = DATA.filter(d=>d.st==='Cap 초과');
+  const o = DATA.filter(d=>d.st==='정상');
+  const needAdj = f.reduce((s,d)=>s+Math.abs(d.df),0);
+  document.getElementById('h-floor').textContent = f.length+'명';
+  document.getElementById('h-cap').textContent   = c.length+'명';
+  document.getElementById('h-ok').textContent    = o.length+'명';
+  document.getElementById('h-need-adj').textContent = fw(needAdj);
+
+  const adjKeys = Object.keys(ADJ).map(Number);
+  const adjInc  = adjKeys.reduce((s,no)=>{const d=DATA.find(x=>x.no===no);return d?s+(ADJ[no].newSal-d.sal):s;},0);
+  const promoKeys = Object.keys(PROMO).map(Number);
+  const promoTotal = promoKeys.reduce((s,no)=>{const d=DATA.find(x=>x.no===no);return d?s+d.promoBonusAmt:s;},0);
+  const grand = adjInc + promoTotal;
+
+  document.getElementById('h-adj-cnt').textContent    = adjKeys.length+'명';
+  document.getElementById('h-adj-total').textContent  = adjKeys.length>0 ? fw(adjInc) : '-';
+  document.getElementById('h-promo-cnt').textContent  = promoKeys.length+'명';
+  document.getElementById('h-promo-total').textContent= promoKeys.length>0 ? fw(promoTotal) : '-';
+  document.getElementById('h-grand-total').textContent= grand>0 ? fw(grand) : '-';
+}
+
+// ══════════════════════════════════════════════
+// GAUGE
+// ══════════════════════════════════════════════
+function calcGroupRate(deptGroup){
+  const members = deptGroup
+    ? DATA.filter(d=>DEPT_GROUP[d.d]===deptGroup)
+    : DATA;
+  const before = members.reduce((s,d)=>s+d.sal,0);
+  const afterAdj = members.reduce((s,d)=>s+(ADJ[d.no]?ADJ[d.no].newSal:d.sal),0);
+  const promoAdd = members.reduce((s,d)=>s+(PROMO[d.no]?d.promoBonusAmt:0),0);
+  if(!before) return 0;
+  return (afterAdj + promoAdd - before) / before * 100;
+}
+
+function updateGauge(){
+  const MAX = 15;
+  function set(fillId,pctId,warnId,rate){
+    const fill=document.getElementById(fillId);
+    const pctEl=document.getElementById(pctId);
+    const warn=document.getElementById(warnId);
+    if(!fill) return;
+    const over = rate>5;
+    const near = rate>4 && rate<=5;
+    fill.style.width = Math.min(Math.abs(rate),MAX)/MAX*100+'%';
+    fill.style.background = over?'#e05060':near?'#e09040':'#60c8a0';
+    pctEl.textContent = (rate>=0?'+':'')+rate.toFixed(1)+'%';
+    pctEl.style.color = over?'#ffb0b0':near?'#ffd080':'rgba(255,255,255,.8)';
+    warn.classList.toggle('on', over);
+  }
+  set('gf-all',  'gp-all',  'gw-all',  calcGroupRate(null));
+  set('gf-sol',  'gp-sol',  'gw-sol',  calcGroupRate('부서A'));
+  set('gf-cloud','gp-cloud','gw-cloud',calcGroupRate('부서B'));
+  set('gf-tel',  'gp-tel',  'gw-tel',  calcGroupRate('부서C'));
+  set('gf-mgmt', 'gp-mgmt', 'gw-mgmt', calcGroupRate('경영지원'));
+}
+
+// ══════════════════════════════════════════════
+// EMPLOYEE LIST
+// ══════════════════════════════════════════════
+function renderList(){
+  const search = document.querySelector('.lp-search input').value;
+  const fDept  = document.getElementById('f-dept').value;
+  const fRank  = document.getElementById('f-rank').value;
+  const fStatus= document.getElementById('f-status').value;
+
+  const filtered = DATA.filter(d=>{
+    const es = effSt(d);
+    const dg = DEPT_GROUP[d.d]||d.d;
+    const matchDept = !fDept || dg===fDept || d.d===fDept;
+    const matchRank = !fRank || rdsp(d.r)===fRank;
+    const matchSt   = !fStatus || es===fStatus || (fStatus==='진급대상' && d.isPromoCand);
+    const matchSearch = !search || d.n.includes(search);
+    return matchDept && matchRank && matchSt && matchSearch;
+  });
+
+  document.getElementById('lp-cnt').textContent = filtered.length+'명';
+  document.getElementById('emp-list').innerHTML = filtered.map(d=>{
+    const es = effSt(d);
+    const stL = es==='Floor 미달'?'미달':es==='Cap 초과'?'초과':es==='조정완료'?'조정':'OK';
+    const stC = stCls(es);
+    const avBg = AV_COLORS[d.no%AV_COLORS.length];
+    const isAct = sel&&sel.no===d.no ? 'active' : '';
+    const hasDot = ADJ[d.no] ? '<span class="ei-dot"></span>' : '';
+    const nhTag  = d.nh ? '<span class="new-tag">경력</span>' : '';
+    const promoCandTag = d.isPromoCand ? '<span class="promo-tag">진급↑</span>' : '';
+    const promoConfTag = PROMO[d.no] ? '<span class="warn-tag">진급확정</span>' : '';
+    const dc = deptCls(d.d);
+    const gradeTag = GRADE[d.no] ? `<span style="font-size:9px;padding:1px 4px;border-radius:3px;background:#e8eaf2;color:var(--t2);font-weight:700">${GRADE[d.no]}</span>` : '';
+    return `<div class="ei ${isAct}" onclick="pick(${d.no})">${hasDot}
+      <div class="ei-av" style="background:${avBg}15;color:${avBg};outline:1px solid ${avBg}30">${d.n[0]}</div>
+      <div class="ei-body">
+        <div class="ei-name">${d.n}${nhTag}${promoCandTag}${promoConfTag}</div>
+        <div class="ei-sub"><span class="dp ${dc}">${deptShort(d.d)}</span> ${rdsp(d.r)} · ${d.tc}</div>
+      </div>
+      <div class="ei-badges">${gradeTag}<span class="ei-st ${stC}">${stL}</span></div>
+    </div>`;
+  }).join('');
+}
+
+// ══════════════════════════════════════════════
+// PROFILE
+// ══════════════════════════════════════════════
+function renderProfile(d){
+  const rk = rdsp(d.r);
+  const avBg = AV_COLORS[d.no%AV_COLORS.length];
+  const adjData = ADJ[d.no];
+  const adjSal  = adjData ? adjData.newSal : d.sal;
+  const adjRate = adjData ? adjData.rate : 0;
+  const adjDiff = adjSal - d.sal;
+  const adjDfTbl= adjSal - d.tm;
+  const adjTblPct = adjDfTbl/d.tm*100;
+  const adjSt  = calcStatus(adjSal, d.tm);
+  const dc = deptCls(d.d);
+  const rankMax = TBL_MAX[rdsp(d.r)]||Infinity;
+  const isOverMax = adjSal > rankMax;
+  const overMaxHtml = isOverMax
+    ? `<div style="margin-top:5px;padding:4px 8px;background:rgba(192,80,0,.09);border:1px solid rgba(192,80,0,.28);border-radius:5px;font-size:10px;color:#c05000;font-weight:600">
+        ⚠ 직급 상한(${fw(rankMax)}) 초과 +${fw(adjSal-rankMax)} · 진급 검토 필요
+      </div>` : '';
+  const isPromoCand = d.isPromoCand;
+  const isPromoConf = !!PROMO[d.no];
+  const bonusAmt = isPromoConf ? d.promoBonusAmt : 0;
+
+  // 역전 감지
+  const reversals = detectReversals(d.no);
+  const revHtml = `<div class="rev-warn-box${reversals.length>0?' on':''}" id="rev-warn-box-${d.no}">
+    ${reversals.length>0?`<div class="rev-warn-title">⚠ 경력 역전 경고 (${reversals.length}건)</div>
+    <div class="rev-warn-list">${reversals.map(r=>r.msg).join('<br>')}</div>`:''}
+  </div>`;
+
+  // 진급 박스 (진급 보조지표 대상자면 항상 표시)
+  const promoHtml = isPromoCand ? `
+    <div class="promo-box">
+      <div class="promo-title">진급 검토</div>
+      <div class="promo-cand-info">총경력 만 ${d.ty}년 · ${rk}→${d.promoTo} 대상</div>
+      <div class="promo-check-row">
+        <input type="checkbox" id="promo-chk-${d.no}" ${isPromoConf?'checked':''} onchange="togglePromo(${d.no})">
+        <label for="promo-chk-${d.no}">진급 확정</label>
+      </div>
+      <div class="promo-bonus-info">수당: ${(d.promoBonusAmt/10000).toLocaleString()}만원 (1회 지급)${isPromoConf?' ← 반영됨':''}</div>
+    </div>` : '';
+
+  document.getElementById('pf').innerHTML = `
+    <div class="pf-row">
+      <div class="pf-av" style="background:${avBg}15;color:${avBg};outline:1px solid ${avBg}35">${d.n[0]}</div>
+      <div class="pf-info">
+        <div class="pf-name">${d.n}
+          <span class="sb ${stCls(d.st)}">${d.st}</span>
+          <span class="dp ${dc}">${d.d}</span>
+          ${d.nh?'<span class="new-tag">경력입사</span>':''}
+          ${isPromoCand?'<span class="promo-tag">진급 보조지표</span>':''}
+        </div>
+        <div class="pf-dept">${rk} · 총경력 ${d.tc}(만 ${d.ty}년 기준) · 진급년차 ${d.py.toFixed(1)}년</div>
+        <div class="pf-stats">
+          <div class="ps"><div class="ps-v">${fw(d.sal)}</div><div class="ps-l">현 연봉</div></div>
+          <div class="ps"><div class="ps-v" style="color:var(--t2)">${fw(d.tm)}</div><div class="ps-l">테이블 최소(${d.ty}년차)</div></div>
+          <div class="ps"><div class="ps-v" style="color:${stColor(d.st)}">${d.df>=0?'+':''}${fw(d.df)}</div><div class="ps-l">현재 테이블 대비</div></div>
+          ${d.pp>0?`<div class="ps"><div class="ps-v" style="color:var(--cap)">${fw(d.pp)}</div><div class="ps-l">직책수당(연)</div></div>`:''}
+          ${GRADE[d.no]?`<div class="ps"><div class="ps-v" style="color:var(--ci-royal)">${GRADE[d.no]}등급</div><div class="ps-l">고과</div></div>`:''}
+        </div>
+        ${revHtml}
+      </div>
+      <div class="adj-box">
+        <div class="adj-title">연봉 조정 <button class="btn-reset" onclick="resetAdj(${d.no})">초기화</button></div>
+        <div class="adj-row">
+          <span class="adj-label">인상률</span>
+          <input class="adj-input" type="number" id="inp-rate" min="-20" max="100" step="0.1"
+            value="${adjRate}" oninput="onAdjInput(${d.no})" placeholder="0.0">
+          <span class="adj-unit">%</span>
+        </div>
+        <div class="adj-result">
+          <div class="ar-item"><div class="ar-v" id="ar-sal" style="color:var(--ci-royal)">${fw(adjSal)}</div><div class="ar-l">조정 연봉</div></div>
+          <div class="ar-item"><div class="ar-v" id="ar-inc" style="color:${adjDiff>0?'var(--ci-royal)':'var(--floor)'}">${adjDiff>=0?'+':''}${fw(adjDiff)}</div><div class="ar-l">인상액</div></div>
+          <div class="ar-item"><div class="ar-v" id="ar-tbl" style="color:${stColor(adjSt)}">${adjTblPct>=0?'+':''}${adjTblPct.toFixed(1)}%</div><div class="ar-l">테이블 대비%</div></div>
+          <div class="ar-item"><div class="ar-v" id="ar-st"><span class="sb ${stCls(adjSt)}">${adjSt}</span></div><div class="ar-l">조정 후 상태</div></div>
+          ${bonusAmt>0?`<div class="ar-item"><div class="ar-v" style="color:var(--promo)">${fw(bonusAmt)}</div><div class="ar-l">진급수당</div></div>`:''}
+        </div>
+        <div id="ar-overmax-${d.no}">${overMaxHtml}</div>
+      </div>
+      ${promoHtml}
+    </div>`;
+}
+
+// ══════════════════════════════════════════════
+// ADJ INPUT
+// ══════════════════════════════════════════════
+function onAdjInput(no){
+  const d = DATA.find(x=>x.no===no);
+  if(!d) return;
+  const rate = parseFloat(document.getElementById('inp-rate').value)||0;
+  const newSal = Math.round(d.sal*(1+rate/100));
+  if(rate!==0) ADJ[no]={rate,newSal};
+  else delete ADJ[no];
+
+  const adjDiff = newSal - d.sal;
+  const adjDfTbl = newSal - d.tm;
+  const adjSt = calcStatus(newSal, d.tm);
+  document.getElementById('ar-sal').textContent = fw(newSal);
+  document.getElementById('ar-inc').textContent = (adjDiff>=0?'+':'')+fw(adjDiff);
+  document.getElementById('ar-inc').style.color = adjDiff>0?'var(--ci-royal)':'var(--floor)';
+  document.getElementById('ar-tbl').textContent = (adjDfTbl/d.tm*100>=0?'+':'')+(adjDfTbl/d.tm*100).toFixed(1)+'%';
+  document.getElementById('ar-tbl').style.color = stColor(adjSt);
+  document.getElementById('ar-st').innerHTML = `<span class="sb ${stCls(adjSt)}">${adjSt}</span>`;
+
+  // 역전 경고 실시간 갱신
+  updateRevWarn(no);
+
+  // 직급 상한 초과 경고 실시간 갱신
+  const overEl = document.getElementById('ar-overmax-'+no);
+  if(overEl){
+    const rmax = TBL_MAX[rdsp(d.r)]||Infinity;
+    overEl.innerHTML = newSal>rmax
+      ? `<div style="margin-top:5px;padding:4px 8px;background:rgba(192,80,0,.09);border:1px solid rgba(192,80,0,.28);border-radius:5px;font-size:10px;color:#c05000;font-weight:600">⚠ 직급 상한(${fw(rmax)}) 초과 +${fw(newSal-rmax)} · 진급 검토 필요</div>` : '';
+  }
+
+  updateAll();
+  if(posC) renderPosChart(d);
+  if(distC) renderDistChart(d);
+}
+
+function resetAdj(no){
+  delete ADJ[no];
+  const d = DATA.find(x=>x.no===no);
+  if(d){renderProfile(d); renderPosChart(d); renderDistChart(d);}
+  updateAll();
+}
+
+function togglePromo(no){
+  const chk = document.getElementById(`promo-chk-${no}`);
+  if(chk && chk.checked) PROMO[no]=true;
+  else delete PROMO[no];
+  updateAll();
+  const d=DATA.find(x=>x.no===no);
+  if(d) renderProfile(d);
+}
+
+// ══════════════════════════════════════════════
+// POSITIONING CHART
+// ══════════════════════════════════════════════
+function renderPosChart(d){
+  if(posC){posC.destroy();posC=null;}
+  const ctx = document.getElementById('chart-pos').getContext('2d');
+  const rk = rdsp(d.r);
+  const adjSal = ADJ[d.no] ? ADJ[d.no].newSal : d.sal;
+
+  const curveSets = Object.entries(TBL).map(([rank,pts])=>({
+    label:rank, type:'line',
+    data:pts.map(([y,s])=>({x:y,y:s/10000})),
+    borderColor:RANK_COLORS[rank]||'#888',
+    borderWidth:rank===rk?2:1,
+    borderDash:rank===rk?[]:[5,4],
+    pointRadius:0,tension:.35,fill:false,order:3
+  }));
+
+  const peers = DATA.filter(q=>rdsp(q.r)===rk && q.no!==d.no);
+  const peerDS = {
+    label:'동료', type:'scatter',
+    data:peers.map(q=>({x:q.ty, y:effSal(q)/10000, name:q.n, st:effSt(q)})),
+    backgroundColor:'rgba(100,120,180,0.2)', borderColor:'rgba(100,120,180,0.4)',
+    borderWidth:1, pointRadius:5, pointHoverRadius:7, order:2
+  };
+
+  const myCol = d.st==='Floor 미달'?'#b83038':d.st==='Cap 초과'?'#a07828':'#287858';
+  const selfDS = {
+    label:'현재', type:'scatter',
+    data:[{x:d.ty, y:d.sal/10000, name:d.n+'(현재)', st:d.st}],
+    backgroundColor:myCol, borderColor:'#fff', borderWidth:2,
+    pointRadius:9, pointHoverRadius:11, order:1
+  };
+
+  const datasets = [...curveSets, peerDS, selfDS];
+  if(ADJ[d.no] && ADJ[d.no].newSal!==d.sal){
+    const adjSt2 = calcStatus(ADJ[d.no].newSal, d.tm);
+    datasets.push({
+      label:'조정후', type:'scatter',
+      data:[{x:d.ty, y:ADJ[d.no].newSal/10000, name:d.n+'(조정후)', st:adjSt2}],
+      backgroundColor:'#3C50C1', borderColor:'#fff', borderWidth:2.5,
+      pointRadius:11, pointHoverRadius:13, order:0
+    });
+  }
+
+  posC = new Chart(ctx,{type:'scatter',data:{datasets},options:{
+    responsive:true, maintainAspectRatio:false, animation:{duration:250},
+    plugins:{legend:{display:false},
+      tooltip:{backgroundColor:'#fff',borderColor:'#dde0ec',borderWidth:1,
+        titleColor:'#1a1d2e',bodyColor:'#4a5070',padding:8,
+        callbacks:{
+          label:c=>c.raw.name?`${c.raw.name} · ${Math.round(c.raw.y).toLocaleString()}만 · ${c.raw.st}`:`${c.dataset.label}: ${Math.round(c.raw.y).toLocaleString()}만`,
+          title:items=>items[0].raw.x!=null?`총경력 만 ${items[0].raw.x}년`:''
+        }}},
+    scales:{
+      x:{type:'linear',min:0,max:30,
+        title:{display:true,text:'총 경력 만년수',color:'#7a809a',font:{size:10}},
+        ticks:{color:'#7a809a',stepSize:5,callback:v=>v+'년'},
+        grid:{color:'rgba(0,0,0,0.04)'}},
+      y:{min:3000,max:12000,
+        title:{display:true,text:'연봉 (만원)',color:'#7a809a',font:{size:10}},
+        ticks:{color:'#7a809a',callback:v=>v.toLocaleString()+'만'},
+        grid:{color:'rgba(0,0,0,0.04)'}}
+    }
+  }});
+}
+
+// ══════════════════════════════════════════════
+// DIST CHART (경력 텍스트 추가)
+// ══════════════════════════════════════════════
+function renderDistChart(d){
+  if(distC){distC.destroy();distC=null;}
+  const rk = rdsp(d.r);
+  const rankMax = TBL_MAX[rk]||Infinity;
+  const same = DATA.filter(q=>rdsp(q.r)===rk).sort((a,b)=>effSal(b)-effSal(a));
+  const overCnt = same.filter(q=>effSal(q)>rankMax).length;
+  const subText = rk+' 직급 내 연봉 비교 · 이름 · 경력'+(overCnt>0?` · ⚠ 상한(${Math.round(rankMax/10000).toLocaleString()}만) 초과 ${overCnt}명`:'');
+  document.getElementById('dist-sub').textContent = subText;
+  const ctx = document.getElementById('chart-dist').getContext('2d');
+  const labels = same.map(q=>`${q.n} · ${q.tc}${effSal(q)>rankMax?' ⚠':''}`);
+  distC = new Chart(ctx,{type:'bar',
+    data:{labels,datasets:[{
+      data:same.map(q=>Math.round(effSal(q)/10000)),
+      backgroundColor:same.map(q=>{
+        if(effSal(q)>rankMax) return 'rgba(192,80,0,0.35)';
+        if(q.no===d.no) return ADJ[q.no]?'#3C50C1':'#1a3a6a';
+        const st2=effSt(q);
+        return st2==='Floor 미달'?'rgba(184,48,56,0.3)':st2==='Cap 초과'?'rgba(160,120,40,0.3)':st2==='조정완료'?'rgba(60,80,193,0.3)':'rgba(40,120,88,0.25)';
+      }),
+      borderColor:same.map(q=>effSal(q)>rankMax?'#c05000':q.no===d.no?'#3AA9F6':'transparent'),
+      borderWidth:same.map(q=>(effSal(q)>rankMax||q.no===d.no)?2:0),
+      borderRadius:3,borderSkipped:false
+    }]},
+    options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,animation:{duration:250},
+      plugins:{legend:{display:false},
+        tooltip:{backgroundColor:'#fff',borderColor:'#dde0ec',borderWidth:1,titleColor:'#1a1d2e',bodyColor:'#4a5070',
+          callbacks:{
+            label:c=>{const q=same[c.dataIndex];const s=effSal(q);return s>rankMax?`${c.raw.toLocaleString()}만원 ⚠ 상한 +${Math.round((s-rankMax)/10000).toLocaleString()}만 초과`:`${c.raw.toLocaleString()}만원`;},
+            title:items=>{const q=same[items[0].dataIndex];return q?`${q.n} · ${q.tc}`:'';},
+          }}},
+      scales:{
+        x:{ticks:{color:'#7a809a',font:{size:10},callback:v=>v+'만'},grid:{color:'rgba(0,0,0,0.04)'}},
+        y:{ticks:{color:c=>{const q=same[c.index];if(!q)return'#4a5070';return effSal(q)>rankMax?'#c05000':q.no===d.no?'#3C50C1':'#4a5070';},font:{size:10}},grid:{display:false}}
+      }
+    }
+  });
+}
+
+
+// ══════════════════════════════════════════════
+// BOTTOM TABLE
+// ══════════════════════════════════════════════
+function updateBottomTable(){
+  const adjKeys = Object.keys(ADJ).map(Number);
+  const promoKeys = Object.keys(PROMO).map(Number);
+  const allKeys = [...new Set([...adjKeys, ...promoKeys])];
+
+  document.getElementById('bt-n').textContent = adjKeys.length+'명';
+  const promoTotal = promoKeys.reduce((s,no)=>{const d=DATA.find(x=>x.no===no);return d?s+d.promoBonusAmt:s;},0);
+
+  if(allKeys.length===0){
+    document.getElementById('bt-tbody').innerHTML=`<tr><td colspan="12" style="text-align:center;color:var(--t3);padding:14px">조정 내역이 없습니다</td></tr>`;
+    ['bt-before','bt-after','bt-delta','bt-promo-total','bt-grand'].forEach(id=>document.getElementById(id).textContent='-');
+    return;
+  }
+
+  const adjPeople = DATA.filter(d=>adjKeys.includes(d.no));
+  const totalBefore = adjPeople.reduce((s,d)=>s+d.sal,0);
+  const totalAfter  = adjPeople.reduce((s,d)=>s+ADJ[d.no].newSal,0);
+  const delta = totalAfter - totalBefore;
+  const grand = delta + promoTotal;
+
+  document.getElementById('bt-before').textContent = fw(totalBefore);
+  document.getElementById('bt-after').textContent  = fw(totalAfter);
+  document.getElementById('bt-delta').textContent  = (delta>=0?'+':'')+fw(delta);
+  document.getElementById('bt-promo-total').textContent = promoTotal>0 ? fw(promoTotal) : '-';
+  document.getElementById('bt-grand').textContent  = fw(grand);
+
+  // 조정 또는 진급 확정된 사람 모두 표시
+  document.getElementById('bt-tbody').innerHTML = allKeys.map(no=>{
+    const d = DATA.find(x=>x.no===no);
+    if(!d) return '';
+    const a = ADJ[no];
+    const newSal = a ? a.newSal : d.sal;
+    const inc = newSal - d.sal;
+    const adjDfTbl = newSal - d.tm;
+    const adjSt2 = calcStatus(newSal, d.tm);
+    const pBonus = PROMO[no] ? d.promoBonusAmt : 0;
+    const dc = deptCls(d.d);
+    return `<tr>
+      <td><span class="dp ${dc}">${deptShort(d.d)}</span></td>
+      <td style="font-weight:700">${d.n}${PROMO[no]?'<span class="promo-badge-sm" style="margin-left:3px">진급</span>':''}</td>
+      <td style="color:var(--t2)">${rdsp(d.r)}</td>
+      <td style="color:var(--t3)">${d.tc}</td>
+      <td class="r">${fw(d.sal)}</td>
+      <td class="r" style="font-weight:700;color:${a?'var(--ci-royal)':'var(--t1)'}">${fw(newSal)}</td>
+      <td class="r" style="color:${a&&a.rate>0?'var(--ci-royal)':'var(--t3)'}">${a?((a.rate>=0?'+':'')+a.rate.toFixed(1)+'%'):'-'}</td>
+      <td class="r" style="color:${inc>0?'var(--ci-royal)':inc<0?'var(--floor)':'var(--t3)'}">${inc!==0?(inc>=0?'+':'')+fw(inc):'-'}</td>
+      <td class="r" style="color:var(--t2)">${fw(d.tm)}</td>
+      <td class="r" style="color:${stColor(adjSt2)}">${(adjDfTbl/d.tm*100>=0?'+':'')+(adjDfTbl/d.tm*100).toFixed(1)}%</td>
+      <td><span class="sb ${stCls(adjSt2)}">${adjSt2}</span></td>
+      <td class="r" style="color:${pBonus>0?'var(--promo)':'var(--t3)'}">${pBonus>0?fw(pBonus):'-'}</td>
+    </tr>`;
+  }).join('');
+}
+
+// ══════════════════════════════════════════════
+// SUMMARY TAB
+// ══════════════════════════════════════════════
+function renderSummary(){
+  const adjKeys   = Object.keys(ADJ).map(Number);
+  const promoKeys = Object.keys(PROMO).map(Number);
+  const adjInc    = adjKeys.reduce((s,no)=>{const d=DATA.find(x=>x.no===no);return d?s+(ADJ[no].newSal-d.sal):s;},0);
+  const promoTotal= promoKeys.reduce((s,no)=>{const d=DATA.find(x=>x.no===no);return d?s+d.promoBonusAmt:s;},0);
+  const stillFloor= DATA.filter(d=>!adjKeys.includes(d.no)&&d.st==='Floor 미달').length;
+  const revCnt    = countAllReversals();
+
+  document.getElementById('s-grand').textContent    = fw(adjInc+promoTotal);
+  document.getElementById('s-adj-amt').textContent  = adjKeys.length>0?fw(adjInc):'-';
+  document.getElementById('s-promo-amt').textContent= promoKeys.length>0?fw(promoTotal):'-';
+  document.getElementById('s-still-floor').textContent = stillFloor+'명';
+  document.getElementById('s-rev-cnt').textContent  = revCnt+'건';
+
+  document.getElementById('sum-tbody').innerHTML = DATA.map(d=>{
+    const a = ADJ[d.no];
+    const esSal = a ? a.newSal : d.sal;
+    const esSt  = a ? calcStatus(a.newSal,d.tm) : d.st;
+    const inc   = esSal - d.sal;
+    const rate  = a ? a.rate : 0;
+    const adjTblPct = (esSal-d.tm)/d.tm*100;
+    const pBonus = PROMO[d.no] ? d.promoBonusAmt : 0;
+    const dc = deptCls(d.d);
+    const rowCls = PROMO[d.no]?'promo-row':a?'adj-row':'';
+    return `<tr class="${rowCls}">
+      <td><span class="dp ${dc}">${deptShort(d.d)}</span></td>
+      <td style="font-weight:${a||PROMO[d.no]?700:400}">${d.n}${a?`<span class="adj-tag" style="margin-left:3px">조정</span>`:''}${PROMO[d.no]?`<span class="promo-badge-sm" style="margin-left:3px">진급</span>`:''}</td>
+      <td style="color:var(--t2)">${rdsp(d.r)}</td>
+      <td style="color:var(--t3)">${d.tc}</td>
+      <td class="r">${fw(d.sal)}</td>
+      <td class="r" style="font-weight:700;color:${a?'var(--ci-royal)':'var(--t1)'}">${fw(esSal)}</td>
+      <td class="r" style="color:${a&&rate>0?'var(--ci-royal)':'var(--t3)'}">${a&&rate!==0?(rate>=0?'+':'')+rate.toFixed(1)+'%':'-'}</td>
+      <td class="r" style="color:${inc>0?'var(--ci-royal)':inc<0?'var(--floor)':'var(--t3)'}">${a&&inc!==0?(inc>=0?'+':'')+fw(inc):'-'}</td>
+      <td class="r" style="color:var(--t2)">${fw(d.tm)}</td>
+      <td class="r" style="color:${stColor(esSt)}">${adjTblPct>=0?'+':''}${adjTblPct.toFixed(1)}%</td>
+      <td><span class="sb ${stCls(esSt)}">${esSt}</span></td>
+      <td class="r" style="color:${pBonus>0?'var(--promo)':'var(--t3)'}">${pBonus>0?fw(pBonus):'-'}</td>
+      <td style="text-align:center">${GRADE[d.no]?`<span style="font-size:10px;font-weight:700;color:var(--ci-royal)">${GRADE[d.no]}</span>`:'-'}</td>
+    </tr>`;
+  }).join('');
+}
+
+// ══════════════════════════════════════════════
+// CSV
+// ══════════════════════════════════════════════
+function exportCSV(){
+  const rows=[['사업부','이름','직급','총경력','현연봉','조정연봉','인상률','인상액','테이블최소','테이블대비%','상태','진급수당','고과']];
+  DATA.forEach(d=>{
+    const a = ADJ[d.no];
+    const esSal = a ? a.newSal : d.sal;
+    const esSt  = a ? calcStatus(a.newSal,d.tm) : d.st;
+    const inc = esSal-d.sal;
+    const rate = a?a.rate:0;
+    const adjTblPct = ((esSal-d.tm)/d.tm*100).toFixed(1);
+    const pBonus = PROMO[d.no]?d.promoBonusAmt:'';
+    rows.push([d.d,d.n,rdsp(d.r),d.tc,d.sal,esSal,rate?rate.toFixed(1)+'%':'',inc||'',d.tm,adjTblPct+'%',esSt,pBonus,GRADE[d.no]||'']);
+  });
+  const csv='\uFEFF'+rows.map(r=>r.join(',')).join('\n');
+  const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;a.download='MOON_연봉조정_'+new Date().toISOString().slice(0,10)+'.csv';
+  a.click();URL.revokeObjectURL(url);
+}
+
+// ══════════════════════════════════════════════
+// SCENARIO (localStorage)
+// ══════════════════════════════════════════════
+function getScenarios(){
+  try{ return JSON.parse(localStorage.getItem('aromit_scenarios')||'[]'); }
+  catch(e){ return []; }
+}
+function saveScenarios(arr){ localStorage.setItem('aromit_scenarios', JSON.stringify(arr)); }
+
+function openScenario(){
+  renderScenarioList();
+  document.getElementById('modal-bg').classList.add('on');
+}
+function closeScenario(){ document.getElementById('modal-bg').classList.remove('on'); }
+
+function renderScenarioList(){
+  const list = getScenarios();
+  const el = document.getElementById('scenario-list');
+  if(!list.length){
+    el.innerHTML='<div style="color:var(--t3);font-size:12px;text-align:center;padding:8px">저장된 시나리오가 없습니다</div>';
+    return;
+  }
+  el.innerHTML = list.map((sc,i)=>`
+    <div class="scenario-item">
+      <div class="sc-info">${sc.name}<span>${sc.date} · 조정 ${Object.keys(sc.adj).length}명 · 진급 ${Object.keys(sc.promo).length}명</span></div>
+      <div class="sc-actions">
+        <button class="btn-sm load" onclick="loadScenario(${i})">불러오기</button>
+        <button class="btn-sm del"  onclick="delScenario(${i})">삭제</button>
+      </div>
+    </div>`).join('');
+}
+
+function saveScenario(){
+  const name = document.getElementById('sc-name').value.trim() || '시나리오 '+(getScenarios().length+1);
+  const list = getScenarios();
+  list.push({
+    name,
+    date: new Date().toLocaleDateString('ko-KR'),
+    adj: JSON.parse(JSON.stringify(ADJ)),
+    promo: JSON.parse(JSON.stringify(PROMO)),
+    grade: JSON.parse(JSON.stringify(GRADE))
+  });
+  saveScenarios(list);
+  document.getElementById('sc-name').value='';
+  renderScenarioList();
+}
+
+function loadScenario(i){
+  const sc = getScenarios()[i];
+  if(!sc) return;
+  Object.keys(ADJ).forEach(k=>delete ADJ[k]);
+  Object.keys(PROMO).forEach(k=>delete PROMO[k]);
+  Object.keys(GRADE).forEach(k=>delete GRADE[k]);
+  Object.assign(ADJ, sc.adj);
+  Object.assign(PROMO, sc.promo);
+  Object.assign(GRADE, sc.grade||{});
+  closeScenario();
+  updateAll();
+  if(sel){ renderProfile(sel); renderPosChart(sel); renderDistChart(sel); }
+  alert(`"${sc.name}" 불러오기 완료`);
+}
+
+function delScenario(i){
+  const list = getScenarios();
+  list.splice(i,1);
+  saveScenarios(list);
+  renderScenarioList();
+}
+
+// ══════════════════════════════════════════════
+// TAB
+// ══════════════════════════════════════════════
+function switchTab(tab){
+  document.getElementById('tab-pos').classList.toggle('active', tab==='pos');
+  document.getElementById('tab-sum').classList.toggle('active', tab==='sum');
+  document.getElementById('rp-pos').style.display = tab==='pos'?'flex':'none';
+  document.getElementById('rp-sum').style.display = tab==='sum'?'flex':'none';
+  if(tab==='sum') renderSummary();
+}
+
+// ══════════════════════════════════════════════
+// PICK
+// ══════════════════════════════════════════════
+function pick(no){
+  sel = DATA.find(d=>d.no===no);
+  if(!sel) return;
+  renderList();
+  renderProfile(sel);
+  renderPosChart(sel);
+  renderDistChart(sel);
+}
+
+// ══════════════════════════════════════════════
+// REALTIME REVERSAL UPDATE
+// ══════════════════════════════════════════════
+function updateRevWarn(no){
+  const box = document.getElementById('rev-warn-box-'+no);
+  if(!box) return;
+  const reversals = detectReversals(no);
+  if(reversals.length===0){
+    box.classList.remove('on');
+    box.innerHTML='';
+  } else {
+    box.classList.add('on');
+    box.innerHTML=`<div class="rev-warn-title">⚠ 경력 역전 경고 (${reversals.length}건)</div>
+      <div class="rev-warn-list">${reversals.map(r=>r.msg).join('<br>')}</div>`;
+  }
+}
+
+// ══════════════════════════════════════════════
+// UPDATE ALL
+// ══════════════════════════════════════════════
+function updateAll(){
+  updateKPI();
+  updateGauge();
+  renderList();
+  updateBottomTable();
+}
+
+function go(){ updateAll(); }
+
+// ══════════════════════════════════════════════
+// DRAG: LEFT ↔ RIGHT
+// ══════════════════════════════════════════════
+let dragLR=false,dragLRX=0,dragLRW=0;
+function startDragLR(e){
+  dragLR=true;dragLRX=e.clientX;
+  dragLRW=document.getElementById('lp-panel').offsetWidth;
+  document.getElementById('drag-lr').classList.add('dragging');
+  document.body.style.cssText='cursor:col-resize;user-select:none';
+  e.preventDefault();
+}
+document.addEventListener('mousemove',e=>{
+  if(!dragLR) return;
+  const w=Math.max(140,Math.min(400,dragLRW+(e.clientX-dragLRX)));
+  document.getElementById('lp-panel').style.width=w+'px';
+});
+document.addEventListener('mouseup',()=>{
+  if(!dragLR) return;
+  dragLR=false;
+  document.getElementById('drag-lr').classList.remove('dragging');
+  document.body.style.cssText='';
+  if(posC)posC.resize();if(distC)distC.resize();
+});
+
+// ══════════════════════════════════════════════
+// DRAG: CHART ↕ TABLE
+// ══════════════════════════════════════════════
+let dragUD=false,dragUDY=0,dragUDH=0;
+function startDragUD(e){
+  dragUD=true;dragUDY=e.clientY;
+  dragUDH=document.getElementById('ca-panel').offsetHeight;
+  document.getElementById('drag-ud').classList.add('dragging');
+  document.body.style.cssText='cursor:row-resize;user-select:none';
+  e.preventDefault();
+}
+document.addEventListener('mousemove',e=>{
+  if(!dragUD) return;
+  const h=Math.max(120,Math.min(600,dragUDH+(e.clientY-dragUDY)));
+  const ca=document.getElementById('ca-panel');
+  ca.style.flex='none';ca.style.height=h+'px';
+});
+document.addEventListener('mouseup',()=>{
+  if(!dragUD) return;
+  dragUD=false;
+  document.getElementById('drag-ud').classList.remove('dragging');
+  document.body.style.cssText='';
+  if(posC)posC.resize();if(distC)distC.resize();
+});
+
+// ══════════════════════════════════════════════
+// LAYOUT PRESETS
+// ══════════════════════════════════════════════
+function applyPreset(mode){
+  const lp=document.getElementById('lp-panel');
+  const ca=document.getElementById('ca-panel');
+  const bt=document.getElementById('bt-panel');
+  ['default','chart','table','report'].forEach(m=>{
+    const el=document.getElementById('pr-'+m);
+    if(el) el.classList.remove('active');
+  });
+  const active=document.getElementById('pr-'+mode);
+  if(active) active.classList.add('active');
+  lp.style.width='';ca.style.flex='';ca.style.height='';
+  if(bt) bt.style.maxHeight='';
+  if(mode==='default'){lp.style.width='256px';}
+  else if(mode==='chart'){lp.style.width='140px';if(bt)bt.style.maxHeight='120px';}
+  else if(mode==='table'){lp.style.width='220px';ca.style.height='200px';ca.style.flex='none';if(bt){bt.style.maxHeight='none';bt.style.flex='1';}}
+  else if(mode==='report'){lp.style.width='200px';ca.style.height='260px';ca.style.flex='none';if(bt)bt.style.maxHeight='200px';}
+  setTimeout(()=>{if(posC)posC.resize();if(distC)distC.resize();},100);
+}
+
+// ══════════════════════════════════════════════
+// KEYBOARD SHORTCUTS
+// ══════════════════════════════════════════════
+document.addEventListener('keydown',e=>{
+  const tag=document.activeElement.tagName;
+  const isInput=(tag==='INPUT'||tag==='TEXTAREA')&&e.target.id!=='search-input';
+  if(isInput&&e.key!=='Escape') return;
+  if(e.key==='Escape'){
+    sel=null;renderList();updateAll();
+    document.getElementById('pf').innerHTML=`<div class="pf-empty"><span style="font-size:18px;opacity:.3">←</span><div><div style="color:var(--t2);font-size:13px">직원을 선택하세요</div></div></div>`;
+    if(posC){posC.destroy();posC=null;}if(distC){distC.destroy();distC=null;}
+    return;
+  }
+  const items=document.querySelectorAll('.ei');
+  if(!items.length) return;
+  const nos=[...items].map(el=>+el.getAttribute('onclick').match(/\d+/)[0]);
+  if(e.key==='ArrowDown'||e.key==='ArrowUp'){
+    e.preventDefault();
+    const cur=sel?nos.indexOf(sel.no):-1;
+    const next=Math.max(0,Math.min(nos.length-1,cur+(e.key==='ArrowDown'?1:-1)));
+    pick(nos[next]);
+    items[next]?.scrollIntoView({block:'nearest'});
+  }
+  if(e.key==='Enter'&&document.activeElement.id==='search-input'&&nos.length>0) pick(nos[0]);
+});
+
+// ══════════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════════
+updateAll();
+applyPreset('default');
+</script>
+</body>
+</html>
