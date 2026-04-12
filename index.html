@@ -12,14 +12,15 @@
 *{box-sizing:border-box;margin:0;padding:0}
 :root{
   --white:#ffffff;
-  --off:#f8f8f6;
-  --ink:#111111;
-  --ink2:#444444;
-  --ink3:#888888;
-  --ink4:#bbbbbb;
-  --rule:#e0e0e0;
-  --accent:#1a2fff;       /* single sharp accent — electric blue */
+  --off:#f7f7f5;
+  --ink:#0d0d0d;
+  --ink2:#3a3a3a;
+  --ink3:#7a7a7a;
+  --ink4:#c0c0c0;
+  --rule:#e4e4e4;
+  --accent:#1a2fff;
   --accent-pale:#eef0ff;
+  --accent-dark:#0f1bcc;
   --sans:'Noto Sans KR',sans-serif;
   --serif:'Libre Baskerville',Georgia,serif;
   --mono:'DM Mono',monospace;
@@ -35,115 +36,199 @@ body{
 }
 
 /* ═══════════════════════════════════════════
-   NAV — thin editorial header
+   NAV
 ═══════════════════════════════════════════ */
 .nav{
   position:sticky;top:0;z-index:100;
-  background:rgba(255,255,255,.92);
-  backdrop-filter:blur(10px);
+  background:rgba(255,255,255,.95);
+  backdrop-filter:blur(12px);
   border-bottom:1px solid var(--rule);
   display:flex;align-items:center;justify-content:space-between;
-  padding:0 48px;height:48px;
+  padding:0 52px;height:52px;
 }
 .nav-id{
   font-family:var(--mono);font-size:11px;font-weight:500;
   color:var(--ink);letter-spacing:.5px;
+  display:flex;align-items:center;gap:8px;
 }
-.nav-id span{color:var(--accent)}
-.nav-links{display:flex;gap:28px;align-items:center}
+.nav-id .dot{
+  width:7px;height:7px;border-radius:50%;
+  background:var(--accent);
+  display:inline-block;
+  animation:pulse 2.5s ease-in-out infinite;
+}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.8)}}
+.nav-links{display:flex;gap:32px;align-items:center}
 .nav-links a{
-  font-size:11px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;
+  font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;
   color:var(--ink3);text-decoration:none;transition:color .15s;
 }
 .nav-links a:hover{color:var(--ink)}
 .nav-links a.cta{
-  color:var(--accent);border-bottom:1.5px solid var(--accent);padding-bottom:1px;
+  color:var(--white);background:var(--accent);
+  padding:6px 14px;border-radius:2px;
+  letter-spacing:.8px;
+  transition:background .15s;
 }
+.nav-links a.cta:hover{background:var(--accent-dark)}
 
 /* ═══════════════════════════════════════════
-   HERO — large editorial block
+   HERO
 ═══════════════════════════════════════════ */
 .hero{
-  max-width:1020px;margin:0 auto;
-  padding:96px 48px 72px;
+  max-width:1080px;margin:0 auto;
+  padding:100px 52px 80px;
   display:grid;
-  grid-template-columns:1fr 320px;
-  gap:64px;align-items:end;
+  grid-template-columns:1fr 300px;
+  gap:72px;align-items:end;
   border-bottom:1px solid var(--rule);
 }
-.hero-left{}
 .hero-kicker{
   font-family:var(--mono);font-size:10px;font-weight:500;
-  letter-spacing:2px;text-transform:uppercase;
-  color:var(--accent);margin-bottom:28px;
-  display:flex;align-items:center;gap:10px;
+  letter-spacing:2.5px;text-transform:uppercase;
+  color:var(--accent);margin-bottom:32px;
+  display:flex;align-items:center;gap:12px;
 }
 .hero-kicker::before{
   content:'';display:block;
-  width:32px;height:1.5px;background:var(--accent);
+  width:36px;height:1.5px;background:var(--accent);flex-shrink:0;
 }
 .hero-h1{
   font-family:var(--serif);
-  font-size:clamp(2.4rem,4.5vw,3.8rem);
-  font-weight:400;          /* Baskerville regular — 담담함 */
-  line-height:1.18;
+  font-size:clamp(2.6rem,4.5vw,4rem);
+  font-weight:400;
+  line-height:1.15;
   letter-spacing:-.5px;
   color:var(--ink);
-  margin-bottom:28px;
+  margin-bottom:32px;
 }
-.hero-h1 em{
-  font-style:italic;
-  color:var(--accent);
+.hero-h1 em{font-style:italic;color:var(--accent)}
+.hero-h1 .underline{
+  position:relative;display:inline-block;
+}
+.hero-h1 .underline::after{
+  content:'';position:absolute;
+  left:0;bottom:2px;
+  width:100%;height:3px;
+  background:var(--accent);opacity:.25;
 }
 .hero-sub{
-  font-size:.9rem;color:var(--ink2);line-height:1.9;
-  max-width:480px;
+  font-size:.875rem;color:var(--ink2);line-height:2;
+  max-width:500px;
   border-left:2px solid var(--rule);
-  padding-left:18px;
-  margin-bottom:40px;
+  padding-left:20px;
+  margin-bottom:44px;
 }
 .hero-sub strong{color:var(--ink);font-weight:600}
-.hero-tag-row{display:flex;gap:8px;flex-wrap:wrap}
+.hero-sub .note{
+  display:inline-block;margin-top:8px;
+  font-size:.75rem;color:var(--ink3);
+  font-style:italic;
+}
+.hero-tag-row{display:flex;gap:7px;flex-wrap:wrap}
 .htag{
   font-size:.68rem;font-weight:700;letter-spacing:.8px;text-transform:uppercase;
-  padding:4px 11px;border-radius:2px;
+  padding:5px 12px;border-radius:2px;
   border:1px solid var(--rule);color:var(--ink3);
+  transition:all .15s;
 }
+.htag:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-pale)}
 .htag.hi{border-color:var(--accent);color:var(--accent);background:var(--accent-pale)}
 
-/* ── STAT COLUMN (right side of hero) ── */
+/* STAT COLUMN */
 .hero-right{
   border-left:1px solid var(--rule);
-  padding-left:48px;
+  padding-left:52px;
   display:flex;flex-direction:column;gap:0;
 }
 .stat-item{
-  padding:20px 0;
+  padding:22px 0;
   border-bottom:1px solid var(--rule);
+  position:relative;
 }
 .stat-item:last-child{border-bottom:none}
+.stat-item::before{
+  content:'';position:absolute;left:-52px;top:0;
+  width:2px;height:0;background:var(--accent);
+  transition:height .4s ease;
+}
+.stat-item:hover::before{height:100%}
 .stat-num{
   font-family:var(--serif);font-style:italic;
-  font-size:2.6rem;font-weight:700;
+  font-size:2.8rem;font-weight:700;
   color:var(--ink);line-height:1;
-  margin-bottom:4px;
+  margin-bottom:5px;
 }
-.stat-num span{font-size:1.2rem;font-style:normal;font-weight:400;color:var(--ink3)}
-.stat-desc{font-size:.75rem;color:var(--ink3);line-height:1.5}
+.stat-num span{font-size:1.1rem;font-style:normal;font-weight:400;color:var(--ink3)}
+.stat-desc{font-size:.72rem;color:var(--ink3);line-height:1.6}
+.stat-badge{
+  display:inline-block;margin-top:4px;
+  font-family:var(--mono);font-size:.6rem;
+  color:var(--accent);background:var(--accent-pale);
+  padding:1px 6px;border-radius:1px;
+  letter-spacing:.5px;text-transform:uppercase;
+}
 
 /* ═══════════════════════════════════════════
-   SECTION STRUCTURE
+   COVER LETTER STRIP
+═══════════════════════════════════════════ */
+.cover-strip{
+  background:var(--ink);
+  color:var(--white);
+}
+.cover-inner{
+  max-width:1080px;margin:0 auto;
+  padding:56px 52px;
+  display:grid;
+  grid-template-columns:200px 1fr;
+  gap:52px;align-items:start;
+}
+.cover-label{
+  font-family:var(--mono);font-size:10px;
+  letter-spacing:2px;text-transform:uppercase;
+  color:rgba(255,255,255,.4);
+  padding-top:4px;
+}
+.cover-body{}
+.cover-quote{
+  font-family:var(--serif);font-style:italic;
+  font-size:1.2rem;font-weight:400;
+  color:var(--white);line-height:1.75;
+  margin-bottom:28px;
+  opacity:.9;
+}
+.cover-text{
+  font-size:.85rem;color:rgba(255,255,255,.65);
+  line-height:2;max-width:620px;
+}
+.cover-text strong{color:var(--white);font-weight:600}
+.cover-metrics{
+  display:flex;gap:36px;margin-top:32px;flex-wrap:wrap;
+}
+.cm{
+  border-top:1px solid rgba(255,255,255,.15);
+  padding-top:14px;
+  min-width:120px;
+}
+.cm-num{
+  font-family:var(--mono);font-size:1.4rem;font-weight:500;
+  color:var(--white);
+}
+.cm-label{font-size:.7rem;color:rgba(255,255,255,.45);margin-top:2px;line-height:1.4}
+
+/* ═══════════════════════════════════════════
+   SECTION
 ═══════════════════════════════════════════ */
 .section{
-  max-width:1020px;margin:0 auto;
-  padding:72px 48px;
+  max-width:1080px;margin:0 auto;
+  padding:80px 52px;
   border-bottom:1px solid var(--rule);
 }
 .section-header{
   display:grid;
-  grid-template-columns:160px 1fr;
-  gap:48px;
-  margin-bottom:52px;
+  grid-template-columns:200px 1fr;
+  gap:52px;
+  margin-bottom:56px;
   align-items:baseline;
 }
 .section-no{
@@ -152,203 +237,225 @@ body{
   padding-top:4px;
 }
 .section-title{
-  font-family:var(--serif);font-size:1.7rem;font-weight:400;font-style:italic;
+  font-family:var(--serif);font-size:1.8rem;font-weight:400;font-style:italic;
   color:var(--ink);letter-spacing:-.3px;
 }
 
 /* ═══════════════════════════════════════════
-   WORK ITEMS — editorial list style
+   WORK ITEMS
 ═══════════════════════════════════════════ */
 .work-list{display:flex;flex-direction:column;gap:0}
 .work-item{
   display:grid;
-  grid-template-columns:160px 1fr auto;
-  gap:48px;
+  grid-template-columns:200px 1fr auto;
+  gap:52px;
   align-items:start;
-  padding:36px 0;
+  padding:40px 0;
   border-bottom:1px solid var(--rule);
   text-decoration:none;color:inherit;
-  transition:background .15s;
+  transition:background .2s;
   position:relative;
   cursor:pointer;
 }
 .work-item:first-child{border-top:1px solid var(--rule)}
-.work-item::after{
-  content:'';position:absolute;left:0;bottom:-1px;
-  width:0;height:1.5px;background:var(--accent);
-  transition:width .3s ease;
+.work-item::before{
+  content:'';position:absolute;
+  left:-52px;top:0;bottom:0;
+  width:3px;background:var(--accent);
+  transform:scaleY(0);transform-origin:bottom;
+  transition:transform .35s ease;
 }
-.work-item:hover::after{width:100%}
+.work-item:hover::before{transform:scaleY(1)}
+.work-item:hover{background:var(--off)}
+.work-item:hover .work-arrow{transform:translateX(6px);color:var(--accent)}
 .work-item:hover .work-num{color:var(--accent)}
-.work-item:hover .work-arrow{transform:translateX(4px);color:var(--accent)}
 
 .work-meta{}
 .work-num{
   font-family:var(--mono);font-size:10px;font-weight:500;
   letter-spacing:1.5px;color:var(--ink4);
-  margin-bottom:6px;transition:color .15s;
+  margin-bottom:8px;transition:color .15s;
 }
 .work-type{
-  font-size:.7rem;font-weight:700;letter-spacing:.6px;text-transform:uppercase;
-  color:var(--ink3);
+  font-size:.68rem;font-weight:700;letter-spacing:.6px;text-transform:uppercase;
+  color:var(--ink3);line-height:1.7;
 }
-
 .work-body{}
 .work-problem{
   font-size:.78rem;color:var(--ink3);
-  font-style:italic;margin-bottom:8px;line-height:1.6;
+  font-style:italic;margin-bottom:10px;line-height:1.65;
   display:flex;align-items:flex-start;gap:6px;
 }
-.work-problem::before{content:'"';color:var(--ink4);font-size:1rem;line-height:1;flex-shrink:0;margin-top:-2px}
+.work-problem::before{content:'"';color:var(--ink4);font-size:1.1rem;line-height:1;flex-shrink:0;margin-top:-2px}
 .work-title{
-  font-family:var(--serif);font-size:1.25rem;font-weight:700;
-  color:var(--ink);margin-bottom:8px;letter-spacing:-.2px;
+  font-family:var(--serif);font-size:1.3rem;font-weight:700;
+  color:var(--ink);margin-bottom:10px;letter-spacing:-.2px;
 }
-.work-desc{font-size:.82rem;color:var(--ink2);line-height:1.75;margin-bottom:14px}
-
-/* ── IMPACT NUMBERS (inline in work item) ── */
+.work-desc{font-size:.82rem;color:var(--ink2);line-height:1.8;margin-bottom:16px}
 .work-impact{
-  display:flex;gap:24px;flex-wrap:wrap;
+  display:flex;gap:0;flex-wrap:wrap;
+  border:1px solid var(--rule);
+  border-radius:3px;
+  overflow:hidden;
+  margin-bottom:14px;
+}
+.wi{
+  flex:1;min-width:100px;
   padding:12px 16px;
-  background:var(--off);
-  border-left:2px solid var(--accent);
-  border-radius:0 2px 2px 0;
+  border-right:1px solid var(--rule);
 }
+.wi:last-child{border-right:none}
 .wi-num{
-  font-family:var(--mono);font-size:1.05rem;font-weight:500;
-  color:var(--accent);white-space:nowrap;
+  font-family:var(--mono);font-size:.95rem;font-weight:500;
+  color:var(--accent);white-space:nowrap;margin-bottom:2px;
 }
-.wi-label{font-size:.7rem;color:var(--ink3);margin-top:1px}
-
-.work-tags{display:flex;flex-wrap:wrap;gap:5px;margin-top:12px}
+.wi-label{font-size:.68rem;color:var(--ink3)}
+.work-tags{display:flex;flex-wrap:wrap;gap:5px}
 .wtag{
-  font-size:.65rem;font-weight:700;letter-spacing:.5px;text-transform:uppercase;
+  font-size:.63rem;font-weight:700;letter-spacing:.5px;text-transform:uppercase;
   color:var(--ink3);border:1px solid var(--rule);
-  padding:2px 8px;border-radius:2px;
+  padding:3px 8px;border-radius:2px;
 }
-
 .work-right{
   display:flex;flex-direction:column;align-items:flex-end;
-  padding-top:4px;gap:8px;
+  padding-top:4px;gap:10px;
 }
 .work-arrow{
-  font-size:1.1rem;color:var(--ink4);
+  font-size:1.2rem;color:var(--ink4);
   transition:transform .2s,color .2s;
 }
 .work-year{
-  font-family:var(--mono);font-size:.7rem;color:var(--ink4);
-  writing-mode:vertical-rl;
-  letter-spacing:1px;
+  font-family:var(--mono);font-size:.68rem;color:var(--ink4);
+  writing-mode:vertical-rl;letter-spacing:1px;
 }
 
 /* ═══════════════════════════════════════════
-   EXPERIENCE — two column table
+   EXPERIENCE
 ═══════════════════════════════════════════ */
 .exp-list{display:flex;flex-direction:column;gap:0}
 .exp-row{
   display:grid;
-  grid-template-columns:160px 1fr;
-  gap:48px;
-  padding:28px 0;
+  grid-template-columns:200px 1fr;
+  gap:52px;
+  padding:32px 0;
   border-bottom:1px solid var(--rule);
 }
 .exp-row:first-child{border-top:1px solid var(--rule)}
-.exp-left{}
-.exp-period{font-family:var(--mono);font-size:.7rem;color:var(--ink4);margin-bottom:4px}
-.exp-domain{font-size:.72rem;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--accent)}
-.exp-right{}
-.exp-role{font-size:.95rem;font-weight:700;color:var(--ink);margin-bottom:10px}
-.exp-bullets{display:flex;flex-direction:column;gap:4px}
+.exp-period{font-family:var(--mono);font-size:.68rem;color:var(--ink4);margin-bottom:5px}
+.exp-domain{font-size:.68rem;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--accent)}
+.exp-role{font-size:.92rem;font-weight:700;color:var(--ink);margin-bottom:12px}
+.exp-role .company-badge{
+  display:inline-block;margin-left:8px;
+  font-family:var(--mono);font-size:.6rem;
+  color:var(--ink3);background:var(--off);
+  padding:2px 7px;border-radius:1px;
+  font-weight:400;vertical-align:middle;
+}
+.exp-bullets{display:flex;flex-direction:column;gap:5px}
 .exp-bullets li{
-  font-size:.8rem;color:var(--ink2);line-height:1.6;
-  list-style:none;padding-left:14px;position:relative;
+  font-size:.8rem;color:var(--ink2);line-height:1.65;
+  list-style:none;padding-left:16px;position:relative;
 }
 .exp-bullets li::before{
   content:'—';position:absolute;left:0;
   color:var(--ink4);font-size:.7rem;
 }
+.exp-bullets li strong{color:var(--accent);font-weight:700}
+
+/* current company highlight row */
+.exp-row.current{
+  background:var(--accent-pale);
+  margin:0 -52px;padding:32px 52px;
+  border-left:3px solid var(--accent);
+}
+.exp-row.current .exp-role{color:var(--accent-dark)}
+
+/* gap row */
+.exp-row.gap{
+  background:var(--off);
+  margin:0 -52px;padding:16px 52px;
+  border-bottom:1px solid var(--rule);
+}
+.exp-row.gap .exp-period{color:var(--ink4)}
 
 /* ═══════════════════════════════════════════
-   SKILLS — typographic grid
+   SKILLS
 ═══════════════════════════════════════════ */
 .skill-grid{
   display:grid;
-  grid-template-columns:160px 1fr;
+  grid-template-columns:200px 1fr;
   gap:0;
 }
-.skill-row{
-  display:contents;
-}
-.skill-row > *{
-  padding:18px 0;
+.skill-row>*{
+  padding:20px 0;
   border-bottom:1px solid var(--rule);
 }
-.skill-row:first-child > *{border-top:1px solid var(--rule)}
+.skill-row:first-child>*{border-top:1px solid var(--rule)}
 .skill-cat{
-  font-family:var(--mono);font-size:.7rem;font-weight:500;
+  font-family:var(--mono);font-size:.68rem;font-weight:500;
   letter-spacing:1.2px;text-transform:uppercase;color:var(--ink4);
   padding-right:24px;
 }
 .skill-items-wrap{
-  display:flex;flex-wrap:wrap;gap:6px;align-items:center;
-  padding-left:48px;border-left:1px solid var(--rule);
+  display:flex;flex-wrap:wrap;gap:7px;align-items:center;
+  padding-left:52px;border-left:1px solid var(--rule);
 }
 .sk{
-  font-size:.75rem;font-weight:500;color:var(--ink2);
-  padding:3px 10px;border:1px solid var(--rule);border-radius:2px;
+  font-size:.73rem;font-weight:500;color:var(--ink2);
+  padding:4px 11px;border:1px solid var(--rule);border-radius:2px;
+  transition:all .15s;
 }
+.sk:hover{border-color:var(--ink2);color:var(--ink)}
 .sk.hi{
   color:var(--accent);border-color:var(--accent);
   background:var(--accent-pale);font-weight:700;
 }
 
 /* ═══════════════════════════════════════════
-   ABOUT — closing editorial block
+   ABOUT
 ═══════════════════════════════════════════ */
 .about-section{
-  max-width:1020px;margin:0 auto;
-  padding:72px 48px 96px;
+  max-width:1080px;margin:0 auto;
+  padding:80px 52px 100px;
 }
 .about-grid{
   display:grid;
-  grid-template-columns:160px 1fr;
-  gap:48px;
+  grid-template-columns:200px 1fr;
+  gap:52px;
 }
-.about-left-col{}
 .about-label{
   font-family:var(--mono);font-size:10px;font-weight:500;
   letter-spacing:2px;text-transform:uppercase;color:var(--ink4);
   margin-bottom:24px;
 }
 .about-avatar{
-  width:56px;height:56px;border-radius:4px;
+  width:60px;height:60px;border-radius:4px;
   background:var(--ink);
   display:flex;align-items:center;justify-content:center;
-  font-family:var(--serif);font-size:1.2rem;font-weight:700;color:#fff;font-style:italic;
+  font-family:var(--serif);font-size:1.25rem;font-weight:700;color:#fff;font-style:italic;
 }
-.about-right-col{}
 .about-name{
-  font-family:var(--serif);font-size:1.5rem;font-weight:700;
+  font-family:var(--serif);font-size:1.6rem;font-weight:700;
   color:var(--ink);margin-bottom:2px;
 }
 .about-role-line{
-  font-family:var(--mono);font-size:.75rem;color:var(--accent);
-  letter-spacing:.5px;margin-bottom:24px;
+  font-family:var(--mono);font-size:.73rem;color:var(--accent);
+  letter-spacing:.5px;margin-bottom:28px;
 }
 .about-statement{
   font-family:var(--serif);font-size:1.05rem;font-weight:400;
   font-style:italic;color:var(--ink2);
-  line-height:1.85;
+  line-height:1.9;
   border-left:2px solid var(--rule);padding-left:20px;
   margin-bottom:28px;
-  max-width:560px;
+  max-width:580px;
 }
-.about-body{font-size:.85rem;color:var(--ink2);line-height:1.9;margin-bottom:24px}
+.about-body{font-size:.85rem;color:var(--ink2);line-height:2;margin-bottom:28px}
 .about-body strong{color:var(--ink);font-weight:600}
-.about-chips{display:flex;flex-wrap:wrap;gap:6px}
+.about-chips{display:flex;flex-wrap:wrap;gap:7px}
 .about-chip{
-  font-size:.7rem;font-weight:700;letter-spacing:.5px;text-transform:uppercase;
-  padding:4px 10px;border:1px solid var(--rule);border-radius:2px;color:var(--ink3);
+  font-size:.68rem;font-weight:700;letter-spacing:.5px;text-transform:uppercase;
+  padding:4px 11px;border:1px solid var(--rule);border-radius:2px;color:var(--ink3);
 }
 
 /* ═══════════════════════════════════════════
@@ -357,49 +464,54 @@ body{
 .footer{
   border-top:1px solid var(--rule);
   display:flex;align-items:center;justify-content:space-between;
-  padding:20px 48px;
-  max-width:1020px;margin:0 auto;
+  padding:22px 52px;
+  max-width:1080px;margin:0 auto;
 }
-.footer-l{font-family:var(--mono);font-size:.68rem;color:var(--ink4);letter-spacing:.5px}
+.footer-l{font-family:var(--mono);font-size:.67rem;color:var(--ink4);letter-spacing:.5px}
 .footer-r{font-size:.72rem;color:var(--ink4)}
 .footer-r a{color:var(--accent);text-decoration:none}
 
 /* ═══════════════════════════════════════════
    ANIMATIONS
 ═══════════════════════════════════════════ */
-@keyframes fadeIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
-.hero{animation:fadeIn .6s ease both}
-.work-item{opacity:0;animation:fadeIn .5s ease forwards}
-.work-item:nth-child(1){animation-delay:.05s}
-.work-item:nth-child(2){animation-delay:.12s}
-.work-item:nth-child(3){animation-delay:.19s}
-.work-item:nth-child(4){animation-delay:.26s}
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+.hero{animation:fadeUp .7s ease both}
+.cover-inner{animation:fadeUp .6s ease .1s both}
+.work-item{opacity:0;animation:fadeUp .5s ease forwards}
+.work-item:nth-child(1){animation-delay:.06s}
+.work-item:nth-child(2){animation-delay:.14s}
+.work-item:nth-child(3){animation-delay:.22s}
+.work-item:nth-child(4){animation-delay:.30s}
 
 /* ═══════════════════════════════════════════
    RESPONSIVE
 ═══════════════════════════════════════════ */
-@media(max-width:768px){
+@media(max-width:800px){
   .nav{padding:0 20px}
-  .hero{grid-template-columns:1fr;gap:40px;padding:56px 20px 48px}
-  .hero-right{border-left:none;padding-left:0;border-top:1px solid var(--rule);padding-top:32px;flex-direction:row;flex-wrap:wrap;gap:0}
-  .stat-item{flex:1;min-width:120px;padding:16px 0;border-bottom:none;border-right:1px solid var(--rule)}
+  .hero,.section,.about-section{padding-left:20px;padding-right:20px}
+  .hero{grid-template-columns:1fr;gap:44px;padding-top:60px}
+  .hero-right{border-left:none;padding-left:0;border-top:1px solid var(--rule);padding-top:32px;flex-direction:row;flex-wrap:wrap}
+  .stat-item{flex:1;min-width:110px;padding:16px 12px 16px 0;border-bottom:none;border-right:1px solid var(--rule)}
   .stat-item:last-child{border-right:none}
-  .section,.about-section{padding:48px 20px}
+  .stat-item::before{display:none}
   .section-header,.work-item,.exp-row,.about-grid,.skill-grid{grid-template-columns:1fr}
-  .work-item{display:flex;flex-direction:column;gap:12px}
-  .work-right{flex-direction:row;align-items:center;justify-content:flex-start}
-  .work-year{writing-mode:horizontal-tb;letter-spacing:.5px}
+  .work-item{display:flex;flex-direction:column;gap:12px;padding:28px 0}
+  .work-right{flex-direction:row;align-items:center}
+  .work-year{writing-mode:horizontal-tb}
   .skill-items-wrap{padding-left:0;border-left:none;padding-top:0}
-  .section-header{gap:8px;margin-bottom:32px}
+  .section-header{gap:8px;margin-bottom:36px}
+  .cover-inner{grid-template-columns:1fr;gap:28px;padding:40px 20px}
+  .exp-row.current,.exp-row.gap{margin:0 -20px;padding-left:20px;padding-right:20px}
+  .work-item::before{display:none}
   .footer{padding:16px 20px;flex-direction:column;gap:8px;align-items:flex-start}
 }
 </style>
 </head>
 <body>
 
-<!-- ─── NAV ─────────────────────────────── -->
+<!-- NAV -->
 <nav class="nav">
-  <div class="nav-id">Moonjeah <span>·</span> HR Portfolio</div>
+  <div class="nav-id"><span class="dot"></span> Moonjeah · HR Portfolio</div>
   <div class="nav-links">
     <a href="#works">Works</a>
     <a href="#exp">Experience</a>
@@ -408,82 +520,168 @@ body{
   </div>
 </nav>
 
-<!-- ─── HERO ─────────────────────────────── -->
+<!-- HERO -->
 <section class="hero">
   <div class="hero-left">
-    <div class="hero-kicker">AI /IT 도메인 & 대기업 호텔 HR 도메인, HRer 문종원입니다.</div>
+    <div class="hero-kicker">Data-Driven HR · IT 도메인 8년 · 1인 HR 전주기 운영</div>
     <h1 class="hero-h1">
       8년간 HR 현업의<br>
       문제를 <em>데이터로</em><br>
-      풀었습니다.
+      <span class="underline">풀었습니다.</span>
     </h1>
     <p class="hero-sub">
       인사 기획, 채용 운영, 상법&노무, 성과평가 설계까지.<br>
-      <strong>HR 전주기를 다루면서</strong>, 반복되는 수작업은<br>
+      <strong>HR 전주기를 혼자 다루면서</strong>, 반복되는 수작업은<br>
       직접 자동화하고 의사결정은 데이터로 뒷받침했습니다.<br>
-      이 포트폴리오는 그 기록입니다.(Hr데이터는 더미데이터로 대체하였습니다.)
+      <span class="note">※ 포트폴리오 내 HR 데이터는 더미데이터로 대체하였습니다.</span>
     </p>
     <div class="hero-tag-row">
       <span class="htag hi">인사 기획</span>
       <span class="htag hi">채용 운영</span>
       <span class="htag hi">성과평가</span>
       <span class="htag hi">HR 자동화</span>
-      <span class="htag hi">상법&스톡옵션&노무</span>
+      <span class="htag hi">상법 & 노무</span>
       <span class="htag hi">IT 기업 HR</span>
+      <span class="htag">BI 대시보드</span>
+      <span class="htag">GAS / VBA</span>
     </div>
   </div>
 
   <div class="hero-right">
     <div class="stat-item">
       <div class="stat-num">8<span>년+</span></div>
-      <div class="stat-desc">HR 실무 경력<br>AI/IT 플랫폼 기업 & 국내 호텔 커리어</div>
+      <div class="stat-desc">HR 실무 경력<br>AI/IT · 호텔 · F&B 도메인</div>
     </div>
     <div class="stat-item">
-      <div class="stat-num">170+<span>명</span></div>
-      <div class="stat-desc">연봉&성과관리<br>BI 대시보드로 실시간 운영</div>
+      <div class="stat-num">170<span>명+</span></div>
+      <div class="stat-desc">연봉·성과관리 운영<br>BI 대시보드 실시간 운영</div>
+      <div class="stat-badge">Scale-up 100% ↑</div>
     </div>
     <div class="stat-item">
-      <div class="stat-num">100+<span>+</span></div>
-      <div class="stat-desc">HR 포털 통합 사이트<br>직접 설계한 스마트 대시보드</div>
+      <div class="stat-num">3<span>종</span></div>
+      <div class="stat-desc">직접 개발한 HR 자동화 툴<br>대시보드·채용DB·연봉테이블</div>
+      <div class="stat-badge">3개월 내 구축</div>
     </div>
     <div class="stat-item">
-      <div class="stat-num">최근 5<span>yr</span></div>
-      <div class="stat-desc">채용 데이터 분석 범위<br>채널 효율·비용 구조 시각화</div>
+      <div class="stat-num">0<span>건</span></div>
+      <div class="stat-desc">법무·노무 리스크<br>근로기준법 기반 선제 대응</div>
     </div>
   </div>
 </section>
 
-<!-- ─── WORKS ─────────────────────────────── -->
+<!-- COVER LETTER STRIP -->
+<div class="cover-strip">
+  <div class="cover-inner">
+    <div class="cover-label">Cover Letter<br>문종원</div>
+    <div class="cover-body">
+      <p class="cover-quote">
+        "데이터로 말하고, 자동화로 구조를 만들며,<br>
+        사람이 성장할 수 있는 환경을 설계합니다."
+      </p>
+      <p class="cover-text">
+        조직의 운영 효율과 사람의 성장을 <strong>데이터로 설계하는</strong> HR 매니저 문종원입니다.<br>
+        시리즈 B~C 규모 피플팀 매니저로 85명→170명 스케일업(IT 직군 40%)을 이끌며,
+        채용부터 인사·총무·법무까지 전사 운영 체계를 직접 구축했습니다.<br><br>
+        모든 의사결정을 데이터와 수치로 근거화하는 방식으로 HR을 운영해 왔습니다.
+        <strong>Google Sheets + GAS 기반 채용 대시보드, HR 통합 포털, 연봉 테이블 자동화</strong>를
+        직접 개발·운영하며, 보고 준비 시간을 단축하고
+        인사 데이터를 경영진이 직관적으로 읽을 수 있는 형태로 전환했습니다.<br><br>
+        B2G·B2B 프로젝트형 채용에서 <strong>95% 이상 목표 달성</strong>을 이어갔으며,
+        법무·노무 이슈에서는 <strong>리스크 0건</strong>의 안정적 운영을 유지했습니다.
+      </p>
+      <div class="cover-metrics">
+        <div class="cm">
+          <div class="cm-num">95%+</div>
+          <div class="cm-label">B2G·B2B 채용<br>목표 달성률</div>
+        </div>
+        <div class="cm">
+          <div class="cm-num">50%+</div>
+          <div class="cm-label">파견 인력<br>리텐션 개선</div>
+        </div>
+        <div class="cm">
+          <div class="cm-num">15%</div>
+          <div class="cm-label">총무 고정비<br>절감</div>
+        </div>
+        <div class="cm">
+          <div class="cm-num">8종</div>
+          <div class="cm-label">HR 시스템<br>단일 포털 통합</div>
+        </div>
+        <div class="cm">
+          <div class="cm-num">0건</div>
+          <div class="cm-label">법무·노무<br>리스크</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- WORKS -->
 <section class="section" id="works">
   <div class="section-header">
     <div class="section-no">01 — Works</div>
     <div class="section-title">실무에서 직접 만든 것들</div>
   </div>
-
   <div class="work-list">
 
-    <!-- 연봉 BI -->
-    <a class="work-item" href="연봉조정BI_MOON_portfolio.html">
+    <!-- No.01 채용 대시보드 -->
+    <a class="work-item" href="채용대시보드_portfolio.html">
       <div class="work-meta">
         <div class="work-num">No.01</div>
+        <div class="work-type">Analytics<br>채용 기획</div>
+      </div>
+      <div class="work-body">
+        <div class="work-problem">어디서 좋은 사람이 왔는지 물어봐도 아무도 데이터로 답하지 못했습니다.</div>
+        <div class="work-title">채용 현황 대시보드</div>
+        <div class="work-desc">5개 채널(사람인·잡코리아·원티드·링크드인·사내추천) 유입부터 최종합격까지 전환율 추적. 부서별 채용 비용, D+day 트래킹, 전형 지연 알림 자동화 4개 포인트를 7탭 Sheets 구조로 설계.</div>
+        <div class="work-impact">
+          <div class="wi">
+            <div class="wi-num">5채널</div>
+            <div class="wi-label">유입별 전환율 추적</div>
+          </div>
+          <div class="wi">
+            <div class="wi-num">7탭</div>
+            <div class="wi-label">채용 DB 구조 설계</div>
+          </div>
+          <div class="wi">
+            <div class="wi-num">4포인트</div>
+            <div class="wi-label">자동화 트리거</div>
+          </div>
+        </div>
+        <div class="work-tags">
+          <span class="wtag">채용 퍼널 분석</span>
+          <span class="wtag">채널 효율</span>
+          <span class="wtag">D+day 트래킹</span>
+          <span class="wtag">인터랙티브 필터</span>
+        </div>
+      </div>
+      <div class="work-right">
+        <div class="work-arrow">→</div>
+        <div class="work-year">2026</div>
+      </div>
+    </a>
+
+    <!-- No.02 연봉 BI -->
+    <a class="work-item" href="연봉조정BI_MOON_portfolio.html">
+      <div class="work-meta">
+        <div class="work-num">No.02</div>
         <div class="work-type">BI Dashboard<br>보상 기획</div>
       </div>
       <div class="work-body">
-        <div class="work-problem">연봉 시즌마다 수백명을 수작업했습니다.</div>
+        <div class="work-problem">연봉 시즌마다 수백 명을 수작업했습니다.</div>
         <div class="work-title">연봉 조정 대시보드</div>
         <div class="work-desc">전 직원 연봉 포지셔닝 시각화, Floor/Cap 상태 자동 분류, 직급별 인상률 시뮬레이터. 임원 보고용으로 직접 설계하고 실무에 적용했습니다.</div>
         <div class="work-impact">
-          <div>
-            <div class="wi-num">수백명 데이터→ 실시간</div>
+          <div class="wi">
+            <div class="wi-num">수백 명</div>
             <div class="wi-label">수작업 → 인터랙티브 BI</div>
           </div>
-          <div>
-            <div class="wi-num">100+명</div>
-            <div class="wi-label">관리 인원 전원 포함</div>
+          <div class="wi">
+            <div class="wi-num">실시간</div>
+            <div class="wi-label">시뮬레이션 전환</div>
           </div>
-          <div>
-            <div class="wi-num">임원 보고용</div>
-            <div class="wi-label">실제 의사결정에 활용</div>
+          <div class="wi">
+            <div class="wi-num">임원 보고</div>
+            <div class="wi-label">실제 의사결정 활용</div>
           </div>
         </div>
         <div class="work-tags">
@@ -499,23 +697,23 @@ body{
       </div>
     </a>
 
-    <!-- 성과평가 -->
+    <!-- No.03 성과평가 -->
     <a class="work-item" href="성과평가_미팅자료_portfolio.html">
       <div class="work-meta">
-        <div class="work-num">No.02</div>
+        <div class="work-num">No.03</div>
         <div class="work-type">Policy Doc<br>성과 기획</div>
       </div>
       <div class="work-body">
-        <div class="work-problem">원래 그렇게 해왔어요"가 평가 기준인 조직에서 중장기 기준을 기획했습니다.</div>
+        <div class="work-problem">"원래 그렇게 해왔어요"가 평가 기준인 조직에서 중장기 기준을 기획했습니다.</div>
         <div class="work-title">성과평가 운영기준 로드맵</div>
-        <div class="work-desc">3개년 중장기 연봉조정 로드맵. 등급 배분 기준, 직급별 인상기준치, 승진 축하금 정책까지 — 구두로만 운영되던 HR 정책을 기획&문서화했습니다.</div>
+        <div class="work-desc">3개년 중장기 연봉조정 로드맵. 등급 배분 기준, 직급별 인상기준치, 승진 축하금 정책까지 — 구두로만 운영되던 HR 정책을 기획 & 문서화했습니다.</div>
         <div class="work-impact">
-          <div>
+          <div class="wi">
             <div class="wi-num">3개년</div>
             <div class="wi-label">중장기 로드맵 최초 수립</div>
           </div>
-          <div>
-            <div class="wi-num">구두 → 문서화</div>
+          <div class="wi">
+            <div class="wi-num">구두 → 문서</div>
             <div class="wi-label">관행을 체계로 전환</div>
           </div>
         </div>
@@ -532,127 +730,102 @@ body{
       </div>
     </a>
 
-    <!-- HR 스마트 포털 -->
-    <a class="work-item" href="MOON_HR_Dashboard_v2_portfolio.html">
+    <!-- No.04 HR 스마트 포털 -->
+    <a class="work-item" href="AROM_HR_Dashboard_v2_portfolio.html">
       <div class="work-meta">
-        <div class="work-num">No.03</div>
+        <div class="work-num">No.04</div>
         <div class="work-type">Smart Portal<br>HR 운영</div>
       </div>
       <div class="work-body">
         <div class="work-problem">신입 온보딩 첫날, 써야 할 사이트를 찾는 데만 반나절이 걸렸습니다.</div>
         <div class="work-title">HR 스마트 대시보드</div>
-        <div class="work-desc">4대보험·채용플랫폼·정부과제·복리후생·협력사 포털 등 HR 업무 사이트 수백개 이상을 카테고리로 통합한 원스톱 포털. Google Apps Script 연동으로 실시간 업데이트 가능하도록 설계했습니다.</div>
+        <div class="work-desc">4대보험·채용플랫폼·정부과제·복리후생·협력사 포털 등 HR 업무 사이트 8종 이상을 카테고리로 통합한 원스톱 포털. Google Apps Script 연동으로 실시간 업데이트 가능하도록 설계 후 Netlify 배포.</div>
         <div class="work-impact">
-          <div>
-            <div class="wi-num">100+</div>
-            <div class="wi-label">사이트 통합</div>
+          <div class="wi">
+            <div class="wi-num">8종</div>
+            <div class="wi-label">HR 시스템 단일 통합</div>
           </div>
-          <div>
-            <div class="wi-num">온보딩 단축</div>
-            <div class="wi-label">인수인계 시간 대폭 절감</div>
+          <div class="wi">
+            <div class="wi-num">80%↓</div>
+            <div class="wi-label">접근 단계 단축</div>
+          </div>
+          <div class="wi">
+            <div class="wi-num">Netlify</div>
+            <div class="wi-label">외부 배포 완료</div>
           </div>
         </div>
         <div class="work-tags">
           <span class="wtag">Google Apps Script</span>
+          <span class="wtag">Netlify 배포</span>
           <span class="wtag">포털 설계</span>
           <span class="wtag">온보딩</span>
-          <span class="wtag">카테고리 필터</span>
         </div>
       </div>
       <div class="work-right">
         <div class="work-arrow">→</div>
-        <div class="work-year">2025</div>
-      </div>
-    </a>
-
-    <!-- 채용 대시보드 -->
-    <a class="work-item" href="채용대시보드_portfolio.html">
-      <div class="work-meta">
-        <div class="work-num">No.04</div>
-        <div class="work-type">Analytics<br>채용 기획</div>
-      </div>
-      <div class="work-body">
-        <div class="work-problem">어디서 좋은 사람이 왔는지 물어봐도 아무도 데이터로 답하지 못했습니다.</div>
-        <div class="work-title">채용 현황 대시보드</div>
-        <div class="work-desc">5개년 입사자 추이, 채용 채널별 비중, 근로형태 분류, 부서별 채용 비용 분석을 한 화면에 통합. 연도·부서·고용형태 필터로 인터랙티브하게 분석할 수 있도록 구현했습니다.</div>
-        <div class="work-impact">
-          <div>
-            <div class="wi-num">5년치</div>
-            <div class="wi-label">채용 데이터로 보고</div>
-          </div>
-          <div>
-            <div class="wi-num">채널 효율</div>
-            <div class="wi-label">데이터 기반 채널 분석력</div>
-          </div>
-        </div>
-        <div class="work-tags">
-          <span class="wtag">병목현상분석</span>
-          <span class="wtag">채용 채널 분석</span>
-          <span class="wtag">비용 구조</span>
-          <span class="wtag">인터랙티브 필터</span>
-        </div>
-      </div>
-      <div class="work-right">
-        <div class="work-arrow">→</div>
-        <div class="work-year">2025</div>
+        <div class="work-year">2026</div>
       </div>
     </a>
 
   </div>
 </section>
 
-<!-- ─── EXPERIENCE ─────────────────────────────── -->
+<!-- EXPERIENCE -->
 <section class="section" id="exp">
   <div class="section-header">
     <div class="section-no">02 — Experience</div>
     <div class="section-title">맡아온 일들</div>
   </div>
-
   <div class="exp-list">
 
-    <div class="exp-row">
+    <!-- 현직 (current / highlight) -->
+    <div class="exp-row current">
       <div class="exp-left">
         <div class="exp-period">2026.02 — 현재</div>
         <div class="exp-domain">인사기획 · HR 자동화</div>
       </div>
       <div class="exp-right">
-        <div class="exp-role">IT 기업 (회사명 비공개) · HR팀</div>
+        <div class="exp-role">IT 솔루션 기업 (회사명 비공개) · 인사기획팀 대리 <span class="company-badge">IT · 80인 · 1인 HR</span></div>
         <ul class="exp-bullets">
-          <li>전 직원 연봉 조정 BI 대시보드 직접 설계·구현 — 실시간 시뮬레이션으로 전환, 임원 보고 활용</li>
-          <li>성과평가 운영기준 수립 — 3개년 연봉관리 로드맵</li>
-          <li>Excel VBA 급여 자동화 매크로 설계, 4대보험·퇴직연금(DC), IT 자산관리 자동화 등 각종 HR 필요업무 자동화 및 체계화</li>
-          <li>파트너사 변경, 기존 고정비용 15% 절감, 업무 프로세스 제안 등</li>
+          <li><strong>HR 데이터 인프라 0→3종</strong> 구축 — 3개월 내 HR Smart Dashboard·채용 DB(7탭)·연봉테이블 자동화 직접 설계·개발</li>
+          <li><strong>80명</strong> 전 임직원 연봉 데이터 Google Sheets 구조화 — 직군별 구간·명절상여·연장수당 자동산출 로직 포함</li>
+          <li>HR 시스템 <strong>8종 단일 포털 통합</strong> (HiWorks·Wehago·MS Admin·HancomDocs 등) Netlify 배포 완료, 접근 단계 80% 단축</li>
+          <li>채용 <strong>5채널</strong> 유입별 전환율 추적 구조 구현, 자동화 트리거 <strong>4포인트</strong> 설계</li>
+          <li>취업규칙 전면 현행화(근로기준법 제20520호 기준), 법무·노무 리스크 <strong>0건</strong> 유지</li>
         </ul>
       </div>
     </div>
 
-    <div class="exp-row" style="background:var(--off);margin:0 -48px;padding:14px 48px;border-bottom:1px solid var(--rule);">
+    <!-- 커리어 갭 -->
+    <div class="exp-row gap">
       <div class="exp-left">
-        <div class="exp-period" style="color:var(--ink4)">2025.05 — 2026.02</div>
-        <div class="exp-domain" style="color:var(--ink4);font-size:.68rem">커리어 리프레쉬</div>
+        <div class="exp-period">2025.05 — 2026.02</div>
+        <div class="exp-domain" style="color:var(--ink4);font-size:.65rem">커리어 리프레시</div>
       </div>
       <div class="exp-right" style="display:flex;align-items:center">
-        <span style="font-size:.78rem;color:var(--ink3)">건강 회복 및 HR·AI 분야 자기개발 — 이 기간 중 Chart.js·VBA·GAS 기반 HR 자동화 도구 자체 제작 </span>
+        <span style="font-size:.78rem;color:var(--ink3)">건강 회복 및 HR·AI 분야 자기개발 — 이 기간 중 Chart.js·VBA·GAS 기반 HR 자동화 도구 자체 제작</span>
       </div>
     </div>
 
+    <!-- AIworkx -->
     <div class="exp-row">
       <div class="exp-left">
         <div class="exp-period">2020.08 — 2025.04</div>
         <div class="exp-domain">채용 스케일업 · M&A · IPO</div>
       </div>
       <div class="exp-right">
-        <div class="exp-role">에이아이웍스(AIworkx, 구 테스트웍스) · 피플팀 매니저</div>
+        <div class="exp-role">에이아이웍스(AIworkx) · 피플팀 매니저</div>
         <ul class="exp-bullets">
-          <li>채용 스케일업 — 임직원 85→170명(100% 증가), IT 직군 40%+, 리드타임 40% 단축, 온보딩 7일 달성</li>
-          <li>B2G 크라우드워커 연 40~50명 × 4년 안정 운영, B2B 파견 인력 15→30명(현재 60명)</li>
+          <li>채용 스케일업 — 임직원 <strong>85→170명(100% 증가)</strong>, IT 직군 40%+, 리드타임 40% 단축, 온보딩 7일 달성</li>
+          <li>B2G 크라우드워커 연 40~50명 × 4년 안정 운영, B2B 파견 인력 15→30명(현재 60명), <strong>목표 달성률 95%+</strong></li>
           <li>시리즈B~C 유상증자(기업가치 800억) 상법 절차 총괄, 민사소송 1·2심 연속 승소</li>
           <li>소규모 M&A(애크하이어) — C레벨·5인 팀 흡수 인수 서류 전반 대응</li>
-          <li>C레벨 포함 임원 채용 성과 90% 이상, ESG-사회성과인센티브(SPC),채용분야 평균2~3억 수령</li>
+          <li>C레벨 포함 임원 채용 <strong>성과 90%+</strong>, ESG-사회성과인센티브(SPC) 채용분야 평균 2~3억 수령</li>
         </ul>
       </div>
     </div>
 
+    <!-- 청담이상 -->
     <div class="exp-row">
       <div class="exp-left">
         <div class="exp-period">2018.08 — 2019.11</div>
@@ -661,12 +834,13 @@ body{
       <div class="exp-right">
         <div class="exp-role">청담이상 논현점 · 동업자 (프리미엄 F&B)</div>
         <ul class="exp-bullets">
-          <li>투자금 4억 대비 연매출 10억 달성(250%), 강남권 가맹점 매출 3위</li>
-          <li>인건비 효율화·파트너사 협의로 고정비 20% · 전체 비용 30% 절감</li>
+          <li>투자금 4억 대비 연매출 10억 달성(<strong>250%</strong>), 강남권 가맹점 매출 3위</li>
+          <li>인건비 효율화·파트너사 협의로 고정비 <strong>20%</strong> · 전체 비용 <strong>30% 절감</strong></li>
         </ul>
       </div>
     </div>
 
+    <!-- 오클라우드 -->
     <div class="exp-row">
       <div class="exp-left">
         <div class="exp-period">2017.06 — 2018.06</div>
@@ -675,12 +849,13 @@ body{
       <div class="exp-right">
         <div class="exp-role">오클라우드호텔 · 경영지원팀 주임</div>
         <ul class="exp-bullets">
-          <li>주 4일제 도입으로 퇴사율 90% → 20% 감소, 근속자 80% 이상 증가</li>
-          <li>채용 공고 개선으로 예산 30% 절감, 조직 개편으로 업무 프로세스 20% 감소</li>
+          <li>주 4일제 도입으로 퇴사율 <strong>90% → 20%</strong> 감소, 근속자 80% 이상 증가</li>
+          <li>채용 공고 개선으로 예산 <strong>30% 절감</strong>, 조직 개편으로 업무 프로세스 20% 감소</li>
         </ul>
       </div>
     </div>
 
+    <!-- 롯데호텔 -->
     <div class="exp-row">
       <div class="exp-left">
         <div class="exp-period">2016.02 — 2017.02</div>
@@ -689,27 +864,25 @@ body{
       <div class="exp-right">
         <div class="exp-role">롯데호텔서울 · 채용담당</div>
         <ul class="exp-bullets">
-          <li>일용직 연 36,000건 채용 안정화, 파트너사 수수료 20% 절감</li>
-          <li>비정규직 보호법 체계화로 노동부 지적 30% 감소, 채용 업무 6h → 1h 단축</li>
+          <li>일용직 연 <strong>36,000건</strong> 채용 안정화, 파트너사 수수료 20% 절감</li>
+          <li>비정규직 보호법 체계화로 노동부 지적 <strong>30% 감소</strong>, 채용 업무 6h → 1h 단축</li>
           <li>그룹 전산실 협업으로 사내 채용 프로그램 전자계약서 기능 업데이트 주도</li>
         </ul>
       </div>
     </div>
 
   </div>
-
-  <div style="margin-top:24px;text-align:right">
-    <a href="career.html" style="font-size:.75rem;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--accent);text-decoration:none;border-bottom:1.5px solid var(--accent);padding-bottom:1px;">전체 경력기술서 보기 →</a>
+  <div style="margin-top:28px;text-align:right">
+    <a href="career.html" style="font-size:.73rem;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--accent);text-decoration:none;border-bottom:1.5px solid var(--accent);padding-bottom:1px;">전체 경력기술서 보기 →</a>
   </div>
 </section>
 
-<!-- ─── SKILLS ─────────────────────────────── -->
+<!-- SKILLS -->
 <section class="section" id="skills">
   <div class="section-header">
     <div class="section-no">03 — Skills</div>
     <div class="section-title">할 수 있는 것들</div>
   </div>
-
   <div class="skill-grid">
     <div class="skill-row">
       <div class="skill-cat">HR 기획</div>
@@ -719,15 +892,15 @@ body{
         <span class="sk hi">채용 기획·운영</span>
         <span class="sk hi">조직 기획</span>
         <span class="sk hi">규정 제개정</span>
-        <span class="sk hi">AI Tool</span>
+        <span class="sk hi">AI Tool 활용</span>
       </div>
     </div>
     <div class="skill-row">
       <div class="skill-cat">HR 운영</div>
       <div class="skill-items-wrap">
-        <span class="sk ">급여 처리</span>
-        <span class="sk ">4대보험</span>
-        <span class="sk ">퇴직연금</span>
+        <span class="sk">급여 처리</span>
+        <span class="sk">4대보험</span>
+        <span class="sk">퇴직연금(DC)</span>
         <span class="sk">연말정산</span>
         <span class="sk hi">자산관리</span>
         <span class="sk hi">온보딩 설계</span>
@@ -741,6 +914,7 @@ body{
         <span class="sk hi">Chart.js</span>
         <span class="sk hi">HTML / CSS / JS</span>
         <span class="sk hi">데이터 시각화</span>
+        <span class="sk hi">Netlify 배포</span>
       </div>
     </div>
     <div class="skill-row">
@@ -762,10 +936,20 @@ body{
         <span class="sk hi">인재 파이프라인</span>
       </div>
     </div>
+    <div class="skill-row">
+      <div class="skill-cat">법무·노무</div>
+      <div class="skill-items-wrap">
+        <span class="sk hi">근로기준법</span>
+        <span class="sk hi">상법 (유상증자·M&A)</span>
+        <span class="sk hi">스톡옵션</span>
+        <span class="sk hi">취업규칙 제개정</span>
+        <span class="sk hi">근로계약서</span>
+      </div>
+    </div>
   </div>
 </section>
 
-<!-- ─── ABOUT ─────────────────────────────── -->
+<!-- ABOUT -->
 <section class="about-section" id="about">
   <div class="about-grid">
     <div class="about-left-col">
@@ -773,14 +957,14 @@ body{
       <div class="about-avatar">MJ</div>
     </div>
     <div class="about-right-col">
-      <div class="about-name">Moonjeah</div>
-      <div class="about-role-line">IT 기업 특화 HR 제너럴리스트</div>
+      <div class="about-name">문종원 Moonjeah</div>
+      <div class="about-role-line">IT 기업 특화 HR 제너럴리스트 · Data-Driven HRer</div>
       <p class="about-statement">
         "HR이 데이터로 말할 수 있어야 한다고 생각합니다.<br>
         그래서 필요한 도구가 없으면 직접 만들었습니다."
       </p>
       <p class="about-body">
-        IT 기업&호텔업계에서 8년 이상 <strong>인사 기획·채용 운영·상법&법무&노무·성과평가 설계</strong>를 전담해왔습니다.<br>
+        IT 기업 & 호텔업계에서 8년 이상 <strong>인사 기획·채용 운영·상법·법무·노무·성과평가 설계</strong>를 전담해왔습니다.<br>
         단순히 업무를 처리하는 것을 넘어, 반복되는 수작업은 자동화하고<br>
         경영진의 의사결정은 시각화된 데이터로 뒷받침했습니다.<br><br>
         <strong>HR 전주기를 혼자 다룰 수 있는 HRer,</strong><br>
@@ -796,12 +980,13 @@ body{
         <span class="about-chip">GAS</span>
         <span class="about-chip">BI 대시보드</span>
         <span class="about-chip">IT 기업 HR</span>
+        <span class="about-chip">상법·스톡옵션</span>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ─── FOOTER ─────────────────────────────── -->
+<!-- FOOTER -->
 <footer class="footer">
   <div class="footer-l">© 2026 Moonjongwon · HR Portfolio · 실무 데이터 더미 처리</div>
   <div class="footer-r">MOON HR · People Team</div>
