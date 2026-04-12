@@ -3,15 +3,15 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Moonjongwon — 경력기술서</title>
+<title>Moonjeah — 경력기술서</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --white:#ffffff;--off:#f8f8f6;
-  --ink:#111111;--ink2:#444444;--ink3:#777777;--ink4:#bbbbbb;
+  --white:#ffffff;--off:#f7f7f5;
+  --ink:#0d0d0d;--ink2:#3a3a3a;--ink3:#7a7a7a;--ink4:#c0c0c0;
   --rule:#e4e4e4;--rule2:#f0f0f0;
-  --accent:#1a2fff;--accent-pale:#eef0ff;
+  --accent:#1a2fff;--accent-pale:#eef0ff;--accent-dark:#0f1bcc;
   --ok:#1a7a4a;--ok-pale:#eaf5ef;
   --sans:'Noto Sans KR',sans-serif;
   --serif:'Libre Baskerville',Georgia,serif;
@@ -20,107 +20,129 @@
 html{scroll-behavior:smooth}
 body{font-family:var(--sans);background:var(--white);color:var(--ink);font-size:14px;line-height:1.6;-webkit-font-smoothing:antialiased}
 
-/* ── NAV ── */
+/* NAV */
 .nav{
   position:sticky;top:0;z-index:100;
-  background:rgba(255,255,255,.93);backdrop-filter:blur(10px);
+  background:rgba(255,255,255,.95);backdrop-filter:blur(12px);
   border-bottom:1px solid var(--rule);
   display:flex;align-items:center;justify-content:space-between;
-  padding:0 48px;height:48px;
+  padding:0 52px;height:52px;
 }
-.nav-logo{font-family:var(--mono);font-size:11px;font-weight:500;color:var(--ink);letter-spacing:.5px}
-.nav-logo span{color:var(--accent)}
-.nav-back{font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--ink3);text-decoration:none;transition:color .15s}
-.nav-back:hover{color:var(--accent)}
-.nav-back::before{content:'← ';font-style:normal}
-.nav-print{font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--accent);border-bottom:1.5px solid var(--accent);padding-bottom:1px;cursor:pointer;background:none;border-top:none;border-left:none;border-right:none;font-family:var(--sans)}
-.nav-print:hover{opacity:.7}
+.nav-logo{
+  font-family:var(--mono);font-size:11px;font-weight:500;
+  color:var(--ink);letter-spacing:.5px;
+  display:flex;align-items:center;gap:8px;
+}
+.nav-logo .dot{width:7px;height:7px;border-radius:50%;background:var(--accent);display:inline-block;animation:pulse 2.5s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.8)}}
 .nav-right{display:flex;gap:24px;align-items:center}
+.nav-back{
+  font-size:10px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;
+  color:var(--ink3);text-decoration:none;transition:color .15s;
+}
+.nav-back:hover{color:var(--accent)}
+.nav-back::before{content:'← '}
+.nav-print{
+  font-size:10px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;
+  color:var(--white);background:var(--accent);
+  padding:6px 14px;border-radius:2px;border:none;
+  font-family:var(--sans);cursor:pointer;transition:background .15s;
+}
+.nav-print:hover{background:var(--accent-dark)}
 
-/* ── HEADER BLOCK ── */
+/* HEADER */
 .header-block{
-  max-width:840px;margin:0 auto;
-  padding:64px 48px 48px;
+  max-width:880px;margin:0 auto;
+  padding:72px 52px 52px;
   border-bottom:1px solid var(--rule);
 }
 .header-kicker{
   font-family:var(--mono);font-size:10px;font-weight:500;
-  letter-spacing:2px;text-transform:uppercase;color:var(--accent);
-  display:flex;align-items:center;gap:10px;margin-bottom:20px;
+  letter-spacing:2.5px;text-transform:uppercase;color:var(--accent);
+  display:flex;align-items:center;gap:12px;margin-bottom:24px;
 }
-.header-kicker::before{content:'';display:block;width:28px;height:1.5px;background:var(--accent)}
+.header-kicker::before{content:'';display:block;width:32px;height:1.5px;background:var(--accent);flex-shrink:0}
 .header-name{
   font-family:var(--serif);font-size:clamp(2rem,4vw,3rem);
-  font-weight:700;color:var(--ink);letter-spacing:-.5px;margin-bottom:6px;
+  font-weight:700;color:var(--ink);letter-spacing:-.5px;margin-bottom:4px;
 }
 .header-title{
-  font-size:.9rem;color:var(--ink3);margin-bottom:24px;
+  font-size:.82rem;color:var(--ink3);margin-bottom:28px;
   font-family:var(--mono);letter-spacing:.3px;
 }
 .header-summary{
-  font-size:.9rem;color:var(--ink2);line-height:1.9;
-  max-width:580px;
-  border-left:2px solid var(--rule);padding-left:18px;
-  margin-bottom:28px;
+  font-size:.875rem;color:var(--ink2);line-height:2;
+  max-width:600px;
+  border-left:2px solid var(--rule);padding-left:20px;
+  margin-bottom:32px;
 }
 .header-summary strong{color:var(--ink);font-weight:600}
 
 /* KPI 태그 */
 .kpi-row{display:flex;flex-wrap:wrap;gap:8px}
 .kpi{
-  font-size:.7rem;font-weight:700;letter-spacing:.6px;text-transform:uppercase;
+  font-size:.68rem;font-weight:700;letter-spacing:.6px;text-transform:uppercase;
   padding:5px 12px;border-radius:2px;
-  background:var(--accent-pale);color:var(--accent);border:1px solid rgba(26,47,255,.15);
+  background:var(--accent-pale);color:var(--accent);border:1px solid rgba(26,47,255,.18);
 }
 
-/* ── CAREER SECTION ── */
-.career{max-width:840px;margin:0 auto;padding:0 48px 72px}
+/* CAREER WRAP */
+.career{max-width:880px;margin:0 auto;padding:0 52px 80px}
 
-.company-block{margin-top:56px}
-.company-block:first-child{margin-top:48px}
+.company-block{margin-top:60px}
+.company-block:first-child{margin-top:52px}
 
 /* 회사 헤더 */
 .co-header{
   display:grid;grid-template-columns:1fr auto;
   gap:16px;align-items:baseline;
-  padding-bottom:12px;
+  padding-bottom:14px;
   border-bottom:2px solid var(--ink);
   margin-bottom:20px;
 }
-.co-name{font-family:var(--serif);font-size:1.2rem;font-weight:700;color:var(--ink)}
-.co-role{font-size:.78rem;color:var(--ink3);margin-top:2px;font-family:var(--mono)}
-.co-period{font-family:var(--mono);font-size:.75rem;color:var(--ink4);white-space:nowrap}
+.co-name{font-family:var(--serif);font-size:1.15rem;font-weight:700;color:var(--ink)}
+.co-name .sub{color:var(--ink3);font-size:.88rem;font-weight:400}
+.co-role{font-size:.75rem;color:var(--ink3);margin-top:3px;font-family:var(--mono)}
+.co-period{font-family:var(--mono);font-size:.73rem;color:var(--ink4);white-space:nowrap}
 
 /* 회사 요약 */
 .co-summary{
-  font-size:.82rem;color:var(--ink2);line-height:1.75;
-  margin-bottom:20px;padding-left:0;
+  font-size:.82rem;color:var(--ink2);line-height:1.8;
+  margin-bottom:4px;
+  padding:14px 18px;
+  background:var(--off);
+  border-left:2px solid var(--rule);
+  border-radius:0 2px 2px 0;
 }
+
+/* 현직 하이라이트 */
+.co-current .co-header{border-bottom-color:var(--accent)}
+.co-current .co-name{color:var(--accent-dark)}
+.co-current .co-summary{border-left-color:var(--accent);background:var(--accent-pale)}
 
 /* 프로젝트 */
 .project{
-  display:grid;grid-template-columns:180px 1fr;
-  gap:24px;
-  padding:18px 0;
+  display:grid;grid-template-columns:190px 1fr;
+  gap:28px;
+  padding:22px 0;
   border-bottom:1px solid var(--rule2);
 }
 .project:last-child{border-bottom:1px solid var(--rule)}
-.proj-left{}
-.proj-period{font-family:var(--mono);font-size:.68rem;color:var(--ink4);margin-bottom:3px}
-.proj-name{font-size:.75rem;font-weight:700;color:var(--ink2);line-height:1.4}
-.proj-tech{margin-top:6px;display:flex;flex-direction:column;gap:3px}
+
+.proj-period{font-family:var(--mono);font-size:.67rem;color:var(--ink4);margin-bottom:4px}
+.proj-name{font-size:.78rem;font-weight:700;color:var(--ink2);line-height:1.45}
+.proj-tech{margin-top:8px;display:flex;flex-direction:column;gap:3px}
 .proj-tech-item{font-size:.65rem;color:var(--ink4);letter-spacing:.3px}
 
-.proj-right{}
 .proj-result{
-  font-size:.78rem;font-weight:700;color:var(--ok);
-  background:var(--ok-pale);border:1px solid rgba(26,122,74,.15);
-  border-radius:2px;padding:4px 10px;
-  display:inline-block;margin-bottom:10px;
+  font-size:.75rem;font-weight:700;color:var(--ok);
+  background:var(--ok-pale);border:1px solid rgba(26,122,74,.18);
+  border-radius:2px;padding:4px 11px;
+  display:inline-block;margin-bottom:12px;
 }
-.proj-bullets{display:flex;flex-direction:column;gap:4px}
+.proj-bullets{display:flex;flex-direction:column;gap:5px}
 .proj-bullets li{
-  font-size:.8rem;color:var(--ink2);line-height:1.6;
+  font-size:.8rem;color:var(--ink2);line-height:1.65;
   list-style:none;padding-left:16px;position:relative;
 }
 .proj-bullets li::before{
@@ -129,52 +151,60 @@ body{font-family:var(--sans);background:var(--white);color:var(--ink);font-size:
 }
 .proj-bullets li strong{color:var(--accent);font-weight:700}
 
-/* 공백기 블록 */
+/* 수치 인라인 뱃지 */
+.num{
+  font-family:var(--mono);font-size:.78rem;font-weight:500;
+  color:var(--accent);
+}
+
+/* 공백기 */
 .gap-block{
-  margin-top:40px;
-  display:grid;grid-template-columns:180px 1fr;gap:24px;
-  padding:16px 18px;
+  margin-top:44px;
+  display:grid;grid-template-columns:190px 1fr;gap:28px;
+  padding:16px 20px;
   background:var(--off);border:1px solid var(--rule);border-radius:2px;
   align-items:center;
 }
-.gap-left{font-family:var(--mono);font-size:.7rem;color:var(--ink4)}
-.gap-right{font-size:.8rem;color:var(--ink3);line-height:1.6}
+.gap-left{font-family:var(--mono);font-size:.68rem;color:var(--ink4);line-height:1.6}
+.gap-right{font-size:.8rem;color:var(--ink3);line-height:1.7}
 .gap-right strong{color:var(--ink2);font-weight:600}
 
-/* ── SKILL SUMMARY ── */
+/* SKILL SUMMARY */
 .skill-section{
-  max-width:840px;margin:0 auto;padding:40px 48px 72px;
+  max-width:880px;margin:0 auto;padding:44px 52px 80px;
   border-top:2px solid var(--ink);
 }
 .skill-title{
-  font-family:var(--serif);font-size:1rem;font-weight:700;
-  margin-bottom:20px;color:var(--ink);
+  font-family:var(--serif);font-size:1rem;font-weight:700;font-style:italic;
+  margin-bottom:24px;color:var(--ink);
 }
-.skill-grid{display:grid;grid-template-columns:120px 1fr;gap:0}
-.skill-row{display:contents}
-.skill-row > *{padding:10px 0;border-bottom:1px solid var(--rule2)}
-.skill-cat{font-family:var(--mono);font-size:.68rem;font-weight:500;letter-spacing:1px;text-transform:uppercase;color:var(--ink4);padding-right:16px}
-.skill-vals{display:flex;flex-wrap:wrap;gap:5px;align-items:center;padding-left:24px;border-left:1px solid var(--rule)}
-.sk{font-size:.72rem;font-weight:500;color:var(--ink2);padding:2px 9px;border:1px solid var(--rule);border-radius:2px}
+.skill-grid{display:grid;grid-template-columns:130px 1fr;gap:0}
+.skill-row>*{padding:12px 0;border-bottom:1px solid var(--rule2)}
+.skill-cat{font-family:var(--mono);font-size:.67rem;font-weight:500;letter-spacing:1.2px;text-transform:uppercase;color:var(--ink4);padding-right:16px}
+.skill-vals{display:flex;flex-wrap:wrap;gap:6px;align-items:center;padding-left:28px;border-left:1px solid var(--rule)}
+.sk{font-size:.72rem;font-weight:500;color:var(--ink2);padding:3px 10px;border:1px solid var(--rule);border-radius:2px}
 .sk.hi{color:var(--accent);border-color:rgba(26,47,255,.25);background:var(--accent-pale);font-weight:700}
 
-/* ── FOOTER ── */
+/* FOOTER */
 .footer{
-  max-width:840px;margin:0 auto;
-  padding:16px 48px 48px;
+  max-width:880px;margin:0 auto;
+  padding:16px 52px 52px;
   display:flex;justify-content:space-between;align-items:center;
 }
-.footer-note{font-family:var(--mono);font-size:.68rem;color:var(--ink4);letter-spacing:.3px}
+.footer-note{font-family:var(--mono);font-size:.67rem;color:var(--ink4);letter-spacing:.3px}
+.footer-note a{color:var(--accent);text-decoration:none}
 
-/* ── PRINT ── */
+/* PRINT */
 @media print{
-  .nav,.nav-print{display:none}
+  .nav{display:none}
   body{font-size:12px}
   .header-block,.career,.skill-section,.footer{padding-left:0;padding-right:0;max-width:100%}
-  .company-block{margin-top:36px}
+  .company-block{margin-top:40px}
   .project{page-break-inside:avoid}
 }
-@media(max-width:640px){
+
+/* RESPONSIVE */
+@media(max-width:700px){
   .nav{padding:0 20px}
   .header-block,.career,.skill-section,.footer{padding-left:20px;padding-right:20px}
   .project,.gap-block,.skill-grid{grid-template-columns:1fr}
@@ -187,7 +217,7 @@ body{font-family:var(--sans);background:var(--white);color:var(--ink);font-size:
 
 <!-- NAV -->
 <nav class="nav">
-  <div class="nav-logo">Moonjeah <span>·</span> 경력기술서</div>
+  <div class="nav-logo"><span class="dot"></span> Moonjeah · 경력기술서</div>
   <div class="nav-right">
     <a href="index.html" class="nav-back">포트폴리오로</a>
     <button class="nav-print" onclick="window.print()">Print / PDF</button>
@@ -197,41 +227,62 @@ body{font-family:var(--sans);background:var(--white);color:var(--ink);font-size:
 <!-- HEADER -->
 <div class="header-block">
   <div class="header-kicker">Career Resume · 2026.04 기준</div>
-  <div class="header-name">Moonjeah</div>
-  <div class="header-title">HR Generalist · People Team / HR팀</div>
+  <div class="header-name">문종원 Moonjeah</div>
+  <div class="header-title">HR Generalist · 인사기획 / 채용 / 자동화</div>
   <p class="header-summary">
     채용을 설계하고, HR 전체를 운영합니다.<br><br>
     스타트업 채용 스케일업(85→170명)부터 유상증자·M&A 법무 대응, 대규모 일용직 채용 안정화,
-    IT 기업 인사기획·급여 자동화까지 — <strong>HR 전주기를 현장에서 직접 다뤄온 제너럴리스트</strong>입니다.
+    IT 기업 인사기획·급여 자동화까지 — <strong>HR 전주기를 현장에서 직접 다뤄온 제너럴리스트</strong>입니다.<br>
     필요한 도구가 없으면 직접 만들고, 관행으로 운영되던 기준은 데이터로 문서화했습니다.
   </p>
   <div class="kpi-row">
-    <span class="kpi">IT 채용 스케일업</span>
+    <span class="kpi">IT 채용 스케일업 100%↑</span>
     <span class="kpi">채용 리드타임 40% 단축</span>
     <span class="kpi">시리즈B~C 유상증자 대응</span>
-    <span class="kpi">애크하이어(M&A)</span>
+    <span class="kpi">소규모 M&A(애크하이어)</span>
     <span class="kpi">연 36,000건 채용 안정화</span>
-    <span class="kpi">HR 자동화 직접 구현</span>
-    <span class="kpi">IPO 업무 연계</span>
+    <span class="kpi">HR 자동화 3종 직접 구현</span>
+    <span class="kpi">법무·노무 리스크 0건</span>
   </div>
 </div>
 
 <!-- CAREER -->
 <div class="career">
 
-  <!-- ① 현재 직장 -->
-  <div class="company-block">
+  <!-- ① 현직 -->
+  <div class="company-block co-current">
     <div class="co-header">
       <div>
-        <div class="co-name">IT 기업 <span style="color:var(--ink3);font-size:.9rem;font-weight:400">(회사명 비공개)</span></div>
-        <div class="co-role">HR팀 · 인사기획 / 급여·총무 전담</div>
+        <div class="co-name">IT 솔루션 기업 <span class="sub">(회사명 비공개 · 공공 SI · 80인 규모)</span></div>
+        <div class="co-role">인사기획팀 대리 · 1인 HR 전담 (인사기획·채용·급여·총무)</div>
       </div>
       <div class="co-period">2026.02 — 현재</div>
     </div>
     <p class="co-summary">
-      Cloud·IoT·통신 분야 IT 플랫폼 기업. HR 전담 인력으로 인사기획, 급여 운영, 성과평가 설계, 총무 업무를 단독 담당.
-      실무에 필요한 자동화·시각화 도구를 직접 설계·구현하며 데이터 기반 HR 운영 체계를 구축 중.
+      공공 SI·솔루션 전문 IT 기업. HR 담당 인력이 없던 상태에서 합류,
+      인사 데이터 인프라 구축부터 급여 운영·성과평가 설계·총무까지 단독 담당.
+      <strong>3개월 내 HR 핵심 시스템 3종 자체 개발</strong>하며 데이터 기반 HR 운영 체계 수립 중.
     </p>
+
+    <div class="project">
+      <div class="proj-left">
+        <div class="proj-period">2026.02 — 현재</div>
+        <div class="proj-name">HR 데이터 인프라 0→3종 구축</div>
+        <div class="proj-tech">
+          <span class="proj-tech-item">Google Sheets · GAS</span>
+          <span class="proj-tech-item">HTML/CSS/JS · Netlify</span>
+        </div>
+      </div>
+      <div class="proj-right">
+        <div class="proj-result">3개월 내 HR 시스템 3종 자체 구축 · 80명 전사 데이터화 완료</div>
+        <ul class="proj-bullets">
+          <li><strong>80명</strong> 전 임직원 연봉 데이터 Google Sheets 구조화 — 직군별 구간·명절상여·연장수당 자동산출 로직 포함</li>
+          <li>HR 시스템 <strong>8종 단일 포털 통합</strong> (그룹웨어·급여·4대보험·채용·복지 등) HTML+GAS 기반 자체 개발 후 Netlify 배포, 접근 단계 <strong>80% 단축</strong></li>
+          <li>채용 <strong>7탭 DB 시스템</strong> 설계 — 5개 채널별 전환율 추적·D+day 트래킹·전형 지연 알림 자동화 <strong>4포인트</strong></li>
+          <li>반복 인사 업무 <strong>7개 항목</strong> GAS 기반 자동화 (입퇴사 알림·계약 만료 트래킹·연봉 산정 등)</li>
+        </ul>
+      </div>
+    </div>
 
     <div class="project">
       <div class="proj-left">
@@ -243,11 +294,11 @@ body{font-family:var(--sans);background:var(--white);color:var(--ink);font-size:
         </div>
       </div>
       <div class="proj-right">
-        <div class="proj-result">수백명 수작업 → 실시간 BI 전환</div>
+        <div class="proj-result">수작업 → 실시간 BI 전환 · 임원 보고용 실무 적용</div>
         <ul class="proj-bullets">
           <li>전 직원 연봉 포지셔닝 시각화 및 <strong>Floor/Cap 상태 자동 분류</strong> 시스템 구현</li>
-          <li>직급별 인상률 시뮬레이터 직접 개발 — 임원 보고용으로 실무 적용</li>
-          <li>경력 역전 감지 로직 구현으로 보상 불균형 즉시 식별 가능</li>
+          <li>직급별 인상률 시뮬레이터 직접 개발 — 임원 의사결정 보고에 실제 활용</li>
+          <li>경력 역전 감지 로직으로 보상 불균형 즉시 식별 가능 구조 구축</li>
         </ul>
       </div>
     </div>
@@ -255,38 +306,19 @@ body{font-family:var(--sans);background:var(--white);color:var(--ink);font-size:
     <div class="project">
       <div class="proj-left">
         <div class="proj-period">2026.02 — 현재</div>
-        <div class="proj-name">성과평가 운영기획</div>
-        <div class="proj-tech">
-          <span class="proj-tech-item">HR 정책 기획</span>
-          <span class="proj-tech-item">3개년 로드맵</span>
-        </div>
-      </div>
-      <div class="proj-right">
-        <div class="proj-result">관행 운영 → 기준 체계화 최초 달성</div>
-        <ul class="proj-bullets">
-          <li>2026~2028 중장기 연봉테이블 로드맵 수립 — <strong>조직 최초 성과평가 기준 문서화</strong></li>
-          <li>등급 배분 기준, 직급별 인상기준치, 승진 축하금 정책 일괄 정립</li>
-          <li>사업부장 미팅용 인터랙티브 자료로 제작하여 의사결정 시간 단축</li>
-        </ul>
-      </div>
-    </div>
-
-    <div class="project">
-      <div class="proj-left">
-        <div class="proj-period">2026.02 — 현재</div>
-        <div class="proj-name">급여 자동화 · 4대보험 · 총무</div>
+        <div class="proj-name">성과평가 운영기준 수립 · 급여·총무</div>
         <div class="proj-tech">
           <span class="proj-tech-item">Excel VBA · GAS</span>
-          <span class="proj-tech-item">4대보험법 · 근로기준법</span>
+          <span class="proj-tech-item">근로기준법 제20520호</span>
         </div>
       </div>
       <div class="proj-right">
-        <div class="proj-result">급여 처리 자동화 · 자산구매 총판연결 비용15% 절감</div>
+        <div class="proj-result">3개년 로드맵 최초 수립 · 고정비 15% 절감 · 리스크 0건</div>
         <ul class="proj-bullets">
-          <li>Excel VBA 급여 자동화 매크로 직접 설계 — A은행 급여이체 업로드 파일 자동 생성</li>
-          <li>퇴직연금(DC) 계산 등 자동화 관리 </li>
-          <li>IT 자산 구매 비용 절감 — 노트북 가격 폭등 시점 총판 연결로 예산&자금 흐름 확보</li>
-          <li>HR 스마트 포털 설계 — 업무 사이트 100+개 이상 통합, GAS 연동 구현</li>
+          <li>2026~2028 중장기 연봉조정 로드맵 수립 — <strong>조직 최초 성과평가 기준 문서화</strong>, 등급 배분·직급별 인상기준·승진 정책 일괄 정립</li>
+          <li>취업규칙 전면 현행화 — 근로기준법(법률 제20520호, 2025.10 개정) 전 조항 검토 완료, 법무·노무 리스크 <strong>0건</strong> 유지</li>
+          <li>Excel VBA 급여 자동화 매크로 설계 (급여이체 파일 자동생성·DC 퇴직연금 연동)</li>
+          <li>IT 자산 총판 연결 — 자산 구매 비용 <strong>15% 절감</strong>, H/W·S/W 자산 관리 대장 체계화</li>
         </ul>
       </div>
     </div>
@@ -294,11 +326,11 @@ body{font-family:var(--sans);background:var(--white);color:var(--ink);font-size:
 
   <!-- 공백기 -->
   <div class="gap-block">
-    <div class="gap-left">2025.04 — 2026.02<br>(약 10개월)</div>
+    <div class="gap-left">2025.05 — 2026.02<br>(약 10개월)</div>
     <div class="gap-right">
       <strong>커리어 브레이크</strong> — 건강 회복 및 HR·AI 분야 자기개발<br>
-      재직 중 누적된 건강 문제를 회복하며, HR 자동화·AI 도구 활용 역량을 집중적으로 학습.
-      이 기간 중 AI Tool활용하여 Chart.js·GAS·VBA 기반 HR 자동화 도구 프로토타입을 자체 제작.
+      재직 중 누적된 건강 문제 회복, AI Tool 활용 역량 집중 학습.
+      이 기간 중 Chart.js·GAS·VBA 기반 HR 자동화 도구 프로토타입 자체 제작.
     </div>
   </div>
 
@@ -306,14 +338,14 @@ body{font-family:var(--sans);background:var(--white);color:var(--ink);font-size:
   <div class="company-block">
     <div class="co-header">
       <div>
-        <div class="co-name">에이아이웍스(AIworkx) <span style="color:var(--ink3);font-size:.85rem;font-weight:400">구 테스트웍스(Testworks)</span></div>
+        <div class="co-name">에이아이웍스(AIworkx) <span class="sub">구 테스트웍스(Testworks)</span></div>
         <div class="co-role">피플팀 매니저</div>
       </div>
       <div class="co-period">2020.08 — 2025.04</div>
     </div>
     <p class="co-summary">
-      AI 학습데이터 구축 전문 스타트업(시리즈B~C). 피플팀 매니저로서 채용 스케일업, 대규모 인력 운영,
-      유상증자·M&A·IPO 연계 법무 대응까지 HR 전 영역을 주도.
+      AI 학습데이터 구축 전문 스타트업(시리즈B~C). 피플팀 매니저로서 채용 스케일업,
+      대규모 크라우드워커·파견 인력 운영, 유상증자·M&A·IPO 연계 법무 대응까지 HR 전 영역 주도.
     </p>
 
     <div class="project">
@@ -326,12 +358,12 @@ body{font-family:var(--sans);background:var(--white);color:var(--ink);font-size:
         </div>
       </div>
       <div class="proj-right">
-        <div class="proj-result">임직원 85→170명 100% 증가 · IT 직군 40%+ 증가</div>
+        <div class="proj-result">임직원 85→170명 100%↑ · IT 직군 40%+ · 리드타임 40% 단축</div>
         <ul class="proj-bullets">
-          <li>채용 이슈 진단 후 스타트업 맞춤 프로세스 재설계 — <strong>리드타임 40% 단축</strong>, ESG/매년 SPC(사회성과인센티브) 평균 2억~3억 수령</li>
-          <li>하반기 B2G·B2B 프로젝트별 채용 계획 <strong>95% 달성</strong></li>
-          <li>채용 플랫폼 담당자 협의로 공고 비용 활용도 <strong>150% 향상</strong></li>
-          <li>1년간 인사비용 절감률 10% 달성, 팀 직무 만족도 80% 이상 유지</li>
+          <li>채용 이슈 진단 후 스타트업 맞춤 프로세스 재설계 — <strong>리드타임 40% 단축</strong>, 온보딩 7일 달성</li>
+          <li>ESG·SPC(사회성과인센티브) 채용 분야 <strong>평균 2~3억 수령</strong></li>
+          <li>하반기 B2G·B2B 프로젝트별 채용 계획 <strong>95%+ 달성</strong></li>
+          <li>채용 플랫폼 담당자 협의로 공고 비용 활용도 150% 향상, 1년간 인사비용 10% 절감</li>
         </ul>
       </div>
     </div>
@@ -339,14 +371,14 @@ body{font-family:var(--sans);background:var(--white);color:var(--ink);font-size:
     <div class="project">
       <div class="proj-left">
         <div class="proj-period">2021.07 — 2025.03<br>(매년 반복)</div>
-        <div class="proj-name">B2G 하반기 크라우드워커 채용 (NIA·데이터바우처)</div>
+        <div class="proj-name">B2G 크라우드워커 채용 운영<br>(NIA·데이터바우처)</div>
         <div class="proj-tech">
           <span class="proj-tech-item">비정규직보호법</span>
           <span class="proj-tech-item">근로기준법</span>
         </div>
       </div>
       <div class="proj-right">
-        <div class="proj-result">4년 연속 목표 95% 이상 달성</div>
+        <div class="proj-result">4년 연속 목표 95%+ 달성 · 연 40~50명 안정 운영</div>
         <ul class="proj-bullets">
           <li>자사 플랫폼 활용으로 채용 예산 <strong>30% 절감</strong>, 플랫폼 가입자 10% 증가</li>
           <li>프로젝트별 인력 효율 배분으로 크라우드워커 비용 10% 절감</li>
@@ -365,11 +397,11 @@ body{font-family:var(--sans);background:var(--white);color:var(--ink);font-size:
         </div>
       </div>
       <div class="proj-right">
-        <div class="proj-result">파견 인력 15→30명 100% 증가 · 현재 60명 운영</div>
+        <div class="proj-result">파견 인력 15→30명 100%↑ · 리텐션 50%↑</div>
         <ul class="proj-bullets">
-          <li>고객사 사업 확장에 따라 파견인력 15명에서 30명으로 추가 채용 (<strong>현재 60명 운영 중</strong>)</li>
-          <li>수도권 파견 상세 안내 체계화로 <strong>채용 유지율 50% 상승</strong></li>
-          <li>경력자 채용비율 50% 이상 유지, 평균 근속기간 2년 이상 달성</li>
+          <li>고객사 사업 확장으로 파견 인력 15명→30명 추가 채용 (<strong>현재 60명 운영</strong>)</li>
+          <li>수도권 근무 상세 안내 체계화로 <strong>채용 유지율 50% 향상</strong></li>
+          <li>경력자 채용 비율 50% 이상 유지, 평균 근속기간 2년 이상 달성</li>
         </ul>
       </div>
     </div>
@@ -377,7 +409,7 @@ body{font-family:var(--sans);background:var(--white);color:var(--ink);font-size:
     <div class="project">
       <div class="proj-left">
         <div class="proj-period">2022.10 — 2025.02</div>
-        <div class="proj-name">유상증자·민사소송·애크하이어(M&A)</div>
+        <div class="proj-name">유상증자·민사소송·<br>애크하이어(M&A)</div>
         <div class="proj-tech">
           <span class="proj-tech-item">상법·벤처기업법</span>
           <span class="proj-tech-item">민법(전자소송)</span>
@@ -385,12 +417,12 @@ body{font-family:var(--sans);background:var(--white);color:var(--ink);font-size:
         </div>
       </div>
       <div class="proj-right">
-        <div class="proj-result">기업가치 800억 달성 · 민사소송 1·2심 전승 · 애크하이어 완료</div>
+        <div class="proj-result">기업가치 800억 · 민사소송 1·2심 전승 · 애크하이어 완료</div>
         <ul class="proj-bullets">
           <li>시리즈B~C 유상증자 상법 절차 총괄 — <strong>기업가치 800억</strong>, 투자자 만족도 35% 향상</li>
-          <li>민사소송 2년간 대응 — <strong>1심·2심 연속 승소</strong>, 원금 및 이자 100% 수령</li>
+          <li>민사소송 2년 대응 — <strong>1심·2심 연속 승소</strong>, 원금 및 이자 100% 수령</li>
+          <li><strong>소규모 합병(애크하이어)</strong> — C레벨 및 5인 팀 흡수 인수, 서류 전반 대응 완료</li>
           <li>인사팀장 부재 시 팀장 업무 대행, 이사회 멤버 만족도 40% 향상</li>
-          <li><strong>소규모 합병(애크하이어)</strong> — C레벨 및 5인 팀 흡수, 인수 서류 전반 대응</li>
         </ul>
       </div>
     </div>
@@ -405,10 +437,10 @@ body{font-family:var(--sans);background:var(--white);color:var(--ink);font-size:
         </div>
       </div>
       <div class="proj-right">
-        <div class="proj-result">C레벨 포함 주요 임직원 채용 성과 50% 이상</div>
+        <div class="proj-result">C레벨 포함 임원급 채용 성과 90%+</div>
         <ul class="proj-bullets">
           <li>채용 프로세스 간소화로 인력 투입 속도 <strong>35% 향상</strong></li>
-          <li>지인 추천 및 인력 소개 플랫폼 활용으로 업무 공백 50% 절감</li>
+          <li>지인 추천·헤드헌팅 병행으로 업무 공백 50% 절감</li>
           <li>퇴사 인수인계 프로세스 정립 — <strong>데이터 손실 80% 감소</strong></li>
         </ul>
       </div>
@@ -420,32 +452,31 @@ body{font-family:var(--sans);background:var(--white);color:var(--ink);font-size:
     <div class="co-header">
       <div>
         <div class="co-name">청담이상 논현점</div>
-        <div class="co-role">동업자 · 프리미엄 이자카야 운영</div>
+        <div class="co-role">동업자 · 프리미엄 F&B 운영</div>
       </div>
       <div class="co-period">2018.08 — 2019.11</div>
     </div>
-
     <div class="project">
       <div class="proj-left">
         <div class="proj-period">2018.08 — 2019.11</div>
-        <div class="proj-name">프리미엄 F&B 창업·운영 (동업)</div>
+        <div class="proj-name">프리미엄 이자카야 창업·운영</div>
         <div class="proj-tech">
           <span class="proj-tech-item">근로기준법</span>
           <span class="proj-tech-item">비정규직보호법</span>
         </div>
       </div>
       <div class="proj-right">
-        <div class="proj-result">연매출 10억 · 투자금 대비 250% · 강남권 가맹점 매출 3위</div>
+        <div class="proj-result">연매출 10억 · 투자금 대비 250% · 강남권 매출 3위</div>
         <ul class="proj-bullets">
           <li>투자금 4억 대비 연매출 10억 달성 — <strong>투자 대비 매출 250%</strong></li>
-          <li>파트너사 직접 협의로 고정비 20% 절감, 인건비 효율화로 전체 비용 30% 절감</li>
+          <li>파트너사 직접 협의로 고정비 <strong>20% 절감</strong>, 전체 비용 <strong>30% 절감</strong></li>
           <li>채용·근태 관리 직접 운영 — 인건비 구조 설계 및 비정규직 법규 준수 관리</li>
         </ul>
       </div>
     </div>
   </div>
 
-  <!-- ④ 오클라우드호텔 -->
+  <!-- ④ 오클라우드 -->
   <div class="company-block">
     <div class="co-header">
       <div>
@@ -454,21 +485,19 @@ body{font-family:var(--sans);background:var(--white);color:var(--ink);font-size:
       </div>
       <div class="co-period">2017.06 — 2018.06</div>
     </div>
-
     <div class="project">
       <div class="proj-left">
         <div class="proj-period">2017.06 — 2018.06</div>
-        <div class="proj-name">HRM 채용 안정화 · 주 4일제 도입</div>
+        <div class="proj-name">HRM 안정화 · 주 4일제 도입</div>
         <div class="proj-tech">
           <span class="proj-tech-item">근로기준법</span>
         </div>
       </div>
       <div class="proj-right">
-        <div class="proj-result">퇴사율 90% → 20% 감소 · 직원 만족도 50% 개선</div>
+        <div class="proj-result">퇴사율 90% → 20% · 근속자 80%↑</div>
         <ul class="proj-bullets">
-          <li>비즈니스급 호텔 업계 최초 <strong>주 4일제 도입</strong> — 근속자 80% 이상 증가</li>
-          <li>채용 공고 개선으로 채용 예산 30% 절감, 조직 개편으로 업무 프로세스 20% 감소</li>
-          <li><strong>퇴사율 90% → 20%</strong> 로 70%p 감소 달성</li>
+          <li>비즈니스급 호텔 최초 <strong>주 4일제 도입</strong> — 퇴사율 <strong>90% → 20%</strong>로 70%p 감소, 근속자 80% 이상 증가</li>
+          <li>채용 공고 개선으로 예산 <strong>30% 절감</strong>, 조직 개편으로 업무 프로세스 20% 감소</li>
         </ul>
       </div>
     </div>
@@ -479,11 +508,10 @@ body{font-family:var(--sans);background:var(--white);color:var(--ink);font-size:
     <div class="co-header">
       <div>
         <div class="co-name">롯데호텔서울</div>
-        <div class="co-role">영업지원팀 채용담당자</div>
+        <div class="co-role">영업지원팀 채용담당</div>
       </div>
       <div class="co-period">2016.02 — 2017.02</div>
     </div>
-
     <div class="project">
       <div class="proj-left">
         <div class="proj-period">2016.02 — 2017.02</div>
@@ -494,13 +522,12 @@ body{font-family:var(--sans);background:var(--white);color:var(--ink);font-size:
         </div>
       </div>
       <div class="proj-right">
-        <div class="proj-result">연 36,000건 채용 안정화 · 노동부 지적 30% 감소</div>
+        <div class="proj-result">연 36,000건 안정화 · 노동부 지적 30%↓ · 업무 6h→1h</div>
         <ul class="proj-bullets">
           <li>비정규직 보호법 준수 체계화 — <strong>노동부 지적 전년 대비 30% 감소</strong></li>
-          <li>채용 프로세스 개선으로 업무 시간 <strong>6시간 → 1시간</strong> 단축</li>
+          <li>채용 프로세스 개선으로 담당 업무 시간 <strong>6시간 → 1시간</strong> 단축</li>
           <li>일용직 <strong>연 36,000건 채용 안정화</strong>, 파트너사 수수료 20% 절감</li>
-          <li>인턴 200명 유지율 90% 이상 달성</li>
-          <li>그룹 전산실 협업으로 사내 채용 프로그램 전자계약서 기능 업데이트 주도</li>
+          <li>그룹 전산실 협업 — 사내 채용 프로그램 전자계약서 기능 업데이트 주도</li>
         </ul>
       </div>
     </div>
@@ -531,7 +558,7 @@ body{font-family:var(--sans);background:var(--white);color:var(--ink);font-size:
         <span class="sk hi">인사기획</span>
         <span class="sk">조직 개편</span>
         <span class="sk">온보딩 설계</span>
-        <span class="sk">인수인계 체계화</span>
+        <span class="sk">취업규칙 제개정</span>
       </div>
     </div>
     <div class="skill-row">
@@ -562,9 +589,9 @@ body{font-family:var(--sans);background:var(--white);color:var(--ink);font-size:
         <span class="sk hi">Excel VBA</span>
         <span class="sk hi">Google Apps Script</span>
         <span class="sk hi">Chart.js</span>
-        <span class="sk">HTML/CSS/JS</span>
-        <span class="sk">데이터 시각화</span>
-        <span class="sk">BI 대시보드</span>
+        <span class="sk hi">HTML/CSS/JS</span>
+        <span class="sk hi">BI 대시보드</span>
+        <span class="sk hi">Netlify 배포</span>
       </div>
     </div>
   </div>
@@ -572,7 +599,7 @@ body{font-family:var(--sans);background:var(--white);color:var(--ink);font-size:
 
 <!-- FOOTER -->
 <div class="footer">
-  <div class="footer-note">© 2026 Moonjeah · 실무 회사명 비공개 처리 / 포트폴리오: <a href="index.html" style="color:var(--accent);text-decoration:none">index.html</a></div>
+  <div class="footer-note">© 2026 Moonjeah · 현직 회사명 비공개 처리 · 포트폴리오: <a href="index.html">index.html</a></div>
   <div class="footer-note">2026.04 기준</div>
 </div>
 
