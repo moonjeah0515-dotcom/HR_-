@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MOON · 연봉 조정 BI</title>
+<title>MOON 정보기술 · 연봉 조정 BI v7</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
@@ -26,23 +26,23 @@
 body{font-family:var(--sans);background:var(--bg);color:var(--t1);font-size:13px;height:100vh;display:flex;flex-direction:column;overflow:hidden}
 
 /* ── HEADER ── */
-.hd{background:var(--ci-royal);border-bottom:1px solid #2a3e8a;padding:10px 20px;display:flex;align-items:center;gap:16px;flex-shrink:0}
+.hd{background:var(--ci-royal);border-bottom:1px solid #2a3e8a;padding:10px 20px;display:flex;align-items:center;gap:10px;flex-shrink:0}
 .logo{font-size:13px;font-weight:700;color:#fff;white-space:nowrap;letter-spacing:-.2px;flex-shrink:0}
 .logo em{color:#90d4ff;font-style:normal}
-.hd-kpis{display:flex;gap:0;flex:1;overflow:hidden}
-.hkpi{padding:0 11px;border-left:1px solid rgba(255,255,255,.15);display:flex;flex-direction:column;align-items:center;flex-shrink:0}
-.hkpi-v{font-size:15px;font-weight:700;font-family:var(--mono);color:#fff;line-height:1.1;white-space:nowrap}
-.hkpi-l{font-size:9px;color:rgba(255,255,255,.5);margin-top:2px;white-space:nowrap}
+.hd-kpis{display:flex;gap:0;flex:1;overflow:hidden;min-width:0}
+.hkpi{padding:0 7px;border-left:1px solid rgba(255,255,255,.15);display:flex;flex-direction:column;align-items:center;flex-shrink:1;overflow:hidden;min-width:0}
+.hkpi-v{font-size:13px;font-weight:700;font-family:var(--mono);color:#fff;line-height:1.1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+.hkpi-l{font-size:8px;color:rgba(255,255,255,.5);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
 .hkpi.f .hkpi-v{color:#ffb0b8}
 .hkpi.c .hkpi-v{color:#ffd898}
 .hkpi.o .hkpi-v{color:#90ddb8}
-.hkpi.a .hkpi-v{color:#ffb0b8;font-size:12px}
-.hkpi.adj-kpi .hkpi-v{color:#a0c8ff;font-size:12px}
-.hkpi.promo-kpi .hkpi-v{color:#d0b0ff;font-size:12px}
-.hd-right{display:flex;gap:6px;align-items:center;flex-shrink:0}
-.sel{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);color:#fff;font-size:11px;padding:4px 8px;border-radius:var(--r6);outline:none;font-family:var(--sans);cursor:pointer}
+.hkpi.a .hkpi-v{color:#ffb0b8;font-size:11px}
+.hkpi.adj-kpi .hkpi-v{color:#a0c8ff;font-size:11px}
+.hkpi.promo-kpi .hkpi-v{color:#d0b0ff;font-size:11px}
+.hd-right{display:flex;gap:5px;align-items:center;flex-shrink:0}
+.sel{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);color:#fff;font-size:11px;padding:3px 6px;border-radius:var(--r6);outline:none;font-family:var(--sans);cursor:pointer}
 .sel option{background:#3C50C1;color:#fff}
-.btn-tab{font-size:11px;font-weight:600;padding:4px 10px;border-radius:var(--r6);border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.1);color:#fff;cursor:pointer;transition:all .15s;white-space:nowrap}
+.btn-tab{font-size:11px;font-weight:600;padding:4px 8px;border-radius:var(--r6);border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.1);color:#fff;cursor:pointer;transition:all .15s;white-space:nowrap}
 .btn-tab.active{background:#fff;color:var(--ci-royal)}
 .btn-tab:hover:not(.active){background:rgba(255,255,255,.2)}
 .btn-scenario{font-size:10px;padding:4px 9px;border-radius:var(--r6);border:1px solid rgba(255,220,80,.35);background:rgba(255,220,80,.1);color:#ffe878;cursor:pointer;white-space:nowrap}
@@ -63,7 +63,7 @@ body{font-family:var(--sans);background:var(--bg);color:var(--t1);font-size:13px
 .gb-warn.on{display:inline}
 
 /* ── MAIN LAYOUT ── */
-.main{display:flex;flex:1;overflow:hidden}
+.main{display:flex;flex:1;overflow-y:hidden;overflow-x:auto}
 
 /* ── LEFT PANEL ── */
 .lp{width:256px;flex-shrink:0;background:var(--s1);border-right:1px solid var(--b1);display:flex;flex-direction:column;overflow:hidden}
@@ -92,6 +92,31 @@ body{font-family:var(--sans);background:var(--bg);color:var(--t1);font-size:13px
 .new-tag{font-size:9px;padding:1px 4px;border-radius:3px;background:rgba(40,120,192,.1);color:var(--blue);font-weight:500}
 .promo-tag{font-size:9px;padding:1px 4px;border-radius:3px;background:var(--promo-a);color:var(--promo);font-weight:500}
 .warn-tag{font-size:9px;padding:1px 4px;border-radius:3px;background:var(--warn-a);color:var(--warn);font-weight:700}
+/* ── RETENTION RISK ── */
+.risk-tag-h{font-size:9px;padding:1px 5px;border-radius:3px;background:rgba(184,48,56,.15);color:#b83038;font-weight:700;border:1px solid rgba(184,48,56,.3)}
+.risk-tag-m{font-size:9px;padding:1px 5px;border-radius:3px;background:rgba(192,120,0,.12);color:#a06010;font-weight:700;border:1px solid rgba(192,120,0,.3)}
+.risk-badge-box{margin-top:5px;padding:6px 10px;border-radius:6px;font-size:11px;line-height:1.6}
+.risk-badge-box.high{background:rgba(184,48,56,.07);border:1px solid rgba(184,48,56,.25)}
+.risk-badge-box.mid{background:rgba(192,120,0,.07);border:1px solid rgba(192,120,0,.25)}
+.risk-badge-title{font-weight:700;margin-bottom:3px}
+.risk-badge-title.high{color:#b83038}
+.risk-badge-title.mid{color:#a06010}
+.risk-reason{color:var(--t2)}
+.hkpi.risk-kpi .hkpi-v{color:#ffb0b0;font-size:11px}
+
+/* ── APPROVAL ── */
+.apv-box{background:var(--s2);border:1px solid var(--b1);border-radius:var(--r8);padding:8px 10px;margin-top:6px}
+.apv-title{font-size:10px;font-weight:700;color:var(--t2);letter-spacing:.3px;text-transform:uppercase;margin-bottom:6px}
+.apv-steps{display:flex;gap:4px;margin-bottom:8px}
+.apv-step{flex:1;text-align:center;padding:4px 6px;border-radius:5px;border:1px solid var(--b2);background:var(--s1);color:var(--t3);font-size:10px;font-weight:600;cursor:pointer;transition:all .12s}
+.apv-step.done-0{border-color:var(--ci-royal);background:var(--adj-a);color:var(--ci-royal)}
+.apv-step.done-1{border-color:#287858;background:rgba(40,120,88,.1);color:#206048}
+.apv-step.done-2{border-color:#7030c0;background:rgba(112,48,192,.1);color:#7030c0}
+.apv-comment{width:100%;background:var(--s1);border:1px solid var(--b2);border-radius:5px;padding:5px 8px;font-size:11px;color:var(--t1);font-family:var(--sans);resize:vertical;min-height:44px;outline:none;box-sizing:border-box}
+.apv-comment:focus{border-color:var(--ci-royal)}
+.apv-tag-0{font-size:9px;padding:1px 5px;border-radius:3px;background:var(--adj-a);color:var(--ci-royal);font-weight:600;border:1px solid var(--adj-b)}
+.apv-tag-1{font-size:9px;padding:1px 5px;border-radius:3px;background:rgba(40,120,88,.1);color:#206048;font-weight:600;border:1px solid rgba(40,120,88,.25)}
+.apv-tag-2{font-size:9px;padding:1px 5px;border-radius:3px;background:rgba(112,48,192,.1);color:#7030c0;font-weight:600;border:1px solid rgba(112,48,192,.25)}
 
 /* ── RIGHT PANEL ── */
 .rp{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0}
@@ -125,6 +150,27 @@ body{font-family:var(--sans);background:var(--bg);color:var(--t1);font-size:13px
 .ar-l{font-size:9px;color:var(--t2);margin-top:1px}
 .btn-reset{font-size:10px;padding:3px 8px;border-radius:var(--r6);border:1px solid var(--floor-b);background:var(--floor-a);color:var(--floor);cursor:pointer}
 .btn-reset:hover{background:var(--floor-b)}
+
+/* ── GRADE SELECTOR (adj-box 내부) ── */
+.grade-sel-row{display:flex;align-items:center;gap:6px;margin-bottom:7px;padding-bottom:7px;border-bottom:1px solid var(--adj-b)}
+.grade-sel-label{font-size:11px;color:var(--t2);width:54px;flex-shrink:0}
+.grade-sel-btns{display:flex;gap:4px}
+.gsel-btn{font-size:11px;font-weight:700;width:28px;height:24px;border-radius:5px;border:1px solid var(--b2);background:var(--s2);color:var(--t2);cursor:pointer;transition:all .12s;line-height:1}
+.gsel-btn:hover{background:var(--s3)}
+.gsel-btn.sel-A{border-color:#7030c0;background:rgba(112,48,192,.12);color:#5018a0}
+.gsel-btn.sel-B{border-color:var(--ci-royal);background:var(--adj-a);color:var(--ci-royal)}
+.gsel-btn.sel-C{border-color:#287858;background:rgba(40,120,88,.1);color:#206048}
+.gsel-btn.sel-D{border-color:var(--floor);background:var(--floor-a);color:var(--floor)}
+.grade-guide-wrap{display:flex;align-items:center;gap:6px;flex:1}
+.grade-guide-badge{font-size:10px;font-weight:700;padding:2px 7px;border-radius:4px;display:none}
+.grade-guide-badge.show{display:inline}
+.grade-guide-badge.gA{background:rgba(112,48,192,.12);color:#5018a0;border:1px solid rgba(112,48,192,.25)}
+.grade-guide-badge.gB{background:var(--adj-a);color:var(--adj);border:1px solid var(--adj-b)}
+.grade-guide-badge.gC{background:rgba(40,120,88,.1);color:#206048;border:1px solid rgba(40,120,88,.25)}
+.grade-guide-badge.gD{background:var(--floor-a);color:var(--floor);border:1px solid var(--floor-b)}
+.grade-guide-btn{font-size:10px;padding:2px 7px;border-radius:4px;border:1px dashed var(--b2);background:transparent;color:var(--t3);cursor:pointer;display:none;transition:all .12s}
+.grade-guide-btn.show{display:inline}
+.grade-guide-btn:hover{border-color:var(--ci-royal);color:var(--ci-royal);background:var(--adj-a)}
 
 /* ── PROMO BOX ── */
 .promo-box{background:var(--promo-a);border:1px solid var(--promo-b);border-radius:var(--r8);padding:9px 12px;min-width:160px;flex-shrink:0}
@@ -181,25 +227,100 @@ body{font-family:var(--sans);background:var(--bg);color:var(--t1);font-size:13px
 /* ── SCENARIO MODAL ── */
 .modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:1000;display:none;align-items:center;justify-content:center}
 .modal-bg.on{display:flex}
-.modal{background:var(--s1);border:1px solid var(--b1);border-radius:var(--r10);padding:20px;width:360px;max-height:80vh;overflow-y:auto}
+.modal{background:var(--s1);border:1px solid var(--b1);border-radius:var(--r10);padding:20px;width:360px;max-height:90vh;overflow-y:auto}
 .modal-title{font-size:14px;font-weight:700;color:var(--t1);margin-bottom:14px}
 .modal-close{float:right;font-size:18px;color:var(--t3);cursor:pointer;line-height:1}
+
+/* ── AUTO-ALLOC MODAL ── */
+.aa-modal{width:480px;max-height:95vh;overflow-y:auto}
+.aa-section{margin-bottom:14px}
+.aa-label{font-size:11px;font-weight:700;color:var(--t2);margin-bottom:6px;letter-spacing:.3px;text-transform:uppercase}
+.aa-mode-row{display:flex;gap:6px;margin-bottom:10px}
+.aa-mode-btn{flex:1;padding:6px 0;border-radius:var(--r6);border:1px solid var(--b2);background:var(--s2);color:var(--t2);font-size:11px;font-weight:600;cursor:pointer;transition:all .12s}
+.aa-mode-btn.active{border-color:var(--ci-royal);background:var(--adj-a);color:var(--ci-royal)}
+.aa-input-row{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.aa-input{background:var(--s1);border:1px solid var(--b2);border-radius:var(--r6);padding:5px 10px;font-size:14px;font-family:var(--mono);font-weight:700;color:var(--t1);width:110px;outline:none;text-align:right}
+.aa-input:focus{border-color:var(--ci-royal)}
+.aa-input-unit{font-size:12px;color:var(--t2)}
+.aa-priority-list{display:flex;flex-direction:column;gap:4px}
+.aa-pri-item{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--t2);padding:3px 0}
+.aa-pri-no{font-size:10px;font-weight:700;width:16px;height:16px;border-radius:50%;background:var(--s3);color:var(--t3);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.aa-result-box{background:var(--s2);border:1px solid var(--b1);border-radius:var(--r8);padding:10px 12px;margin-bottom:12px;display:none}
+.aa-result-box.show{display:block}
+.aa-result-kpi{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:8px}
+.aa-kpi{text-align:center}
+.aa-kpi-v{font-size:13px;font-weight:700;font-family:var(--mono);color:var(--ci-royal)}
+.aa-kpi-l{font-size:10px;color:var(--t3);margin-top:1px}
+.aa-result-list{max-height:260px;overflow-y:auto}
+.aa-row{display:flex;align-items:center;gap:6px;font-size:11px;padding:3px 0;border-bottom:1px solid var(--b1)}
+.aa-row:last-child{border-bottom:none}
+.aa-row-name{font-weight:600;width:54px;flex-shrink:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.aa-row-rank{color:var(--t3);width:28px;flex-shrink:0}
+.aa-row-grade{width:16px;flex-shrink:0;font-weight:700;font-size:10px}
+.aa-row-sal{font-family:var(--mono);width:52px;text-align:right;flex-shrink:0;color:var(--t2)}
+.aa-row-arrow{color:var(--t4);flex-shrink:0}
+.aa-row-new{font-family:var(--mono);width:52px;text-align:right;flex-shrink:0;color:var(--ci-royal);font-weight:700}
+.aa-row-rate{font-family:var(--mono);width:36px;text-align:right;flex-shrink:0;color:var(--ok)}
+.aa-warn{font-size:11px;color:var(--warn);margin-top:6px;padding:5px 8px;background:var(--warn-a);border-radius:4px;display:none}
+.aa-warn.show{display:block}
+.btn-aa-run{width:100%;padding:8px;border-radius:var(--r8);border:1px solid var(--ci-royal);background:var(--adj-a);color:var(--ci-royal);font-size:12px;font-weight:700;cursor:pointer;margin-bottom:8px}
+.btn-aa-run:hover{background:var(--adj-b)}
+.btn-aa-apply{width:100%;padding:8px;border-radius:var(--r8);border:none;background:var(--ci-royal);color:#fff;font-size:12px;font-weight:700;cursor:pointer;display:none}
+.btn-aa-apply.show{display:block}
+.btn-aa-apply:hover{background:#2a3eb0}
 .scenario-list{display:flex;flex-direction:column;gap:8px;margin-bottom:14px}
 .scenario-item{background:var(--s2);border:1px solid var(--b1);border-radius:var(--r8);padding:10px 12px;display:flex;align-items:center;justify-content:space-between}
 .sc-info{font-size:12px;color:var(--t1)}
 .sc-info span{font-size:10px;color:var(--t3);margin-left:6px;font-family:var(--mono)}
 .sc-actions{display:flex;gap:6px}
 .btn-sm{font-size:10px;padding:3px 8px;border-radius:5px;border:1px solid var(--b2);background:var(--s1);color:var(--t1);cursor:pointer}
-.btn-sm.load{border-color:var(--adj-b);color:var(--adj);background:var(--adj-a)}
-.btn-sm.del{border-color:var(--floor-b);color:var(--floor);background:var(--floor-a)}
+.btn-sm.cmp{border-color:rgba(112,48,192,.3);color:#7030c0;background:rgba(112,48,192,.08)}
+.btn-sm.cmp.sel{border-color:#7030c0;background:rgba(112,48,192,.18);font-weight:700}
+/* ── COMPARE MODAL ── */
+.cmp-modal{width:600px;max-width:96vw}
+.cmp-pick-row{display:flex;gap:8px;margin-bottom:12px;align-items:center}
+.cmp-pick-label{font-size:11px;color:var(--t2);width:28px;flex-shrink:0;font-weight:700}
+.cmp-pick-sel{flex:1;background:var(--s2);border:1px solid var(--b1);color:var(--t1);font-size:12px;padding:5px 8px;border-radius:var(--r6);outline:none;cursor:pointer}
+.cmp-pick-sel:focus{border-color:var(--ci-royal)}
+.btn-cmp-run{padding:6px 16px;border-radius:var(--r6);border:1px solid var(--ci-royal);background:var(--adj-a);color:var(--ci-royal);font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap}
+.btn-cmp-run:hover{background:var(--adj-b)}
+.cmp-result{display:none;margin-top:4px}
+.cmp-result.show{display:block}
+.cmp-header-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:10px}
+.cmp-col-label{font-size:10px;font-weight:700;color:var(--t2);text-align:center;padding:4px 0;border-bottom:2px solid var(--b1)}
+.cmp-col-label.a{border-color:#3C50C1;color:#3C50C1}
+.cmp-col-label.b{border-color:#7030c0;color:#7030c0}
+.cmp-kpi-grid{display:flex;flex-direction:column;gap:6px}
+.cmp-kpi-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;align-items:center}
+.cmp-kpi-item{background:var(--s2);border-radius:var(--r6);padding:8px 10px;text-align:center}
+.cmp-kpi-v{font-size:13px;font-weight:700;font-family:var(--mono);color:var(--t1)}
+.cmp-kpi-l{font-size:10px;color:var(--t3);margin-top:2px}
+.cmp-kpi-item.metric-label{background:transparent;text-align:left;padding:8px 4px}
+.cmp-kpi-v.metric-label-text{font-size:11px;font-weight:700;color:var(--t2);font-family:var(--sans)}
+.cmp-kpi-item.win-a .cmp-kpi-v{color:#3C50C1}
+.cmp-kpi-item.win-b .cmp-kpi-v{color:#7030c0}
+.cmp-diff-tag{font-size:9px;padding:1px 5px;border-radius:3px;margin-top:3px;display:inline-block}
+.cmp-diff-tag.pos{background:rgba(40,120,88,.1);color:#206048}
+.cmp-diff-tag.neg{background:var(--floor-a);color:var(--floor)}
+.cmp-people-section{margin-top:12px}
+.cmp-people-title{font-size:11px;font-weight:700;color:var(--t2);margin-bottom:6px;padding-top:8px;border-top:1px solid var(--b1)}
+.cmp-people-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.cmp-people-col{background:var(--s2);border-radius:var(--r8);padding:8px 10px;max-height:160px;overflow-y:auto}
+.cmp-people-col-hd{font-size:10px;font-weight:700;margin-bottom:5px}
+.cmp-people-col-hd.a{color:#3C50C1}
+.cmp-people-col-hd.b{color:#7030c0}
+.cmp-person-row{font-size:11px;color:var(--t1);padding:2px 0;border-bottom:1px solid var(--b1);display:flex;justify-content:space-between}
+.cmp-person-row:last-child{border-bottom:none}
+.cmp-person-rate{font-family:var(--mono);font-size:10px;color:var(--ci-royal)}
 .btn-save-new{width:100%;padding:8px;border-radius:var(--r8);border:1px solid var(--adj-b);background:var(--adj-a);color:var(--adj);font-size:12px;font-weight:700;cursor:pointer;margin-top:6px}
 .btn-save-new:hover{background:var(--adj-b)}
 .sc-name-input{width:100%;background:var(--s2);border:1px solid var(--b1);color:var(--t1);font-size:12px;padding:6px 9px;border-radius:var(--r6);outline:none;margin-bottom:8px;font-family:var(--sans)}
 .sc-name-input:focus{border-color:var(--blue)}
 
 /* ── SUMMARY PANEL ── */
-.sum-panel{display:none;flex:1;flex-direction:column;overflow:hidden}
-.sum-panel.active{display:flex}
+.sum-panel{display:flex;flex:1;min-width:0;flex-direction:column;overflow:auto;visibility:hidden;pointer-events:none}
+.sum-panel.active{visibility:visible;pointer-events:auto}
+.rp-hidden{display:none!important}
 .sum-kpi{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;padding:12px 14px;flex-shrink:0}
 .sk{background:var(--s1);border:1px solid var(--b1);border-radius:var(--r8);padding:10px 12px}
 .sk-v{font-size:18px;font-weight:700;font-family:var(--mono);color:var(--t1)}
@@ -210,6 +331,42 @@ body{font-family:var(--sans);background:var(--bg);color:var(--t1);font-size:13px
 .sk.promo .sk-v{color:var(--promo)}
 .sum-section{padding:0 14px 6px;flex-shrink:0}
 .sum-section-title{font-size:11px;font-weight:700;color:var(--t2);margin-bottom:6px;padding-bottom:4px;border-bottom:1px solid var(--b1)}
+
+/* ── SUM SUB-TAB ── */
+.sum-sub-tabs{display:flex;gap:6px;padding:6px 14px;flex-shrink:0;border-bottom:1px solid var(--b1);background:var(--s2)}
+.sum-sub-btn{font-size:11px;font-weight:600;padding:3px 12px;border-radius:5px;border:1px solid var(--b2);background:var(--s1);color:var(--t2);cursor:pointer;transition:all .12s}
+.sum-sub-btn.active{background:var(--ci-royal);color:#fff;border-color:var(--ci-royal)}
+
+/* ── HEATMAP ── */
+.heatmap-wrap{flex:1;overflow:auto;padding:14px}
+.heatmap-table{border-collapse:separate;border-spacing:4px;font-size:11px}
+.hm-th{font-size:10px;font-weight:700;color:var(--t2);padding:4px 8px;text-align:center;white-space:nowrap}
+.hm-th.dept{text-align:left;min-width:100px}
+.hm-cell{border-radius:6px;padding:8px 10px;text-align:center;cursor:pointer;transition:filter .12s;min-width:88px;position:relative}
+.hm-cell:hover{filter:brightness(.92)}
+.hm-cell.empty{background:var(--s2);cursor:default}
+.hm-cell.empty:hover{filter:none}
+.hm-cell-pct{font-size:13px;font-weight:700;font-family:var(--mono)}
+.hm-cell-cnt{font-size:10px;margin-top:2px;opacity:.75}
+.hm-cell-avg{font-size:10px;margin-top:1px;opacity:.8;font-family:var(--mono)}
+/* 색상: 테이블 대비 % 구간별 */
+.hm-lvl-5{background:#b83038;color:#fff}  /* ≤-10% 심각 미달 */
+.hm-lvl-4{background:#d06040;color:#fff}  /* -10~-5% */
+.hm-lvl-3{background:#e09060;color:#fff}  /* -5~0% */
+.hm-lvl-2{background:#c0c040;color:#333}  /* 0~5% */
+.hm-lvl-1{background:#60a878;color:#fff}  /* 5~15% */
+.hm-lvl-0{background:#a07828;color:#fff}  /* >15% Cap 초과 */
+.hm-legend{display:flex;gap:8px;flex-wrap:wrap;padding:0 14px 10px;flex-shrink:0}
+.hm-leg-item{display:flex;align-items:center;gap:4px;font-size:10px;color:var(--t2)}
+.hm-leg-dot{width:12px;height:12px;border-radius:3px;flex-shrink:0}
+/* 팝오버 */
+.hm-popover{position:fixed;background:var(--s1);border:1px solid var(--b1);border-radius:var(--r8);padding:10px 12px;z-index:2000;min-width:200px;max-width:280px;box-shadow:0 4px 16px rgba(0,0,0,.12);display:none}
+.hm-popover.show{display:block}
+.hm-pop-title{font-size:11px;font-weight:700;color:var(--t1);margin-bottom:6px;padding-bottom:4px;border-bottom:1px solid var(--b1)}
+.hm-pop-row{display:flex;justify-content:space-between;align-items:center;font-size:11px;padding:3px 0;border-bottom:1px solid var(--s2)}
+.hm-pop-row:last-child{border-bottom:none}
+.hm-pop-name{color:var(--t1)}
+.hm-pop-val{font-family:var(--mono);font-size:10px}
 
 /* ── GRADE SECTION ── */
 .grade-panel{background:var(--s1);border-bottom:1px solid var(--b1);padding:8px 14px;flex-shrink:0;display:none}
@@ -237,11 +394,11 @@ body{font-family:var(--sans);background:var(--bg);color:var(--t1);font-size:13px
 .d-strat{background:rgba(150,50,120,.1);color:#802060}
 
 .sb{font-size:10px;font-weight:600;padding:2px 7px;border-radius:8px}
-.sum-table-wrap{flex:1;overflow:auto;padding:0 14px 12px}
-.sum-table{width:100%;border-collapse:collapse;font-size:11px;table-layout:fixed}
-.sum-table th{background:var(--ci-royal);color:#fff;font-size:10px;font-weight:700;padding:6px 8px;text-align:left;white-space:nowrap;position:sticky;top:0;overflow:hidden;text-overflow:ellipsis}
+.sum-table-wrap{flex:1;overflow-x:auto;overflow-y:auto;padding:0 14px 12px}
+.sum-table{border-collapse:collapse;font-size:11px;table-layout:fixed;width:100%}
+.sum-table th{background:var(--ci-royal);color:#fff;font-size:10px;font-weight:700;padding:6px 8px;text-align:left;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;position:relative;user-select:none}
 .sum-table th.r{text-align:right}
-.sum-table td{padding:6px 8px;border-bottom:1px solid var(--b1);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--t1)}
+.sum-table td{padding:6px 12px;border-bottom:1px solid var(--b1);white-space:nowrap;color:var(--t1)}
 .sum-table td.r{text-align:right;font-family:var(--mono)}
 .sum-table tr:hover td{background:var(--s2)}
 .sum-table tr.adj-row td{background:rgba(60,80,193,.03)}
@@ -265,7 +422,56 @@ body{font-family:var(--sans);background:var(--bg);color:var(--t1);font-size:13px
 .kbd-hint{font-size:10px;color:var(--t4);margin-left:auto;display:flex;align-items:center;gap:4px}
 .kbd{font-size:9px;padding:1px 5px;border-radius:3px;background:var(--s3);border:1px solid var(--b2);color:var(--t3);font-family:var(--mono)}
 
-/* ── PRINT ── */
+/* ── REPORT MODAL ── */
+.report-overlay{position:fixed;inset:0;background:#fff;z-index:3000;display:none;flex-direction:column;overflow:auto;font-family:var(--sans)}
+.report-overlay.show{display:flex}
+.report-toolbar{background:var(--ci-royal);color:#fff;padding:8px 20px;display:flex;align-items:center;gap:12px;flex-shrink:0}
+.report-toolbar-title{font-size:13px;font-weight:700;flex:1}
+.btn-rpt{font-size:11px;padding:4px 12px;border-radius:5px;border:1px solid rgba(255,255,255,.3);background:rgba(255,255,255,.12);color:#fff;cursor:pointer;white-space:nowrap}
+.btn-rpt:hover{background:rgba(255,255,255,.22)}
+.btn-rpt.print{background:#fff;color:var(--ci-royal);border-color:#fff;font-weight:700}
+.report-body{flex:1;padding:24px 32px;max-width:960px;margin:0 auto;width:100%}
+.rpt-header{border-bottom:3px solid var(--ci-royal);padding-bottom:12px;margin-bottom:20px}
+.rpt-title{font-size:20px;font-weight:700;color:var(--ci-royal);letter-spacing:-.3px}
+.rpt-subtitle{font-size:12px;color:var(--t3);margin-top:4px}
+.rpt-kpi-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:20px}
+.rpt-kpi{background:var(--s2);border-radius:8px;padding:12px 14px;border-left:3px solid var(--ci-royal)}
+.rpt-kpi.fl{border-color:var(--floor)}
+.rpt-kpi.ok{border-color:var(--ok)}
+.rpt-kpi.promo{border-color:var(--promo)}
+.rpt-kpi.warn{border-color:var(--warn)}
+.rpt-kpi-v{font-size:18px;font-weight:700;font-family:var(--mono);color:var(--t1)}
+.rpt-kpi-l{font-size:10px;color:var(--t3);margin-top:3px}
+.rpt-section{margin-bottom:20px}
+.rpt-section-title{font-size:12px;font-weight:700;color:var(--t2);letter-spacing:.4px;text-transform:uppercase;margin-bottom:8px;padding-bottom:5px;border-bottom:1px solid var(--b1)}
+.rpt-dept-table{width:100%;border-collapse:collapse;font-size:12px}
+.rpt-dept-table th{background:var(--ci-royal);color:#fff;padding:6px 10px;text-align:left;font-size:11px;font-weight:700}
+.rpt-dept-table th.r{text-align:right}
+.rpt-dept-table td{padding:6px 10px;border-bottom:1px solid var(--b1);color:var(--t1)}
+.rpt-dept-table td.r{text-align:right;font-family:var(--mono)}
+.rpt-dept-table tr:hover td{background:var(--s2)}
+.rpt-dept-table .total-row td{font-weight:700;background:var(--s3);border-top:2px solid var(--b2)}
+.rpt-adj-table{width:100%;border-collapse:collapse;font-size:11px}
+.rpt-adj-table th{background:var(--s3);color:var(--t2);padding:5px 8px;text-align:left;font-size:10px;font-weight:700;border-bottom:1px solid var(--b2)}
+.rpt-adj-table th.r{text-align:right}
+.rpt-adj-table td{padding:5px 8px;border-bottom:1px solid var(--s2);color:var(--t1)}
+.rpt-adj-table td.r{text-align:right;font-family:var(--mono);font-size:10px}
+.rpt-issue-list{display:flex;flex-direction:column;gap:6px}
+.rpt-issue{display:flex;align-items:flex-start;gap:8px;padding:8px 10px;border-radius:6px;font-size:12px}
+.rpt-issue.floor{background:var(--floor-a);border:1px solid var(--floor-b)}
+.rpt-issue.cap{background:var(--cap-a);border:1px solid var(--cap-b)}
+.rpt-issue.rev{background:var(--warn-a);border:1px solid var(--warn-b)}
+.rpt-issue-icon{font-size:13px;flex-shrink:0;margin-top:1px}
+.rpt-issue-text{flex:1;color:var(--t1);line-height:1.5}
+.rpt-footer{margin-top:24px;padding-top:12px;border-top:1px solid var(--b1);font-size:10px;color:var(--t4);text-align:right}
+.rpt-two-col{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media print{
+  .report-toolbar{display:none!important}
+  .report-overlay{position:static;overflow:visible}
+  .report-body{padding:16px}
+}
+
+/* ── PRINT (기존) ── */
 @media print{
   .hd,.gauge-bar,.preset-bar,.lp,.drag-h,.drag-v,.adj-box,.promo-box,.btn-csv,.btn-tab,.btn-scenario,.sel,.bt-actions{display:none!important}
   body{height:auto;overflow:visible;font-size:12px}
@@ -281,6 +487,9 @@ body{font-family:var(--sans);background:var(--bg);color:var(--t1);font-size:13px
 ::-webkit-scrollbar{width:3px;height:3px}
 ::-webkit-scrollbar-thumb{background:var(--b2);border-radius:2px}
 ::-webkit-scrollbar-track{background:transparent}
+
+.col-resizer{position:absolute;right:0;top:0;width:4px;height:100%;cursor:col-resize;background:rgba(255,255,255,0.2);z-index:1}
+.col-resizer:hover,.col-resizer.dragging{background:rgba(255,255,255,0.6)}
 </style>
 </head>
 <body>
@@ -298,12 +507,13 @@ body{font-family:var(--sans);background:var(--bg);color:var(--t1);font-size:13px
     <div class="hkpi promo-kpi"><div class="hkpi-v" id="h-promo-cnt">0명</div><div class="hkpi-l">진급 확정</div></div>
     <div class="hkpi promo-kpi"><div class="hkpi-v" id="h-promo-total">-</div><div class="hkpi-l">진급수당 합계</div></div>
     <div class="hkpi adj-kpi"><div class="hkpi-v" id="h-grand-total">-</div><div class="hkpi-l">총 추가 인건비</div></div>
+    <div class="hkpi risk-kpi"><div class="hkpi-v" id="h-risk-high">-</div><div class="hkpi-l">이탈위험 고</div></div>
   </div>
   <div class="hd-right">
     <select class="sel" id="f-dept" onchange="go()">
-      <option value="">전체 부서</option>
-      <option>부서A</option><option>부서B</option>
-      <option>부서C</option><option>경영지원</option>
+      <option value="">전체 사업부</option>
+      <option>B사업부</option><option>C사업부</option>
+      <option>D사업부</option><option>A</option>
     </select>
     <select class="sel" id="f-rank" onchange="go()">
       <option value="">전체 직급</option>
@@ -316,9 +526,12 @@ body{font-family:var(--sans);background:var(--bg);color:var(--t1);font-size:13px
       <option value="정상">정상</option>
       <option value="조정완료">조정 완료</option>
       <option value="진급대상">진급 대상</option>
+      <option value="이탈위험고">이탈위험 고</option>
+      <option value="이탈위험중">이탈위험 중</option>
     </select>
     <button class="btn-tab active" id="tab-pos" onclick="switchTab('pos')">포지셔닝</button>
     <button class="btn-tab" id="tab-sum" onclick="switchTab('sum')">조정 요약</button>
+    <button class="btn-scenario" onclick="openAutoAlloc()" style="border-color:rgba(160,220,255,.4);background:rgba(160,220,255,.1);color:#a0e0ff">⚡ 자동배분</button>
     <button class="btn-scenario" onclick="openScenario()">📋 시나리오</button>
   </div>
 </div>
@@ -340,25 +553,25 @@ body{font-family:var(--sans);background:var(--bg);color:var(--t1);font-size:13px
       <span class="gb-warn" id="gw-all">초과!</span>
     </div>
     <div class="gb-item">
-      <div class="gb-name" style="width:50px">솔루션</div>
+      <div class="gb-name" style="width:50px">B</div>
       <div class="gb-track"><div class="gb-fill" id="gf-sol" style="background:#7090e0;width:0%"></div><div class="gb-limit"></div></div>
       <div class="gb-pct" id="gp-sol" style="color:rgba(255,255,255,.6);font-size:10px">-</div>
       <span class="gb-warn" id="gw-sol">초과</span>
     </div>
     <div class="gb-item">
-      <div class="gb-name" style="width:50px">클라우드</div>
+      <div class="gb-name" style="width:50px">C</div>
       <div class="gb-track"><div class="gb-fill" id="gf-cloud" style="background:#7090e0;width:0%"></div><div class="gb-limit"></div></div>
       <div class="gb-pct" id="gp-cloud" style="color:rgba(255,255,255,.6);font-size:10px">-</div>
       <span class="gb-warn" id="gw-cloud">초과</span>
     </div>
     <div class="gb-item">
-      <div class="gb-name" style="width:50px">통신응용</div>
+      <div class="gb-name" style="width:50px">D</div>
       <div class="gb-track"><div class="gb-fill" id="gf-tel" style="background:#7090e0;width:0%"></div><div class="gb-limit"></div></div>
       <div class="gb-pct" id="gp-tel" style="color:rgba(255,255,255,.6);font-size:10px">-</div>
       <span class="gb-warn" id="gw-tel">초과</span>
     </div>
     <div class="gb-item">
-      <div class="gb-name" style="width:50px">경영지원</div>
+      <div class="gb-name" style="width:50px">A</div>
       <div class="gb-track"><div class="gb-fill" id="gf-mgmt" style="background:#7090e0;width:0%"></div><div class="gb-limit"></div></div>
       <div class="gb-pct" id="gp-mgmt" style="color:rgba(255,255,255,.6);font-size:10px">-</div>
       <span class="gb-warn" id="gw-mgmt">초과</span>
@@ -374,6 +587,7 @@ body{font-family:var(--sans);background:var(--bg);color:var(--t1);font-size:13px
   <button class="btn-preset" id="pr-table" onclick="applyPreset('table')">테이블 집중</button>
   <button class="btn-preset" id="pr-report" onclick="applyPreset('report')">보고용</button>
   <div class="preset-divider"></div>
+  <button class="btn-preset" onclick="openReport()" style="border-color:var(--ci-royal);color:var(--ci-royal)">📄 보고서</button>
   <button class="btn-preset" onclick="window.print()">🖨 인쇄</button>
   <div class="kbd-hint">
     <span class="kbd">↑↓</span>직원이동
@@ -480,7 +694,7 @@ body{font-family:var(--sans);background:var(--bg);color:var(--t1);font-size:13px
   </div><!-- /rp-pos -->
 
   <!-- RIGHT: SUMMARY TAB -->
-  <div class="rp sum-panel" id="rp-sum">
+  <div class="sum-panel" id="rp-sum">
     <div class="sum-kpi">
       <div class="sk hl"><div class="sk-v" id="s-grand">-</div><div class="sk-l">총 추가 인건비</div></div>
       <div class="sk hl"><div class="sk-v" id="s-adj-amt">-</div><div class="sk-l">연봉 조정 합계</div></div>
@@ -488,24 +702,45 @@ body{font-family:var(--sans);background:var(--bg);color:var(--t1);font-size:13px
       <div class="sk fl"><div class="sk-v" id="s-still-floor">-</div><div class="sk-l">미달 미조정 잔여</div></div>
       <div class="sk ok"><div class="sk-v" id="s-rev-cnt">-</div><div class="sk-l">역전 잔여 건수</div></div>
     </div>
-    <div class="sum-table-wrap">
-      <table class="sum-table">
-        <colgroup>
-          <col style="width:80px"><col style="width:60px"><col style="width:48px"><col style="width:76px">
-          <col style="width:76px"><col style="width:76px"><col style="width:56px"><col style="width:68px">
-          <col style="width:76px"><col style="width:68px"><col style="width:80px"><col style="width:68px"><col style="width:60px">
-        </colgroup>
-        <thead><tr>
-          <th>사업부</th><th>이름</th><th>직급</th><th>총경력</th>
-          <th class="r">현 연봉</th><th class="r">조정 연봉</th>
-          <th class="r">인상률</th><th class="r">인상액</th>
-          <th class="r">테이블 최소</th><th class="r">테이블 대비%</th>
-          <th>상태</th><th class="r">진급수당</th><th>고과</th>
-        </tr></thead>
-        <tbody id="sum-tbody"></tbody>
-      </table>
+
+    <!-- 서브탭 -->
+    <div class="sum-sub-tabs">
+      <button class="sum-sub-btn active" id="ssb-list" onclick="switchSumSub('list')">전체 목록</button>
+      <button class="sum-sub-btn" id="ssb-heatmap" onclick="switchSumSub('heatmap')">형평성 히트맵</button>
+    </div>
+
+    <!-- 전체 목록 뷰 -->
+    <div id="sum-list-view" style="flex:1;display:flex;flex-direction:column;overflow:hidden">
+      <div class="sum-table-wrap">
+        <table class="sum-table" id="sum-table">
+          <colgroup>
+            <col style="width:90px"><col style="width:80px"><col style="width:44px"><col style="width:80px">
+            <col style="width:72px"><col style="width:72px"><col style="width:52px"><col style="width:64px">
+            <col style="width:72px"><col style="width:66px"><col style="width:72px"><col style="width:60px"><col style="width:44px">
+          </colgroup>
+          <tbody id="sum-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- 형평성 히트맵 뷰 -->
+    <div id="sum-heatmap-view" style="flex:1;display:none;flex-direction:column;overflow:hidden">
+      <div class="hm-legend">
+        <span class="hm-leg-item"><span class="hm-leg-dot hm-lvl-5"></span>심각 미달 (≤-10%)</span>
+        <span class="hm-leg-item"><span class="hm-leg-dot hm-lvl-4"></span>미달 (-10~-5%)</span>
+        <span class="hm-leg-item"><span class="hm-leg-dot hm-lvl-3"></span>주의 (-5~0%)</span>
+        <span class="hm-leg-item"><span class="hm-leg-dot hm-lvl-2"></span>정상 (0~5%)</span>
+        <span class="hm-leg-item"><span class="hm-leg-dot hm-lvl-1"></span>양호 (5~15%)</span>
+        <span class="hm-leg-item"><span class="hm-leg-dot hm-lvl-0"></span>Cap 초과 (>15%)</span>
+      </div>
+      <div class="heatmap-wrap">
+        <table class="heatmap-table" id="hm-table"></table>
+      </div>
     </div>
   </div>
+
+  <!-- 히트맵 팝오버 -->
+  <div class="hm-popover" id="hm-popover"></div>
 
 </div><!-- /main -->
 
@@ -516,7 +751,109 @@ body{font-family:var(--sans);background:var(--bg);color:var(--t1);font-size:13px
     <div class="scenario-list" id="scenario-list"></div>
     <input class="sc-name-input" id="sc-name" type="text" placeholder="시나리오 이름 입력 (예: 1안, 보수안...)">
     <button class="btn-save-new" onclick="saveScenario()">현재 조정 내역 저장</button>
+    <button class="btn-save-new" onclick="openCompare()" style="margin-top:6px;background:rgba(112,48,192,.08);border-color:rgba(112,48,192,.3);color:#7030c0">🔀 시나리오 비교하기</button>
   </div>
+</div>
+
+<!-- COMPARE MODAL -->
+<div class="modal-bg" id="cmp-modal-bg" onclick="if(event.target===this)closeCmp()">
+  <div class="modal cmp-modal">
+    <div class="modal-title">🔀 시나리오 비교 <span class="modal-close" onclick="closeCmp()">×</span></div>
+    <div style="display:flex;gap:8px;align-items:flex-end;margin-bottom:14px;flex-wrap:wrap">
+      <div style="flex:1;min-width:180px">
+        <div style="font-size:10px;font-weight:700;color:#3C50C1;margin-bottom:4px">A안</div>
+        <select class="cmp-pick-sel" id="cmp-sel-a"></select>
+      </div>
+      <div style="flex:1;min-width:180px">
+        <div style="font-size:10px;font-weight:700;color:#7030c0;margin-bottom:4px">B안</div>
+        <select class="cmp-pick-sel" id="cmp-sel-b"></select>
+      </div>
+      <button class="btn-cmp-run" onclick="runCompare()">비교 실행</button>
+    </div>
+    <div class="cmp-result" id="cmp-result">
+      <div class="cmp-header-row">
+        <div class="cmp-col-label">항목</div>
+        <div class="cmp-col-label a" id="cmp-title-a">A안</div>
+        <div class="cmp-col-label b" id="cmp-title-b">B안</div>
+      </div>
+      <div class="cmp-kpi-grid" id="cmp-kpi-grid"></div>
+      <div class="cmp-people-section">
+        <div class="cmp-people-title">조정 대상 직원 비교</div>
+        <div class="cmp-people-grid">
+          <div class="cmp-people-col">
+            <div class="cmp-people-col-hd a" id="cmp-people-title-a">A안</div>
+            <div id="cmp-people-a"></div>
+          </div>
+          <div class="cmp-people-col">
+            <div class="cmp-people-col-hd b" id="cmp-people-title-b">B안</div>
+            <div id="cmp-people-b"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- AUTO-ALLOC MODAL -->
+<div class="modal-bg" id="aa-modal-bg" onclick="if(event.target===this)closeAutoAlloc()">
+  <div class="modal aa-modal">
+    <div class="modal-title">⚡ 자동 최적 배분 <span class="modal-close" onclick="closeAutoAlloc()">×</span></div>
+
+    <div class="aa-section">
+      <div class="aa-label">배분 기준</div>
+      <div class="aa-mode-row">
+        <button class="aa-mode-btn active" id="aa-mode-budget" onclick="setAAMode('budget')">예산 총액 기준</button>
+        <button class="aa-mode-btn" id="aa-mode-rate" onclick="setAAMode('rate')">평균 인상률 기준</button>
+      </div>
+      <div class="aa-input-row">
+        <input class="aa-input" type="number" id="aa-value" value="100" min="0" step="0.1">
+        <span class="aa-input-unit" id="aa-unit">억원</span>
+        <span style="font-size:10px;color:var(--t3)" id="aa-hint">전체 인건비의 최대 증가 예산</span>
+      </div>
+    </div>
+
+    <div class="aa-section">
+      <div class="aa-label">배분 우선순위</div>
+      <div class="aa-priority-list">
+        <div class="aa-pri-item"><div class="aa-pri-no">1</div>Floor 미달자 테이블 최솟값까지 우선 해소</div>
+        <div class="aa-pri-item"><div class="aa-pri-no">2</div>고과 A등급 → 권고 중간값(8.5%) 적용</div>
+        <div class="aa-pri-item"><div class="aa-pri-no">3</div>고과 B등급 → 권고 중간값(5.0%) 적용</div>
+        <div class="aa-pri-item"><div class="aa-pri-no">4</div>고과 C등급 → 권고 중간값(2.5%) 적용</div>
+        <div class="aa-pri-item"><div class="aa-pri-no">5</div>고과 미입력 직원 → 기본 인상률 적용</div>
+        <div class="aa-pri-item"><div class="aa-pri-no">6</div>예산 소진 시 이후 직원 적용 중단</div>
+      </div>
+    </div>
+
+    <div class="aa-section">
+      <div class="aa-label">기본 인상률 <span style="font-weight:400;color:var(--t3)">(고과 미입력 직원 적용)</span></div>
+      <div class="aa-input-row">
+        <input class="aa-input" type="number" id="aa-default-rate" value="3" min="0" max="20" step="0.5">
+        <span class="aa-input-unit">%</span>
+      </div>
+    </div>
+
+    <button class="btn-aa-run" onclick="runAutoAlloc()">배분 시뮬레이션 실행</button>
+
+    <div class="aa-result-box" id="aa-result-box">
+      <div class="aa-label" style="margin-bottom:8px">시뮬레이션 결과</div>
+      <div class="aa-result-kpi" id="aa-result-kpi"></div>
+      <div class="aa-warn" id="aa-warn"></div>
+      <div style="font-size:10px;font-weight:700;color:var(--t2);margin:8px 0 4px">조정 대상 직원</div>
+      <div class="aa-result-list" id="aa-result-list"></div>
+    </div>
+
+    <button class="btn-aa-apply" id="btn-aa-apply" onclick="applyAutoAlloc()">이 배분안 전체 적용</button>
+  </div>
+</div>
+
+<!-- REPORT OVERLAY -->
+<div class="report-overlay" id="report-overlay">
+  <div class="report-toolbar">
+    <div class="report-toolbar-title">📄 연봉 조정 보고서 · MOON</div>
+    <button class="btn-rpt print" onclick="printReport()">🖨 인쇄</button>
+    <button class="btn-rpt" onclick="closeReport()">✕ 닫기</button>
+  </div>
+  <div class="report-body" id="report-body"></div>
 </div>
 
 <script>
@@ -526,9 +863,9 @@ body{font-family:var(--sans);background:var(--bg);color:var(--t1);font-size:13px
 const RANK_MAP = {'선임':'대리','전임':'대리'};
 const RANK_COLORS = {'부장':'#8b5050','차장':'#4050a0','과장':'#306080','대리':'#287858','사원':'#806030'};
 const AV_COLORS = ['#3C50C1','#2878c0','#6828a8','#287858','#b83038','#a07828','#3a80b0','#5040a0'];
-const DEPT_CLS = {'부서A':'d-sol','부서B':'d-cloud','부서C':'d-tel','HR팀':'d-mgmt','피플팀':'d-strat'};
-const DEPT_GROUP = {'부서A':'부서A','부서B':'부서B','부서C':'부서C','HR팀':'경영지원','피플팀':'경영지원'};
-const DEPT_GAUGE_ID = {'부서A':'sol','부서B':'cloud','부서C':'tel','경영지원':'mgmt'};
+const DEPT_CLS = {'B사업부':'d-sol','C사업부':'d-cloud','D사업부':'d-tel','A사업부/A1팀':'d-mgmt','A사업부/A2팀':'d-strat'};
+const DEPT_GROUP = {'B사업부':'B사업부','C사업부':'C사업부','D사업부':'D사업부','A사업부/A1팀':'경영전략실','A사업부/A2팀':'경영전략실'};
+const DEPT_GAUGE_ID = {'B사업부':'sol','C사업부':'cloud','D사업부':'tel','경영전략실':'mgmt'};
 const TBL = {
   '부장':[[19,73000000],[20,75000000],[21,76500000],[22,78000000],[23,79500000],[24,81000000],[25,82500000],[26,84500000]],
   '차장':[[14,64000000],[15,66000000],[16,68000000],[17,70000000],[18,72000000]],
@@ -545,72 +882,72 @@ const PROMO_TO  = {'사원':'대리','대리':'과장','과장':'차장','차장
 const PROMO_BONUS = {'사원':1000000,'대리':1000000,'과장':2000000,'차장':2000000};
 
 const DATA = [
-  {no:1,n:'김지아',r:'차장',d:'HR팀',tc:'24년 4개월',ty:24,py:4.0,sal:62200000,tm:72000000,pp:3600000,nh:false},
-  {no:2,n:'박수현',r:'대리',d:'HR팀',tc:'8년 1개월',ty:8,py:0.17,sal:42400000,tm:51000000,pp:0,nh:true},
-  {no:3,n:'이수연',r:'대리',d:'HR팀',tc:'5년 2개월',ty:5,py:0.92,sal:40500000,tm:44000000,pp:0,nh:false},
-  {no:4,n:'박예진',r:'차장',d:'피플팀',tc:'21년 7개월',ty:21,py:6.0,sal:74300000,tm:72000000,pp:0,nh:false},
-  {no:5,n:'최준혁',r:'대리',d:'피플팀',tc:'9년 1개월',ty:9,py:6.0,sal:51100000,tm:51000000,pp:0,nh:false},
-  {no:6,n:'이하영',r:'부장',d:'부서A',tc:'24년 9개월',ty:24,py:3.17,sal:74300000,tm:81000000,pp:3600000,nh:true},
-  {no:7,n:'윤지훈',r:'부장',d:'부서A',tc:'19년 5개월',ty:19,py:1.75,sal:105200000,tm:73000000,pp:3600000,nh:false},
-  {no:8,n:'장민석',r:'차장',d:'부서A',tc:'11년 4개월',ty:11,py:1.33,sal:70700000,tm:64000000,pp:0,nh:true},
-  {no:9,n:'한도윤',r:'과장',d:'부서A',tc:'11년 2개월',ty:11,py:4.0,sal:68200000,tm:57500000,pp:0,nh:false},
-  {no:10,n:'오다혜',r:'과장',d:'부서A',tc:'9년 5개월',ty:9,py:2.92,sal:61800000,tm:53000000,pp:0,nh:false},
-  {no:11,n:'정수아',r:'과장',d:'부서A',tc:'7년 4개월',ty:7,py:1.5,sal:56000000,tm:53000000,pp:0,nh:true},
-  {no:12,n:'조규남',r:'과장',d:'부서A',tc:'8년 10개월',ty:8,py:1.75,sal:65800000,tm:53000000,pp:0,nh:false},
-  {no:13,n:'임동규',r:'선임',d:'부서A',tc:'5년 3개월',ty:5,py:1.58,sal:51000000,tm:44000000,pp:0,nh:false},
-  {no:14,n:'권미경',r:'과장',d:'부서A',tc:'9년 1개월',ty:9,py:0.17,sal:48200000,tm:53000000,pp:0,nh:true},
-  {no:15,n:'서준우',r:'대리',d:'부서A',tc:'5년 11개월',ty:5,py:2.92,sal:51100000,tm:44000000,pp:0,nh:false},
-  {no:16,n:'김영준',r:'대리',d:'부서A',tc:'4년 10개월',ty:4,py:1.75,sal:45700000,tm:42000000,pp:0,nh:false},
-  {no:17,n:'문유덕',r:'대리',d:'부서A',tc:'5년 6개월',ty:5,py:1.58,sal:39100000,tm:44000000,pp:0,nh:true},
-  {no:18,n:'남영준',r:'대리',d:'부서A',tc:'5년 10개월',ty:5,py:1.58,sal:45200000,tm:44000000,pp:0,nh:true},
-  {no:19,n:'오세신',r:'전임',d:'부서A',tc:'4년 2개월',ty:4,py:1.58,sal:46700000,tm:42000000,pp:0,nh:false},
-  {no:20,n:'이세경',r:'대리',d:'부서A',tc:'4년 2개월',ty:4,py:0.92,sal:37000000,tm:42000000,pp:0,nh:false},
-  {no:21,n:'정동우',r:'전임',d:'부서A',tc:'4년 2개월',ty:4,py:1.58,sal:47500000,tm:42000000,pp:0,nh:false},
-  {no:22,n:'류종석',r:'대리',d:'부서A',tc:'4년 11개월',ty:4,py:1.75,sal:43100000,tm:42000000,pp:0,nh:false},
-  {no:23,n:'강영재',r:'대리',d:'부서A',tc:'4년 1개월',ty:4,py:0.92,sal:38500000,tm:42000000,pp:0,nh:false},
-  {no:24,n:'한현아',r:'대리',d:'부서A',tc:'4년 0개월',ty:4,py:0.92,sal:39600000,tm:42000000,pp:0,nh:false},
-  {no:25,n:'임성민',r:'대리',d:'부서A',tc:'7년 1개월',ty:7,py:1.75,sal:47200000,tm:48500000,pp:0,nh:false},
-  {no:26,n:'조범서',r:'사원',d:'부서A',tc:'2년 8개월',ty:2,py:1.58,sal:36700000,tm:37500000,pp:0,nh:true},
-  {no:27,n:'배성진',r:'사원',d:'부서A',tc:'1년 9개월',ty:1,py:1.17,sal:33400000,tm:35000000,pp:0,nh:false},
-  {no:28,n:'신혜윤',r:'사원',d:'부서A',tc:'0년 9개월',ty:0,py:0.17,sal:33300000,tm:35000000,pp:0,nh:false},
-  {no:29,n:'고우성',r:'부장',d:'부서B',tc:'22년 7개월',ty:22,py:4.17,sal:91400000,tm:78000000,pp:3600000,nh:true},
-  {no:30,n:'오현조',r:'차장',d:'부서B',tc:'19년 0개월',ty:19,py:3.25,sal:76300000,tm:72000000,pp:3600000,nh:true},
-  {no:31,n:'이수자',r:'차장',d:'부서B',tc:'19년 10개월',ty:19,py:4.17,sal:75800000,tm:72000000,pp:0,nh:true},
-  {no:32,n:'전호진',r:'차장',d:'부서B',tc:'13년 8개월',ty:13,py:4.0,sal:76700000,tm:64000000,pp:3600000,nh:false},
-  {no:33,n:'박형기',r:'차장',d:'부서B',tc:'16년 3개월',ty:16,py:4.0,sal:77700000,tm:68000000,pp:3600000,nh:false},
-  {no:34,n:'장준영',r:'차장',d:'부서B',tc:'15년 0개월',ty:15,py:3.25,sal:69800000,tm:66000000,pp:0,nh:false},
-  {no:35,n:'송희진',r:'과장',d:'부서B',tc:'9년 11개월',ty:9,py:1.75,sal:59700000,tm:53000000,pp:0,nh:false},
-  {no:36,n:'민동준',r:'대리',d:'부서B',tc:'5년 11개월',ty:5,py:2.92,sal:57800000,tm:44000000,pp:0,nh:false},
-  {no:37,n:'안지나',r:'대리',d:'부서B',tc:'6년 1개월',ty:6,py:2.92,sal:54200000,tm:46000000,pp:0,nh:false},
-  {no:38,n:'최민',r:'대리',d:'부서B',tc:'5년 6개월',ty:5,py:2.92,sal:58200000,tm:44000000,pp:0,nh:false},
-  {no:39,n:'황정우',r:'대리',d:'부서B',tc:'5년 6개월',ty:5,py:2.92,sal:57000000,tm:44000000,pp:0,nh:false},
-  {no:40,n:'유성탁',r:'대리',d:'부서B',tc:'4년 11개월',ty:4,py:1.75,sal:46200000,tm:42000000,pp:0,nh:false},
-  {no:41,n:'채현익',r:'대리',d:'부서B',tc:'4년 11개월',ty:4,py:1.75,sal:46900000,tm:42000000,pp:0,nh:false},
-  {no:42,n:'신현규',r:'대리',d:'부서B',tc:'4년 10개월',ty:4,py:1.75,sal:43600000,tm:42000000,pp:0,nh:false},
-  {no:43,n:'이혜지',r:'대리',d:'부서B',tc:'4년 10개월',ty:4,py:1.75,sal:43900000,tm:42000000,pp:0,nh:false},
-  {no:44,n:'천도훈',r:'대리',d:'부서B',tc:'4년 8개월',ty:4,py:1.75,sal:42800000,tm:42000000,pp:0,nh:false},
-  {no:45,n:'조민호',r:'대리',d:'부서B',tc:'4년 2개월',ty:4,py:0.92,sal:37000000,tm:42000000,pp:0,nh:false},
-  {no:46,n:'하원경',r:'대리',d:'부서B',tc:'4년 4개월',ty:4,py:1.75,sal:50000000,tm:42000000,pp:0,nh:false},
-  {no:47,n:'문현',r:'대리',d:'부서B',tc:'4년 4개월',ty:4,py:1.17,sal:38100000,tm:42000000,pp:0,nh:true},
-  {no:48,n:'원세현',r:'사원',d:'부서B',tc:'0년 9개월',ty:0,py:0.17,sal:34100000,tm:35000000,pp:0,nh:false},
-  {no:49,n:'나승화',r:'부장',d:'부서C',tc:'25년 7개월',ty:25,py:0,sal:92600000,tm:82500000,pp:0,nh:false},
-  {no:50,n:'마재복',r:'부장',d:'부서C',tc:'25년 2개월',ty:25,py:0,sal:90600000,tm:82500000,pp:0,nh:false},
-  {no:51,n:'위재현',r:'부장',d:'부서C',tc:'24년 11개월',ty:24,py:3.33,sal:76400000,tm:81000000,pp:0,nh:true},
-  {no:52,n:'곽도영',r:'차장',d:'부서C',tc:'28년 1개월',ty:28,py:11.0,sal:82600000,tm:72000000,pp:0,nh:true},
-  {no:53,n:'방민석',r:'차장',d:'부서C',tc:'17년 8개월',ty:17,py:3.92,sal:79700000,tm:70000000,pp:3600000,nh:false},
-  {no:54,n:'태현우',r:'차장',d:'부서C',tc:'13년 11개월',ty:13,py:4.0,sal:74100000,tm:64000000,pp:0,nh:false},
-  {no:55,n:'류세민',r:'차장',d:'부서C',tc:'12년 0개월',ty:12,py:4.0,sal:68500000,tm:64000000,pp:0,nh:false},
-  {no:56,n:'구상현',r:'대리',d:'부서C',tc:'4년 1개월',ty:4,py:2.92,sal:42400000,tm:42000000,pp:0,nh:false},
-  {no:57,n:'석원식',r:'대리',d:'부서C',tc:'6년 3개월',ty:6,py:2.92,sal:44200000,tm:46000000,pp:0,nh:false},
-  {no:58,n:'탁효근',r:'대리',d:'부서C',tc:'5년 11개월',ty:5,py:2.92,sal:47500000,tm:44000000,pp:0,nh:false},
-  {no:59,n:'봉영헌',r:'대리',d:'부서C',tc:'4년 6개월',ty:4,py:0.92,sal:39000000,tm:42000000,pp:0,nh:false},
-  {no:60,n:'엄순빈',r:'대리',d:'부서C',tc:'4년 6개월',ty:4,py:0.92,sal:37400000,tm:42000000,pp:0,nh:false},
-  {no:61,n:'도건희',r:'대리',d:'부서C',tc:'4년 0개월',ty:4,py:0.92,sal:40800000,tm:42000000,pp:0,nh:false},
-  {no:62,n:'갈혜성',r:'대리',d:'부서C',tc:'4년 1개월',ty:4,py:0.92,sal:38700000,tm:42000000,pp:0,nh:false},
-  {no:63,n:'남성현',r:'사원',d:'부서C',tc:'3년 9개월',ty:3,py:3.75,sal:38600000,tm:40000000,pp:0,nh:false},
-  {no:64,n:'기준호',r:'사원',d:'부서C',tc:'3년 9개월',ty:3,py:3.75,sal:41100000,tm:40000000,pp:0,nh:false},
-  {no:65,n:'마혜지',r:'사원',d:'부서C',tc:'3년 8개월',ty:3,py:3.67,sal:39500000,tm:40000000,pp:0,nh:false},
-  {no:66,n:'서주양',r:'사원',d:'부서C',tc:'2년 6개월',ty:2,py:2.5,sal:36300000,tm:37500000,pp:0,nh:false},
+  {no:1,n:'노민영',r:'차장',d:'A사업부/A1팀',tc:'24년 4개월',ty:24,py:4.0,sal:62390000,tm:70000000,pp:3600000,nh:false},
+  {no:2,n:'이민준',r:'대리',d:'A사업부/A1팀',tc:'8년 1개월',ty:8,py:0.17,sal:42010000,tm:49000000,pp:0,nh:true},
+  {no:3,n:'박소연',r:'대리',d:'A사업부/A1팀',tc:'5년 2개월',ty:5,py:0.92,sal:40280000,tm:43000000,pp:0,nh:false},
+  {no:4,n:'최현우',r:'차장',d:'A사업부/A2팀',tc:'21년 7개월',ty:21,py:6.0,sal:73900000,tm:70000000,pp:0,nh:false},
+  {no:5,n:'김태희',r:'대리',d:'A사업부/A2팀',tc:'9년 1개월',ty:9,py:6.0,sal:51350000,tm:50000000,pp:0,nh:false},
+  {no:6,n:'정수민',r:'부장',d:'B사업부',tc:'24년 9개월',ty:24,py:3.17,sal:74600000,tm:85000000,pp:3600000,nh:true},
+  {no:7,n:'오재원',r:'부장',d:'B사업부',tc:'19년 5개월',ty:19,py:1.75,sal:105960000,tm:76000000,pp:3600000,nh:false},
+  {no:8,n:'윤지현',r:'차장',d:'B사업부',tc:'11년 4개월',ty:11,py:1.33,sal:70100000,tm:63000000,pp:0,nh:true},
+  {no:9,n:'강민수',r:'과장',d:'B사업부',tc:'11년 2개월',ty:11,py:4.0,sal:68130000,tm:58000000,pp:0,nh:false},
+  {no:10,n:'서현준',r:'과장',d:'B사업부',tc:'9년 5개월',ty:9,py:2.92,sal:61220000,tm:52000000,pp:0,nh:false},
+  {no:11,n:'임소영',r:'과장',d:'B사업부',tc:'7년 4개월',ty:7,py:1.5,sal:55690000,tm:55000000,pp:0,nh:true},
+  {no:12,n:'조태영',r:'과장',d:'B사업부',tc:'8년 10개월',ty:8,py:1.75,sal:65800000,tm:53000000,pp:0,nh:false},
+  {no:13,n:'황재민',r:'선임',d:'B사업부',tc:'5년 3개월',ty:5,py:1.58,sal:50490000,tm:43000000,pp:0,nh:false},
+  {no:14,n:'신지연',r:'과장',d:'B사업부',tc:'9년 1개월',ty:9,py:0.17,sal:47890000,tm:52000000,pp:0,nh:true},
+  {no:15,n:'노현수',r:'대리',d:'B사업부',tc:'5년 11개월',ty:5,py:2.92,sal:51270000,tm:44000000,pp:0,nh:false},
+  {no:16,n:'류민지',r:'대리',d:'B사업부',tc:'4년 10개월',ty:4,py:1.75,sal:45700000,tm:41000000,pp:0,nh:false},
+  {no:17,n:'배태준',r:'대리',d:'B사업부',tc:'5년 6개월',ty:5,py:1.58,sal:38860000,tm:44000000,pp:0,nh:true},
+  {no:18,n:'권소현',r:'대리',d:'B사업부',tc:'5년 10개월',ty:5,py:1.58,sal:45260000,tm:46000000,pp:0,nh:true},
+  {no:19,n:'안민준',r:'전임',d:'B사업부',tc:'4년 2개월',ty:4,py:1.58,sal:46980000,tm:42000000,pp:0,nh:false},
+  {no:20,n:'장현지',r:'대리',d:'B사업부',tc:'4년 2개월',ty:4,py:0.92,sal:36630000,tm:41000000,pp:0,nh:false},
+  {no:21,n:'박재수',r:'전임',d:'B사업부',tc:'4년 2개월',ty:4,py:1.58,sal:47760000,tm:44000000,pp:0,nh:false},
+  {no:22,n:'이소영',r:'대리',d:'B사업부',tc:'4년 11개월',ty:4,py:1.75,sal:43230000,tm:42000000,pp:0,nh:false},
+  {no:23,n:'김현준',r:'대리',d:'B사업부',tc:'4년 1개월',ty:4,py:0.92,sal:38340000,tm:40000000,pp:0,nh:false},
+  {no:24,n:'김현아',r:'대리',d:'B사업부',tc:'4년 0개월',ty:4,py:0.92,sal:39330000,tm:40000000,pp:0,nh:false},
+  {no:25,n:'홍성민',r:'대리',d:'B사업부',tc:'7년 1개월',ty:7,py:1.75,sal:47580000,tm:47000000,pp:0,nh:false},
+  {no:26,n:'최범서',r:'사원',d:'B사업부',tc:'2년 8개월',ty:2,py:1.58,sal:36580000,tm:38000000,pp:0,nh:true},
+  {no:27,n:'김성진',r:'사원',d:'B사업부',tc:'1년 9개월',ty:1,py:1.17,sal:33130000,tm:36000000,pp:0,nh:false},
+  {no:28,n:'정혜윤',r:'사원',d:'B사업부',tc:'0년 9개월',ty:0,py:0.17,sal:33020000,tm:35000000,pp:0,nh:false},
+  {no:29,n:'최민지',r:'부장',d:'C사업부',tc:'22년 7개월',ty:22,py:4.17,sal:92050000,tm:75000000,pp:3600000,nh:true},
+  {no:30,n:'주현조',r:'차장',d:'C사업부',tc:'19년 0개월',ty:19,py:3.25,sal:76500000,tm:71000000,pp:3600000,nh:true},
+  {no:31,n:'문수자',r:'차장',d:'C사업부',tc:'19년 10개월',ty:19,py:4.17,sal:76250000,tm:76000000,pp:0,nh:true},
+  {no:32,n:'기호진',r:'차장',d:'C사업부',tc:'13년 8개월',ty:13,py:4.0,sal:77070000,tm:64000000,pp:3600000,nh:false},
+  {no:33,n:'김형기',r:'차장',d:'C사업부',tc:'16년 3개월',ty:16,py:4.0,sal:77780000,tm:71000000,pp:3600000,nh:false},
+  {no:34,n:'김준영',r:'차장',d:'C사업부',tc:'15년 0개월',ty:15,py:3.25,sal:70380000,tm:68000000,pp:0,nh:false},
+  {no:35,n:'주희진',r:'과장',d:'C사업부',tc:'9년 11개월',ty:9,py:1.75,sal:59550000,tm:50000000,pp:0,nh:false},
+  {no:36,n:'권동준',r:'대리',d:'C사업부',tc:'5년 11개월',ty:5,py:2.92,sal:57890000,tm:45000000,pp:0,nh:false},
+  {no:37,n:'전지나',r:'대리',d:'C사업부',tc:'6년 1개월',ty:6,py:2.92,sal:54570000,tm:47000000,pp:0,nh:false},
+  {no:38,n:'허민',r:'대리',d:'C사업부',tc:'5년 6개월',ty:5,py:2.92,sal:58330000,tm:44000000,pp:0,nh:false},
+  {no:39,n:'장정우',r:'대리',d:'C사업부',tc:'5년 6개월',ty:5,py:2.92,sal:57410000,tm:43000000,pp:0,nh:false},
+  {no:40,n:'강성탁',r:'대리',d:'C사업부',tc:'4년 11개월',ty:4,py:1.75,sal:46280000,tm:43000000,pp:0,nh:false},
+  {no:41,n:'서현익',r:'대리',d:'C사업부',tc:'4년 11개월',ty:4,py:1.75,sal:47090000,tm:40000000,pp:0,nh:false},
+  {no:42,n:'김현규',r:'대리',d:'C사업부',tc:'4년 10개월',ty:4,py:1.75,sal:43210000,tm:42000000,pp:0,nh:false},
+  {no:43,n:'강혜지',r:'대리',d:'C사업부',tc:'4년 10개월',ty:4,py:1.75,sal:43680000,tm:42000000,pp:0,nh:false},
+  {no:44,n:'박도훈',r:'대리',d:'C사업부',tc:'4년 8개월',ty:4,py:1.75,sal:42650000,tm:44000000,pp:0,nh:false},
+  {no:45,n:'배민호',r:'대리',d:'C사업부',tc:'4년 2개월',ty:4,py:0.92,sal:36710000,tm:44000000,pp:0,nh:false},
+  {no:46,n:'김원경',r:'대리',d:'C사업부',tc:'4년 4개월',ty:4,py:1.75,sal:49680000,tm:41000000,pp:0,nh:false},
+  {no:47,n:'장현',r:'대리',d:'C사업부',tc:'4년 4개월',ty:4,py:1.17,sal:37770000,tm:42000000,pp:0,nh:true},
+  {no:48,n:'방세현',r:'사원',d:'C사업부',tc:'0년 9개월',ty:0,py:0.17,sal:33910000,tm:34000000,pp:0,nh:false},
+  {no:49,n:'유승화',r:'부장',d:'D사업부',tc:'25년 7개월',ty:25,py:0,sal:92830000,tm:86000000,pp:0,nh:false},
+  {no:50,n:'최재복',r:'부장',d:'D사업부',tc:'25년 2개월',ty:25,py:0,sal:90350000,tm:86000000,pp:0,nh:false},
+  {no:51,n:'이재현',r:'부장',d:'D사업부',tc:'24년 11개월',ty:24,py:3.33,sal:76200000,tm:79000000,pp:0,nh:true},
+  {no:52,n:'김도영',r:'차장',d:'D사업부',tc:'28년 1개월',ty:28,py:11.0,sal:82140000,tm:73000000,pp:0,nh:true},
+  {no:53,n:'홍민석',r:'차장',d:'D사업부',tc:'17년 8개월',ty:17,py:3.92,sal:79270000,tm:71000000,pp:3600000,nh:false},
+  {no:54,n:'천현우',r:'차장',d:'D사업부',tc:'13년 11개월',ty:13,py:4.0,sal:74730000,tm:62000000,pp:0,nh:false},
+  {no:55,n:'박세민',r:'차장',d:'D사업부',tc:'12년 0개월',ty:12,py:4.0,sal:68680000,tm:66000000,pp:0,nh:false},
+  {no:56,n:'윤상현',r:'대리',d:'D사업부',tc:'4년 1개월',ty:4,py:2.92,sal:42510000,tm:42000000,pp:0,nh:false},
+  {no:57,n:'황원식',r:'대리',d:'D사업부',tc:'6년 3개월',ty:6,py:2.92,sal:43910000,tm:47000000,pp:0,nh:false},
+  {no:58,n:'송효근',r:'대리',d:'D사업부',tc:'5년 11개월',ty:5,py:2.92,sal:47710000,tm:44000000,pp:0,nh:false},
+  {no:59,n:'김영헌',r:'대리',d:'D사업부',tc:'4년 6개월',ty:4,py:0.92,sal:38720000,tm:40000000,pp:0,nh:false},
+  {no:60,n:'박순빈',r:'대리',d:'D사업부',tc:'4년 6개월',ty:4,py:0.92,sal:37340000,tm:41000000,pp:0,nh:false},
+  {no:61,n:'한건희',r:'대리',d:'D사업부',tc:'4년 0개월',ty:4,py:0.92,sal:41200000,tm:40000000,pp:0,nh:false},
+  {no:62,n:'정혜성',r:'대리',d:'D사업부',tc:'4년 1개월',ty:4,py:0.92,sal:38770000,tm:44000000,pp:0,nh:false},
+  {no:63,n:'유성현',r:'사원',d:'D사업부',tc:'3년 9개월',ty:3,py:3.75,sal:38620000,tm:42000000,pp:0,nh:false},
+  {no:64,n:'박준호',r:'사원',d:'D사업부',tc:'3년 9개월',ty:3,py:3.75,sal:41210000,tm:41000000,pp:0,nh:false},
+  {no:65,n:'오혜지',r:'사원',d:'D사업부',tc:'3년 8개월',ty:3,py:3.67,sal:39780000,tm:39000000,pp:0,nh:false},
+  {no:66,n:'고주양',r:'사원',d:'D사업부',tc:'2년 6개월',ty:2,py:2.5,sal:36490000,tm:36000000,pp:0,nh:false},
 ];
 
 // 진급 보조지표 자동계산 (참고용)
@@ -630,6 +967,62 @@ DATA.forEach(d=>{
 const ADJ = {};      // no → {rate, newSal}
 const PROMO = {};    // no → true (Moon이 수동 확정한 진급자)
 const GRADE = {};    // no → 'A'|'B'|'C'|'D'
+const COMMENT = {};  // no → string (부서장/HR 코멘트)
+const APPROVAL = {}; // no → 0(HR검토중) | 1(부서장확인) | 2(대표승인)
+
+// 고과 등급별 권고 인상률 범위 [min%, max%, mid%]
+const GRADE_GUIDE = {
+  'A': [7, 10, 8.5],
+  'B': [4,  6, 5.0],
+  'C': [2,  3, 2.5],
+  'D': [0,  1, 0.5],
+};
+
+// ── 이탈 위험 스코어 계산 ──
+// 반환: {level:'high'|'mid'|null, score:0~100, reasons:[]}
+function calcRisk(d){
+  const reasons = [];
+  let score = 0;
+
+  // 1. 고과 A/B (성과 우수)
+  const g = GRADE[d.no];
+  const isHighPerf = g==='A' || g==='B';
+  if(g==='A') { score+=30; reasons.push('고과 A등급 (고성과자)'); }
+  else if(g==='B') { score+=15; reasons.push('고과 B등급'); }
+
+  // 2. 현재 연봉 상태
+  const esSal = effSal(d);
+  const stNow = ADJ[d.no] ? calcStatus(esSal, d.tm) : d.st;
+  if(stNow==='Floor 미달') { score+=35; reasons.push('테이블 Floor 미달'); }
+  else {
+    const tblPct = (esSal - d.tm) / d.tm * 100;
+    if(tblPct < 5) { score+=15; reasons.push(`테이블 대비 ${tblPct.toFixed(1)}% (낮음)`); }
+  }
+
+  // 3. 경력 역전
+  const revs = detectReversals(d.no);
+  if(revs.length>=2) { score+=25; reasons.push(`경력 역전 ${revs.length}건`); }
+  else if(revs.length===1) { score+=12; reasons.push('경력 역전 1건'); }
+
+  // 4. 진급 보조지표이지만 미확정
+  if(d.isPromoCand && !PROMO[d.no]) { score+=10; reasons.push('진급 대상이나 미확정'); }
+
+  // 5. 고성과자인데 미조정
+  if(isHighPerf && !ADJ[d.no]) { score+=10; reasons.push('고성과자 미조정'); }
+
+  // 등급 판정
+  let level = null;
+  if(score>=50 && isHighPerf) level='high';
+  else if(score>=35) level='mid';
+
+  return {level, score, reasons};
+}
+const GRADE_LABEL = {
+  'A': 'A등급 · 7~10%',
+  'B': 'B등급 · 4~6%',
+  'C': 'C등급 · 2~3%',
+  'D': 'D등급 · 0~1%',
+};
 let sel = null, posC = null, distC = null;
 
 // ══════════════════════════════════════════════
@@ -654,7 +1047,7 @@ function stCls(st){
 function stColor(st){
   return st==='Floor 미달'?'var(--floor)':st==='Cap 초과'?'var(--cap)':st==='조정완료'||st==='정상'?'var(--ok)':'var(--ok)';
 }
-function deptShort(d){return {'부서A':'부서A','부서B':'부서B','부서C':'부서C','HR팀':'HR','피플팀':'People'}[d]||d;}
+function deptShort(d){return d.replace('B사업부','B부').replace('C사업부','C부').replace('D사업부','D부').replace('A사업부/A1팀','A-1').replace('A사업부/A2팀','A-2');}
 function deptCls(d){return DEPT_CLS[d]||'d-sol';}
 
 // ══════════════════════════════════════════════
@@ -721,6 +1114,11 @@ function updateKPI(){
   document.getElementById('h-promo-cnt').textContent  = promoKeys.length+'명';
   document.getElementById('h-promo-total').textContent= promoKeys.length>0 ? fw(promoTotal) : '-';
   document.getElementById('h-grand-total').textContent= grand>0 ? fw(grand) : '-';
+
+  // 이탈 위험 고 인원
+  const riskHigh = DATA.filter(d=>calcRisk(d).level==='high').length;
+  const riskEl = document.getElementById('h-risk-high');
+  if(riskEl) riskEl.textContent = riskHigh>0 ? riskHigh+'명' : '0명';
 }
 
 // ══════════════════════════════════════════════
@@ -753,10 +1151,10 @@ function updateGauge(){
     warn.classList.toggle('on', over);
   }
   set('gf-all',  'gp-all',  'gw-all',  calcGroupRate(null));
-  set('gf-sol',  'gp-sol',  'gw-sol',  calcGroupRate('부서A'));
-  set('gf-cloud','gp-cloud','gw-cloud',calcGroupRate('부서B'));
-  set('gf-tel',  'gp-tel',  'gw-tel',  calcGroupRate('부서C'));
-  set('gf-mgmt', 'gp-mgmt', 'gw-mgmt', calcGroupRate('경영지원'));
+  set('gf-sol',  'gp-sol',  'gw-sol',  calcGroupRate('B사업부'));
+  set('gf-cloud','gp-cloud','gw-cloud',calcGroupRate('C사업부'));
+  set('gf-tel',  'gp-tel',  'gw-tel',  calcGroupRate('D사업부'));
+  set('gf-mgmt', 'gp-mgmt', 'gw-mgmt', calcGroupRate('경영전략실'));
 }
 
 // ══════════════════════════════════════════════
@@ -773,7 +1171,11 @@ function renderList(){
     const dg = DEPT_GROUP[d.d]||d.d;
     const matchDept = !fDept || dg===fDept || d.d===fDept;
     const matchRank = !fRank || rdsp(d.r)===fRank;
-    const matchSt   = !fStatus || es===fStatus || (fStatus==='진급대상' && d.isPromoCand);
+    const risk = calcRisk(d);
+    const matchSt   = !fStatus || es===fStatus
+      || (fStatus==='진급대상' && d.isPromoCand)
+      || (fStatus==='이탈위험고' && risk.level==='high')
+      || (fStatus==='이탈위험중' && risk.level==='mid');
     const matchSearch = !search || d.n.includes(search);
     return matchDept && matchRank && matchSt && matchSearch;
   });
@@ -790,14 +1192,23 @@ function renderList(){
     const promoCandTag = d.isPromoCand ? '<span class="promo-tag">진급↑</span>' : '';
     const promoConfTag = PROMO[d.no] ? '<span class="warn-tag">진급확정</span>' : '';
     const dc = deptCls(d.d);
-    const gradeTag = GRADE[d.no] ? `<span style="font-size:9px;padding:1px 4px;border-radius:3px;background:#e8eaf2;color:var(--t2);font-weight:700">${GRADE[d.no]}</span>` : '';
+    const gradeColors = {A:'#7030c0;background:rgba(112,48,192,.1)',B:'var(--ci-royal);background:var(--adj-a)',C:'#206048;background:rgba(40,120,88,.1)',D:'var(--floor);background:var(--floor-a)'};
+    const gc = GRADE[d.no] ? gradeColors[GRADE[d.no]] : null;
+    const gradeTag = gc ? `<span style="font-size:9px;padding:1px 5px;border-radius:3px;color:${gc};font-weight:700">${GRADE[d.no]}</span>` : '';
+    const risk = calcRisk(d);
+    const riskTag = risk.level==='high'
+      ? '<span class="risk-tag-h">⚠위험</span>'
+      : risk.level==='mid' ? '<span class="risk-tag-m">△주의</span>' : '';
+    const apvStep = APPROVAL[d.no]??-1;
+    const apvTag = apvStep>=0
+      ? `<span class="apv-tag-${apvStep}">${APV_ICONS[apvStep]}</span>` : '';
     return `<div class="ei ${isAct}" onclick="pick(${d.no})">${hasDot}
       <div class="ei-av" style="background:${avBg}15;color:${avBg};outline:1px solid ${avBg}30">${d.n[0]}</div>
       <div class="ei-body">
-        <div class="ei-name">${d.n}${nhTag}${promoCandTag}${promoConfTag}</div>
+        <div class="ei-name">${d.n}${nhTag}${promoCandTag}${promoConfTag}${riskTag}</div>
         <div class="ei-sub"><span class="dp ${dc}">${deptShort(d.d)}</span> ${rdsp(d.r)} · ${d.tc}</div>
       </div>
-      <div class="ei-badges">${gradeTag}<span class="ei-st ${stC}">${stL}</span></div>
+      <div class="ei-badges">${apvTag}${gradeTag}<span class="ei-st ${stC}">${stL}</span></div>
     </div>`;
   }).join('');
 }
@@ -833,6 +1244,14 @@ function renderProfile(d){
     <div class="rev-warn-list">${reversals.map(r=>r.msg).join('<br>')}</div>`:''}
   </div>`;
 
+  // 이탈 위험 박스
+  const risk = calcRisk(d);
+  const riskHtml = risk.level ? `
+    <div class="risk-badge-box ${risk.level}">
+      <div class="risk-badge-title ${risk.level}">${risk.level==='high'?'⚠ 이탈 위험 높음':'△ 이탈 위험 중간'} (스코어 ${risk.score})</div>
+      <div class="risk-reason">${risk.reasons.join(' · ')}</div>
+    </div>` : '';
+
   // 진급 박스 (진급 보조지표 대상자면 항상 표시)
   const promoHtml = isPromoCand ? `
     <div class="promo-box">
@@ -844,6 +1263,11 @@ function renderProfile(d){
       </div>
       <div class="promo-bonus-info">수당: ${(d.promoBonusAmt/10000).toLocaleString()}만원 (1회 지급)${isPromoConf?' ← 반영됨':''}</div>
     </div>` : '';
+
+  const rateRangeHint = GRADE[d.no] ? `(${GRADE_GUIDE[GRADE[d.no]][0]}~${GRADE_GUIDE[GRADE[d.no]][1]}%)` : '';
+  const gradeBadgeCls = GRADE[d.no] ? `grade-guide-badge g${GRADE[d.no]} show` : 'grade-guide-badge';
+  const gradeBadgeTxt = GRADE[d.no] ? GRADE_LABEL[GRADE[d.no]] : '';
+  const gradeGuideShow = GRADE[d.no] ? 'show' : '';
 
   document.getElementById('pf').innerHTML = `
     <div class="pf-row">
@@ -864,14 +1288,25 @@ function renderProfile(d){
           ${GRADE[d.no]?`<div class="ps"><div class="ps-v" style="color:var(--ci-royal)">${GRADE[d.no]}등급</div><div class="ps-l">고과</div></div>`:''}
         </div>
         ${revHtml}
+        ${riskHtml}
+        <div id="apv-box-${d.no}"></div>
       </div>
       <div class="adj-box">
         <div class="adj-title">연봉 조정 <button class="btn-reset" onclick="resetAdj(${d.no})">초기화</button></div>
+        <div class="grade-sel-row">
+          <span class="grade-sel-label">고과 등급</span>
+          <div class="grade-sel-btns" id="grade-sel-btns-${d.no}"></div>
+          <div class="grade-guide-wrap">
+            <span class="${gradeBadgeCls}" id="grade-guide-badge-${d.no}">${gradeBadgeTxt}</span>
+            <button class="grade-guide-btn ${gradeGuideShow}" id="grade-guide-btn-${d.no}" onclick="applyGuideMid(${d.no})" title="권고 중간값 적용">권고 적용</button>
+          </div>
+        </div>
         <div class="adj-row">
           <span class="adj-label">인상률</span>
           <input class="adj-input" type="number" id="inp-rate" min="-20" max="100" step="0.1"
             value="${adjRate}" oninput="onAdjInput(${d.no})" placeholder="0.0">
           <span class="adj-unit">%</span>
+          <span id="rate-range-hint-${d.no}" style="font-size:10px;color:var(--t3);white-space:nowrap">${rateRangeHint}</span>
         </div>
         <div class="adj-result">
           <div class="ar-item"><div class="ar-v" id="ar-sal" style="color:var(--ci-royal)">${fw(adjSal)}</div><div class="ar-l">조정 연봉</div></div>
@@ -884,6 +1319,88 @@ function renderProfile(d){
       </div>
       ${promoHtml}
     </div>`;
+  // 고과 등급 버튼 동적 생성
+  renderGradeSelBtns(d.no);
+  // 승인 박스 동적 생성
+  renderApvBox(d.no);
+}
+
+// ── 승인 박스 동적 생성 ──
+const APV_LABELS = ['HR 검토 중','부서장 확인','대표 승인'];
+const APV_ICONS  = ['📋','✅','🏆'];
+
+function renderApvBox(no){
+  const el = document.getElementById('apv-box-'+no);
+  if(!el) return;
+  const cur = APPROVAL[no]??-1; // -1: 미설정
+  const comment = COMMENT[no]||'';
+
+  const box = document.createElement('div');
+  box.className = 'apv-box';
+
+  const title = document.createElement('div');
+  title.className = 'apv-title';
+  title.textContent = '결재 진행 상태';
+  box.appendChild(title);
+
+  const steps = document.createElement('div');
+  steps.className = 'apv-steps';
+  APV_LABELS.forEach((lbl,i)=>{
+    const btn = document.createElement('div');
+    btn.className = 'apv-step' + (cur>=i ? ` done-${i}` : '');
+    btn.textContent = APV_ICONS[i]+' '+lbl;
+    btn.title = '클릭하여 이 단계로 설정';
+    btn.onclick = ()=> setApproval(no, cur===i ? -1 : i); // 같은 단계 클릭 시 해제
+    steps.appendChild(btn);
+  });
+  box.appendChild(steps);
+
+  const ta = document.createElement('textarea');
+  ta.className = 'apv-comment';
+  ta.placeholder = '부서장 / HR 코멘트 입력...';
+  ta.value = comment;
+  ta.oninput = ()=> saveComment(no, ta.value);
+  box.appendChild(ta);
+
+  el.innerHTML = '';
+  el.appendChild(box);
+}
+
+function setApproval(no, step){
+  if(step===-1) delete APPROVAL[no];
+  else APPROVAL[no] = step;
+  const d = DATA.find(x=>x.no===no);
+  if(d){ renderProfile(d); }
+  renderList();
+}
+
+function saveComment(no, text){
+  if(text) COMMENT[no] = text;
+  else delete COMMENT[no];
+}
+
+function renderGradeSelBtns(no){
+  const el = document.getElementById('grade-sel-btns-'+no);
+  if(!el) return;
+  const cur = GRADE[no];
+  el.innerHTML = '';
+  ['A','B','C','D'].forEach(g=>{
+    const btn = document.createElement('button');
+    btn.className = 'gsel-btn' + (cur===g ? ' sel-'+g : '');
+    btn.textContent = g;
+    btn.title = GRADE_LABEL[g];
+    btn.onclick = ()=>setGrade(no, g);
+    el.appendChild(btn);
+  });
+  if(cur){
+    const clrBtn = document.createElement('button');
+    clrBtn.className = 'gsel-btn';
+    clrBtn.style.cssText = 'width:auto;padding:0 6px;font-size:10px;color:var(--t3)';
+    clrBtn.title = '등급 해제';
+    clrBtn.textContent = '×';
+    clrBtn.onclick = ()=>clearGrade(no);
+    el.appendChild(clrBtn);
+  }
 }
 
 // ══════════════════════════════════════════════
@@ -927,6 +1444,35 @@ function resetAdj(no){
   delete ADJ[no];
   const d = DATA.find(x=>x.no===no);
   if(d){renderProfile(d); renderPosChart(d); renderDistChart(d);}
+  updateAll();
+}
+
+// ── 고과 등급 설정 함수들 ──
+function setGrade(no, grade){
+  GRADE[no] = grade;
+  const d = DATA.find(x=>x.no===no);
+  if(d){ renderProfile(d); }
+  updateAll();
+}
+
+function clearGrade(no){
+  delete GRADE[no];
+  const d = DATA.find(x=>x.no===no);
+  if(d){ renderProfile(d); }
+  updateAll();
+}
+
+function applyGuideMid(no){
+  const g = GRADE[no];
+  if(!g || !GRADE_GUIDE[g]) return;
+  const mid = GRADE_GUIDE[g][2];
+  const d = DATA.find(x=>x.no===no);
+  if(!d) return;
+  const newSal = Math.round(d.sal * (1 + mid/100));
+  ADJ[no] = {rate: mid, newSal};
+  renderProfile(d);
+  renderPosChart(d);
+  renderDistChart(d);
   updateAll();
 }
 
@@ -1108,7 +1654,25 @@ function updateBottomTable(){
 // ══════════════════════════════════════════════
 // SUMMARY TAB
 // ══════════════════════════════════════════════
+
 function renderSummary(){
+  // wrap 실제 너비로 colgroup 업데이트 → table-layout:fixed 정확히 동작
+  const wrap = document.querySelector('.sum-table-wrap');
+  const cols = document.querySelectorAll('.sum-table colgroup col');
+  const RATIOS = [90,80,44,80,72,72,52,64,72,66,72,60,44];
+  const RATIO_TOTAL = RATIOS.reduce((a,b)=>a+b,0);
+  if(wrap && cols.length){
+    const wrapW = wrap.clientWidth;
+    if(wrapW > 0){
+      let allocated = 0;
+      RATIOS.forEach((r,i)=>{
+        const w = i===RATIOS.length-1 ? wrapW-allocated : Math.round(r/RATIO_TOTAL*wrapW);
+        if(cols[i]) cols[i].style.width = w+'px';
+        allocated += w;
+      });
+    }
+  }
+  // sum-panel이 display:none 상태일 수 있으므로 강제로 active 추가
   const adjKeys   = Object.keys(ADJ).map(Number);
   const promoKeys = Object.keys(PROMO).map(Number);
   const adjInc    = adjKeys.reduce((s,no)=>{const d=DATA.find(x=>x.no===no);return d?s+(ADJ[no].newSal-d.sal):s;},0);
@@ -1122,7 +1686,10 @@ function renderSummary(){
   document.getElementById('s-still-floor').textContent = stillFloor+'명';
   document.getElementById('s-rev-cnt').textContent  = revCnt+'건';
 
-  document.getElementById('sum-tbody').innerHTML = DATA.map(d=>{
+  const HDR = ['사업부','이름','직급','총경력','현 연봉','조정 연봉','인상률','인상액','테이블 최소','테이블대비%','상태','진급수당','고과'];
+  const HDR_R = new Set([4,5,6,7,8,9,11]);
+  const hdrRow = `<tr class="sum-hdr-row" style="position:sticky;top:0;z-index:2">${HDR.map((lb,i)=>`<td style="background:var(--ci-royal);color:#fff;font-size:10px;font-weight:700;padding:6px 8px;white-space:nowrap;text-align:${HDR_R.has(i)?'right':'left'};border:none;position:relative">${lb}<span class="col-resizer"></span></td>`).join('')}</tr>`;
+  document.getElementById('sum-tbody').innerHTML = hdrRow + DATA.map(d=>{
     const a = ADJ[d.no];
     const esSal = a ? a.newSal : d.sal;
     const esSt  = a ? calcStatus(a.newSal,d.tm) : d.st;
@@ -1148,13 +1715,22 @@ function renderSummary(){
       <td style="text-align:center">${GRADE[d.no]?`<span style="font-size:10px;font-weight:700;color:var(--ci-royal)">${GRADE[d.no]}</span>`:'-'}</td>
     </tr>`;
   }).join('');
+
+  // 각 td에 colgroup 너비 직접 적용 → table-layout:fixed 무관하게 정렬 보장
+  const colWidths = Array.from(document.querySelectorAll('.sum-table colgroup col')).map(c=>c.style.width);
+  document.querySelectorAll('#sum-tbody tr').forEach(tr=>{
+    tr.querySelectorAll('td').forEach((td,i)=>{
+      if(colWidths[i]){ td.style.minWidth=colWidths[i]; td.style.maxWidth=colWidths[i]; }
+    });
+  });
+  initColResize();
 }
 
 // ══════════════════════════════════════════════
 // CSV
 // ══════════════════════════════════════════════
 function exportCSV(){
-  const rows=[['사업부','이름','직급','총경력','현연봉','조정연봉','인상률','인상액','테이블최소','테이블대비%','상태','진급수당','고과']];
+  const rows=[['사업부','이름','직급','총경력','현연봉','조정연봉','인상률','인상액','테이블최소','테이블대비%','상태','진급수당','고과','승인단계','코멘트']];
   DATA.forEach(d=>{
     const a = ADJ[d.no];
     const esSal = a ? a.newSal : d.sal;
@@ -1163,7 +1739,9 @@ function exportCSV(){
     const rate = a?a.rate:0;
     const adjTblPct = ((esSal-d.tm)/d.tm*100).toFixed(1);
     const pBonus = PROMO[d.no]?d.promoBonusAmt:'';
-    rows.push([d.d,d.n,rdsp(d.r),d.tc,d.sal,esSal,rate?rate.toFixed(1)+'%':'',inc||'',d.tm,adjTblPct+'%',esSt,pBonus,GRADE[d.no]||'']);
+    const apvStep = APPROVAL[d.no]??-1;
+    const apvLabel = apvStep>=0 ? APV_LABELS[apvStep] : '';
+    rows.push([d.d,d.n,rdsp(d.r),d.tc,d.sal,esSal,rate?rate.toFixed(1)+'%':'',inc||'',d.tm,adjTblPct+'%',esSt,pBonus,GRADE[d.no]||'',apvLabel,COMMENT[d.no]||'']);
   });
   const csv='\uFEFF'+rows.map(r=>r.join(',')).join('\n');
   const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});
@@ -1181,6 +1759,367 @@ function getScenarios(){
   catch(e){ return []; }
 }
 function saveScenarios(arr){ localStorage.setItem('aromit_scenarios', JSON.stringify(arr)); }
+
+// ══════════════════════════════════════════════
+// AUTO-ALLOC (자동 최적 배분)
+// ══════════════════════════════════════════════
+let aaMode = 'budget';   // 'budget' | 'rate'
+let aaPlan = [];         // 시뮬레이션 결과: [{no, newSal, rate}]
+
+function setAAMode(mode){
+  aaMode = mode;
+  document.getElementById('aa-mode-budget').classList.toggle('active', mode==='budget');
+  document.getElementById('aa-mode-rate').classList.toggle('active', mode==='rate');
+  document.getElementById('aa-unit').textContent = mode==='budget' ? '억원' : '%';
+  document.getElementById('aa-hint').textContent = mode==='budget'
+    ? '전체 인건비의 최대 증가 예산'
+    : '전체 평균 인상률 상한';
+  document.getElementById('aa-value').value = mode==='budget' ? '100' : '5';
+  // 결과 초기화
+  document.getElementById('aa-result-box').classList.remove('show');
+  document.getElementById('btn-aa-apply').classList.remove('show');
+  aaPlan = [];
+}
+
+function openAutoAlloc(){
+  document.getElementById('aa-result-box').classList.remove('show');
+  document.getElementById('btn-aa-apply').classList.remove('show');
+  aaPlan = [];
+  document.getElementById('aa-modal-bg').classList.add('on');
+}
+function closeAutoAlloc(){
+  document.getElementById('aa-modal-bg').classList.remove('on');
+}
+
+function runAutoAlloc(){
+  const val = parseFloat(document.getElementById('aa-value').value)||0;
+  const defaultRate = parseFloat(document.getElementById('aa-default-rate').value)||3;
+  if(val<=0){ alert('값을 올바르게 입력해주세요.'); return; }
+
+  // 예산 한도 계산
+  const totalBase = DATA.reduce((s,d)=>s+d.sal,0);
+  let budget; // 원 단위
+  if(aaMode==='budget'){
+    budget = val * 100000000; // 억 → 원
+  } else {
+    budget = totalBase * val / 100; // 평균 인상률% → 원
+  }
+
+  // 배분 계획 수립
+  const plan = []; // {no, newSal, rate, reason}
+  let remaining = budget;
+
+  // 우선순위 1: Floor 미달자 (고과 무관) - 테이블 최솟값까지 해소
+  const floorList = DATA.filter(d=>d.st==='Floor 미달').sort((a,b)=>a.df-b.df);
+  for(const d of floorList){
+    const needed = d.tm - d.sal; // 올려야 할 금액
+    if(needed<=0) continue;
+    const actualIncrease = Math.min(needed, remaining);
+    const newSal = d.sal + Math.round(actualIncrease);
+    const rate = parseFloat(((newSal-d.sal)/d.sal*100).toFixed(1));
+    plan.push({no:d.no, newSal, rate, reason:'Floor 해소'});
+    remaining -= actualIncrease;
+    if(remaining<=0) break;
+  }
+
+  const planned = new Set(plan.map(p=>p.no));
+
+  // 우선순위 2~5: 고과 등급 순 (A→B→C→미입력)
+  const gradeOrder = ['A','B','C','D', null];
+  for(const g of gradeOrder){
+    if(remaining<=0) break;
+    let candidates;
+    if(g===null){
+      candidates = DATA.filter(d=>!planned.has(d.no) && !GRADE[d.no]);
+    } else {
+      candidates = DATA.filter(d=>!planned.has(d.no) && GRADE[d.no]===g);
+    }
+    // 경력 많은 순 정렬
+    candidates.sort((a,b)=>b.ty-a.ty);
+    for(const d of candidates){
+      if(remaining<=0) break;
+      let rate;
+      if(g && GRADE_GUIDE[g]){
+        rate = GRADE_GUIDE[g][2]; // 중간값
+      } else {
+        rate = defaultRate;
+      }
+      const increase = Math.round(d.sal * rate/100);
+      if(increase>remaining){
+        // 예산 초과 시 가능한 만큼만
+        const actualInc = Math.floor(remaining/10000)*10000;
+        if(actualInc<=0){ remaining=0; break; }
+        const newSal = d.sal + actualInc;
+        const actualRate = parseFloat(((actualInc/d.sal)*100).toFixed(1));
+        plan.push({no:d.no, newSal, rate:actualRate, reason:'예산 내 부분'});
+        remaining -= actualInc;
+        break;
+      }
+      const newSal = d.sal + increase;
+      plan.push({no:d.no, newSal, rate:parseFloat(rate.toFixed(1)), reason: g?`고과 ${g}`:'기본'});
+      remaining -= increase;
+      planned.add(d.no);
+    }
+  }
+
+  aaPlan = plan;
+
+  // 결과 표시
+  const totalIncrease = plan.reduce((s,p)=>{
+    const d=DATA.find(x=>x.no===p.no);
+    return d?s+(p.newSal-d.sal):s;
+  },0);
+  const usedRate = (totalIncrease/totalBase*100).toFixed(1);
+  const unusedBudget = budget - totalIncrease;
+
+  const kpiEl = document.getElementById('aa-result-kpi');
+  kpiEl.innerHTML = `
+    <div class="aa-kpi"><div class="aa-kpi-v">${plan.length}명</div><div class="aa-kpi-l">조정 대상</div></div>
+    <div class="aa-kpi"><div class="aa-kpi-v">${fw(totalIncrease)}</div><div class="aa-kpi-l">총 추가 인건비</div></div>
+    <div class="aa-kpi"><div class="aa-kpi-v">${usedRate}%</div><div class="aa-kpi-l">실제 인상률</div></div>
+    <div class="aa-kpi"><div class="aa-kpi-v">${fw(Math.max(0,unusedBudget))}</div><div class="aa-kpi-l">잔여 예산</div></div>
+  `;
+
+  const warnEl = document.getElementById('aa-warn');
+  if(aaMode==='budget' && unusedBudget<0){
+    warnEl.textContent = `⚠ 예산 ${fw(Math.abs(unusedBudget))} 초과됩니다. 예산을 늘리거나 기본 인상률을 낮춰주세요.`;
+    warnEl.classList.add('show');
+  } else {
+    warnEl.classList.remove('show');
+  }
+
+  const listEl = document.getElementById('aa-result-list');
+  const gradeColorMap = {A:'#7030c0',B:'var(--ci-royal)',C:'#206048',D:'var(--floor)'};
+  listEl.innerHTML = plan.map(p=>{
+    const d = DATA.find(x=>x.no===p.no);
+    if(!d) return '';
+    const gc = GRADE[d.no] ? gradeColorMap[GRADE[d.no]] : 'var(--t3)';
+    return `<div class="aa-row">
+      <span class="aa-row-name">${d.n}</span>
+      <span class="aa-row-rank">${rdsp(d.r)}</span>
+      <span class="aa-row-grade" style="color:${gc}">${GRADE[d.no]||'-'}</span>
+      <span class="aa-row-sal">${fw(d.sal)}</span>
+      <span class="aa-row-arrow">→</span>
+      <span class="aa-row-new">${fw(p.newSal)}</span>
+      <span class="aa-row-rate">+${p.rate}%</span>
+    </div>`;
+  }).join('');
+
+  document.getElementById('aa-result-box').classList.add('show');
+  document.getElementById('btn-aa-apply').classList.add('show');
+}
+
+function applyAutoAlloc(){
+  if(!aaPlan.length) return;
+  const existingAdj = Object.keys(ADJ).length;
+  if(existingAdj>0){
+    if(!confirm(`현재 수동 조정 내역 ${existingAdj}명이 자동 배분안으로 대체됩니다.\n계속 진행하시겠습니까?`)) return;
+  }
+  // 기존 ADJ 초기화 후 배분안 적용
+  Object.keys(ADJ).forEach(k=>delete ADJ[k]);
+  aaPlan.forEach(p=>{
+    ADJ[p.no] = {rate: p.rate, newSal: p.newSal};
+  });
+  updateAll();
+  if(sel) { renderProfile(sel); renderPosChart(sel); renderDistChart(sel); }
+  closeAutoAlloc();
+  // 조정 요약 탭이 이미 활성화되어 있으면 renderSummary만, 아니면 switchTab
+  const sumTabActive = document.getElementById('tab-sum').classList.contains('active');
+  if(sumTabActive){
+    renderSummary(); renderHeatmap();
+  } else {
+    switchTab('sum');
+  }
+}
+
+// ══════════════════════════════════════════════
+// REPORT (보고용 1-Page 자동 요약)
+// ══════════════════════════════════════════════
+function openReport(){
+  buildReport();
+  document.getElementById('report-overlay').classList.add('show');
+}
+function closeReport(){
+  document.getElementById('report-overlay').classList.remove('show');
+}
+function printReport(){
+  const overlay = document.getElementById('report-overlay');
+  // 인쇄 시 오버레이만 보이도록
+  document.body.style.overflow='hidden';
+  window.print();
+  document.body.style.overflow='';
+}
+
+function buildReport(){
+  const now = new Date();
+  const dateStr = now.toLocaleDateString('ko-KR',{year:'numeric',month:'long',day:'numeric'});
+
+  // ── 전체 집계 ──
+  const totalBase = DATA.reduce((s,d)=>s+d.sal,0);
+  const adjKeys   = Object.keys(ADJ).map(Number);
+  const promoKeys = Object.keys(PROMO).map(Number);
+  const adjInc    = adjKeys.reduce((s,no)=>{const d=DATA.find(x=>x.no===no);return d?s+(ADJ[no].newSal-d.sal):s;},0);
+  const promoTotal= promoKeys.reduce((s,no)=>{const d=DATA.find(x=>x.no===no);return d?s+d.promoBonusAmt:s;},0);
+  const grand     = adjInc+promoTotal;
+  const incRate   = (grand/totalBase*100).toFixed(2);
+  const stillFloor= DATA.filter(d=>!adjKeys.includes(d.no)&&d.st==='Floor 미달');
+  const revCnt    = countAllReversals();
+  const capList   = DATA.filter(d=>d.st==='Cap 초과');
+  const avgRateAll= adjKeys.length
+    ? (adjKeys.reduce((s,no)=>s+(ADJ[no].rate||0),0)/adjKeys.length).toFixed(1)
+    : '0.0';
+
+  // ── 부서별 집계 ──
+  const deptGroups = ['B사업부','C사업부','D사업부','경영전략실'];
+  const deptStats = deptGroups.map(dep=>{
+    const members = DATA.filter(d=>(DEPT_GROUP[d.d]||d.d)===dep);
+    const base  = members.reduce((s,d)=>s+d.sal,0);
+    const adjM  = members.filter(d=>adjKeys.includes(d.no));
+    const inc   = adjM.reduce((s,d)=>s+(ADJ[d.no].newSal-d.sal),0);
+    const promoM= members.filter(d=>promoKeys.includes(d.no));
+    const promoA= promoM.reduce((s,d)=>s+d.promoBonusAmt,0);
+    const floorM= members.filter(d=>!adjKeys.includes(d.no)&&d.st==='Floor 미달');
+    const rate  = base>0?((inc+promoA)/base*100).toFixed(2):'0.00';
+    const avgAdj= adjM.length ? (adjM.reduce((s,d)=>s+(ADJ[d.no].rate||0),0)/adjM.length).toFixed(1):'—';
+    return {dep, cnt:members.length, adjCnt:adjM.length, inc, promoA, grand:inc+promoA, rate, floorCnt:floorM.length, avgAdj};
+  });
+
+  // ── 조정 대상자 목록 ──
+  const adjPeople = DATA.filter(d=>adjKeys.includes(d.no))
+    .sort((a,b)=>(ADJ[b.no].newSal-b.sal)-(ADJ[a.no].newSal-a.sal));
+
+  // ── 이슈 목록 ──
+  const issues = [];
+  if(stillFloor.length)
+    issues.push({cls:'floor', icon:'⚠', text:`Floor 미달 미조정 잔여: ${stillFloor.map(d=>d.n+'('+rdsp(d.r)+')').join(', ')} 총 ${stillFloor.length}명`});
+  if(capList.length)
+    issues.push({cls:'cap', icon:'△', text:`Cap 초과 직원: ${capList.map(d=>d.n).join(', ')} 총 ${capList.length}명 — 진급 검토 권고`});
+  if(revCnt>0)
+    issues.push({cls:'rev', icon:'↕', text:`경력 역전 잔여 ${revCnt}건 — 추가 조정 또는 별도 협의 필요`});
+
+  // ── 고과 분포 ──
+  const gradeCount = {A:0,B:0,C:0,D:0,없음:0};
+  DATA.forEach(d=>{ const g=GRADE[d.no]; if(g) gradeCount[g]++; else gradeCount['없음']++; });
+
+  // ── HTML 조립 ──
+  document.getElementById('report-body').innerHTML = `
+    <div class="rpt-header">
+      <div class="rpt-title">2026년 연봉 조정 검토 보고서</div>
+      <div class="rpt-subtitle">MOON · 경영지원팀 · ${dateStr} 기준 · 총 ${DATA.length}명 (임원 제외)</div>
+    </div>
+
+    <div class="rpt-kpi-grid">
+      <div class="rpt-kpi">
+        <div class="rpt-kpi-v">${fw(grand)}</div>
+        <div class="rpt-kpi-l">총 추가 인건비</div>
+      </div>
+      <div class="rpt-kpi">
+        <div class="rpt-kpi-v">${adjKeys.length}명</div>
+        <div class="rpt-kpi-l">연봉 조정 인원 (평균 +${avgRateAll}%)</div>
+      </div>
+      <div class="rpt-kpi ok">
+        <div class="rpt-kpi-v">${incRate}%</div>
+        <div class="rpt-kpi-l">인건비 증가율</div>
+      </div>
+      <div class="rpt-kpi promo">
+        <div class="rpt-kpi-v">${promoKeys.length}명 / ${fw(promoTotal)}</div>
+        <div class="rpt-kpi-l">진급 확정 / 진급수당</div>
+      </div>
+      <div class="rpt-kpi ${stillFloor.length>0?'fl':'ok'}">
+        <div class="rpt-kpi-v">${stillFloor.length}명</div>
+        <div class="rpt-kpi-l">Floor 미달 미조정 잔여</div>
+      </div>
+    </div>
+
+    <div class="rpt-two-col">
+      <div class="rpt-section">
+        <div class="rpt-section-title">부서별 조정 집계</div>
+        <table class="rpt-dept-table">
+          <thead><tr>
+            <th>사업부</th><th class="r">인원</th><th class="r">조정</th>
+            <th class="r">평균인상률</th><th class="r">추가인건비</th><th class="r">인건비증가율</th>
+          </tr></thead>
+          <tbody>
+            ${deptStats.map(s=>`<tr>
+              <td>${s.dep.replace('사업부','')}</td>
+              <td class="r">${s.cnt}명</td>
+              <td class="r">${s.adjCnt}명</td>
+              <td class="r">${s.avgAdj}%</td>
+              <td class="r">${fw(s.grand)}</td>
+              <td class="r">${s.rate}%</td>
+            </tr>`).join('')}
+            <tr class="total-row">
+              <td>합계</td>
+              <td class="r">${DATA.length}명</td>
+              <td class="r">${adjKeys.length}명</td>
+              <td class="r">+${avgRateAll}%</td>
+              <td class="r">${fw(grand)}</td>
+              <td class="r">${incRate}%</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="rpt-section">
+        <div class="rpt-section-title">고과 등급 분포</div>
+        <table class="rpt-dept-table">
+          <thead><tr><th>등급</th><th class="r">인원</th><th class="r">권고 인상률</th></tr></thead>
+          <tbody>
+            <tr><td style="color:#7030c0;font-weight:700">A등급</td><td class="r">${gradeCount.A}명</td><td class="r">7~10%</td></tr>
+            <tr><td style="color:var(--ci-royal);font-weight:700">B등급</td><td class="r">${gradeCount.B}명</td><td class="r">4~6%</td></tr>
+            <tr><td style="color:#206048;font-weight:700">C등급</td><td class="r">${gradeCount.C}명</td><td class="r">2~3%</td></tr>
+            <tr><td style="color:var(--floor);font-weight:700">D등급</td><td class="r">${gradeCount.D}명</td><td class="r">0~1%</td></tr>
+            <tr><td style="color:var(--t3)">미입력</td><td class="r">${gradeCount['없음']}명</td><td class="r">—</td></tr>
+          </tbody>
+        </table>
+        ${issues.length?`
+        <div class="rpt-section-title" style="margin-top:14px">주요 이슈</div>
+        <div class="rpt-issue-list">
+          ${issues.map(iss=>`<div class="rpt-issue ${iss.cls}">
+            <span class="rpt-issue-icon">${iss.icon}</span>
+            <span class="rpt-issue-text">${iss.text}</span>
+          </div>`).join('')}
+        </div>`:'<div style="font-size:12px;color:var(--ok);padding:8px 0">✓ 주요 이슈 없음</div>'}
+      </div>
+    </div>
+
+    ${adjPeople.length?`
+    <div class="rpt-section">
+      <div class="rpt-section-title">연봉 조정 대상자 명단 (${adjPeople.length}명)</div>
+      <table class="rpt-adj-table">
+        <thead><tr>
+          <th>사업부</th><th>이름</th><th>직급</th><th>고과</th>
+          <th class="r">현 연봉</th><th class="r">조정 연봉</th>
+          <th class="r">인상률</th><th class="r">인상액</th><th class="r">테이블 대비</th><th>상태</th>
+        </tr></thead>
+        <tbody>
+          ${adjPeople.map(d=>{
+            const a=ADJ[d.no];
+            const newSal=a.newSal;
+            const inc=newSal-d.sal;
+            const adjSt=calcStatus(newSal,d.tm);
+            const adjTblPct=((newSal-d.tm)/d.tm*100);
+            const gc={A:'#7030c0',B:'var(--ci-royal)',C:'#206048',D:'var(--floor)'}[GRADE[d.no]]||'var(--t3)';
+            return `<tr>
+              <td style="font-size:10px;color:var(--t3)">${d.d.replace('사업부','').replace('/경영지원팀','·경지').replace('/전략마케팅팀','·전마')}</td>
+              <td style="font-weight:700">${d.n}${PROMO[d.no]?'<span style="font-size:9px;color:var(--promo);margin-left:3px">진급</span>':''}</td>
+              <td>${rdsp(d.r)}</td>
+              <td style="color:${gc};font-weight:700">${GRADE[d.no]||'—'}</td>
+              <td class="r">${fw(d.sal)}</td>
+              <td class="r" style="font-weight:700;color:var(--ci-royal)">${fw(newSal)}</td>
+              <td class="r">+${a.rate.toFixed(1)}%</td>
+              <td class="r">+${fw(inc)}</td>
+              <td class="r" style="color:${adjTblPct<0?'var(--floor)':adjTblPct>15?'var(--cap)':'var(--ok)'}">${adjTblPct>=0?'+':''}${adjTblPct.toFixed(1)}%</td>
+              <td><span class="sb ${stCls(adjSt)}">${adjSt}</span></td>
+            </tr>`;
+          }).join('')}
+        </tbody>
+      </table>
+    </div>`:''}
+
+    <div class="rpt-footer">본 보고서는 MOON HR·BI 시스템에서 자동 생성되었습니다 · ${dateStr}</div>
+  `;
+}
 
 function openScenario(){
   renderScenarioList();
@@ -1211,9 +2150,11 @@ function saveScenario(){
   list.push({
     name,
     date: new Date().toLocaleDateString('ko-KR'),
-    adj: JSON.parse(JSON.stringify(ADJ)),
-    promo: JSON.parse(JSON.stringify(PROMO)),
-    grade: JSON.parse(JSON.stringify(GRADE))
+    adj:     JSON.parse(JSON.stringify(ADJ)),
+    promo:   JSON.parse(JSON.stringify(PROMO)),
+    grade:   JSON.parse(JSON.stringify(GRADE)),
+    comment: JSON.parse(JSON.stringify(COMMENT)),
+    approval:JSON.parse(JSON.stringify(APPROVAL))
   });
   saveScenarios(list);
   document.getElementById('sc-name').value='';
@@ -1226,9 +2167,13 @@ function loadScenario(i){
   Object.keys(ADJ).forEach(k=>delete ADJ[k]);
   Object.keys(PROMO).forEach(k=>delete PROMO[k]);
   Object.keys(GRADE).forEach(k=>delete GRADE[k]);
-  Object.assign(ADJ, sc.adj);
-  Object.assign(PROMO, sc.promo);
-  Object.assign(GRADE, sc.grade||{});
+  Object.keys(COMMENT).forEach(k=>delete COMMENT[k]);
+  Object.keys(APPROVAL).forEach(k=>delete APPROVAL[k]);
+  Object.assign(ADJ,     sc.adj);
+  Object.assign(PROMO,   sc.promo);
+  Object.assign(GRADE,   sc.grade||{});
+  Object.assign(COMMENT, sc.comment||{});
+  Object.assign(APPROVAL,sc.approval||{});
   closeScenario();
   updateAll();
   if(sel){ renderProfile(sel); renderPosChart(sel); renderDistChart(sel); }
@@ -1243,15 +2188,236 @@ function delScenario(i){
 }
 
 // ══════════════════════════════════════════════
+// SCENARIO COMPARE (시나리오 A/B 비교)
+// ══════════════════════════════════════════════
+function openCompare(){
+  const list = getScenarios();
+  if(list.length<2){ alert('비교하려면 시나리오가 2개 이상 필요합니다.'); return; }
+  // 셀렉트 옵션 채우기
+  const opts = list.map((sc,i)=>`<option value="${i}">${sc.name} (${sc.date})</option>`).join('');
+  document.getElementById('cmp-sel-a').innerHTML = opts;
+  document.getElementById('cmp-sel-b').innerHTML = opts;
+  // 기본값: A=0, B=1
+  document.getElementById('cmp-sel-a').value = '0';
+  document.getElementById('cmp-sel-b').value = list.length>1?'1':'0';
+  document.getElementById('cmp-result').classList.remove('show');
+  closeScenario();
+  document.getElementById('cmp-modal-bg').classList.add('on');
+}
+
+function closeCmp(){
+  document.getElementById('cmp-modal-bg').classList.remove('on');
+}
+
+function calcScenarioStats(sc){
+  const adj = sc.adj||{};
+  const promo = sc.promo||{};
+  const totalBase = DATA.reduce((s,d)=>s+d.sal,0);
+  const adjKeys = Object.keys(adj).map(Number);
+  const promoKeys = Object.keys(promo).map(Number);
+  const adjInc = adjKeys.reduce((s,no)=>{
+    const d=DATA.find(x=>x.no===no); return d?s+(adj[no].newSal-d.sal):s;
+  },0);
+  const promoTotal = promoKeys.reduce((s,no)=>{
+    const d=DATA.find(x=>x.no===no); return d?s+d.promoBonusAmt:s;
+  },0);
+  const grand = adjInc+promoTotal;
+  const floorResolved = adjKeys.filter(no=>{
+    const d=DATA.find(x=>x.no===no);
+    return d&&d.st==='Floor 미달'&&adj[no].newSal>=d.tm;
+  }).length;
+  const totalFloor = DATA.filter(d=>d.st==='Floor 미달').length;
+  const avgRate = adjKeys.length>0
+    ? (adjKeys.reduce((s,no)=>s+(adj[no].rate||0),0)/adjKeys.length).toFixed(1)
+    : '0.0';
+  return {adjCnt:adjKeys.length, promoCnt:promoKeys.length, adjInc, promoTotal, grand,
+    floorResolved, totalFloor, avgRate, totalBase};
+}
+
+function runCompare(){
+  const list = getScenarios();
+  const idxA = parseInt(document.getElementById('cmp-sel-a').value);
+  const idxB = parseInt(document.getElementById('cmp-sel-b').value);
+  if(idxA===idxB){ alert('서로 다른 시나리오를 선택해주세요.'); return; }
+  const scA = list[idxA], scB = list[idxB];
+  const stA = calcScenarioStats(scA), stB = calcScenarioStats(scB);
+
+  document.getElementById('cmp-title-a').textContent = `A: ${scA.name}`;
+  document.getElementById('cmp-title-b').textContent = `B: ${scB.name}`;
+
+  const metrics = [
+    {label:'총 추가 인건비', a:fw(stA.grand), b:fw(stB.grand), rawA:stA.grand, rawB:stB.grand, lowerBetter:true},
+    {label:'연봉 조정 인원', a:`${stA.adjCnt}명`, b:`${stB.adjCnt}명`, rawA:stA.adjCnt, rawB:stB.adjCnt, lowerBetter:false},
+    {label:'평균 인상률', a:`${stA.avgRate}%`, b:`${stB.avgRate}%`, rawA:parseFloat(stA.avgRate), rawB:parseFloat(stB.avgRate), lowerBetter:false},
+    {label:'Floor 해소', a:`${stA.floorResolved}/${stA.totalFloor}명`, b:`${stB.floorResolved}/${stB.totalFloor}명`, rawA:stA.floorResolved, rawB:stB.floorResolved, lowerBetter:false},
+    {label:'진급 확정', a:`${stA.promoCnt}명`, b:`${stB.promoCnt}명`, rawA:stA.promoCnt, rawB:stB.promoCnt, lowerBetter:false},
+    {label:'진급수당 합계', a:fw(stA.promoTotal), b:fw(stB.promoTotal), rawA:stA.promoTotal, rawB:stB.promoTotal, lowerBetter:true},
+    {label:'인건비 증가율', a:`${(stA.grand/stA.totalBase*100).toFixed(2)}%`, b:`${(stB.grand/stB.totalBase*100).toFixed(2)}%`, rawA:stA.grand/stA.totalBase, rawB:stB.grand/stB.totalBase, lowerBetter:true},
+  ];
+
+  const grid = document.getElementById('cmp-kpi-grid');
+  grid.innerHTML = metrics.map(m=>{
+    const diff = m.rawA - m.rawB;
+    const aWins = m.lowerBetter ? diff<0 : diff>0;
+    const bWins = m.lowerBetter ? diff>0 : diff<0;
+    const diffPct = m.rawB!==0 ? Math.abs(diff/m.rawB*100).toFixed(1) : '0';
+    const diffTag = diff===0 ? '' :
+      `<div class="cmp-diff-tag ${aWins?'pos':'neg'}">B대비 ${aWins?'+':'-'}${diffPct}%</div>`;
+    const bDiffTag = diff===0 ? '' :
+      `<div class="cmp-diff-tag ${bWins?'pos':'neg'}">A대비 ${bWins?'+':'-'}${diffPct}%</div>`;
+    return `<div class="cmp-kpi-row">
+      <div class="cmp-kpi-item metric-label"><div class="cmp-kpi-v metric-label-text">${m.label}</div></div>
+      <div class="cmp-kpi-item${aWins?' win-a':''}"><div class="cmp-kpi-v">${m.a}</div>${diffTag}</div>
+      <div class="cmp-kpi-item${bWins?' win-b':''}"><div class="cmp-kpi-v">${m.b}</div>${bDiffTag}</div>
+    </div>`;
+  }).join('');
+
+  // 조정 대상 직원 목록
+  function renderPeopleList(sc, elId, titleId, labelCls, scName){
+    document.getElementById(titleId).textContent = scName;
+    document.getElementById(titleId).className = `cmp-people-col-hd ${labelCls}`;
+    const adj = sc.adj||{};
+    const keys = Object.keys(adj).map(Number);
+    const el = document.getElementById(elId);
+    if(!keys.length){ el.innerHTML='<div style="font-size:11px;color:var(--t3);padding:4px 0">없음</div>'; return; }
+    el.innerHTML = keys.map(no=>{
+      const d=DATA.find(x=>x.no===no);
+      if(!d) return '';
+      const r = adj[no].rate||0;
+      return `<div class="cmp-person-row"><span>${d.n} <span style="color:var(--t3);font-size:10px">${rdsp(d.r)}</span></span><span class="cmp-person-rate">+${r.toFixed(1)}%</span></div>`;
+    }).join('');
+  }
+  renderPeopleList(scA,'cmp-people-a','cmp-people-title-a','a',`A: ${scA.name}`);
+  renderPeopleList(scB,'cmp-people-b','cmp-people-title-b','b',`B: ${scB.name}`);
+
+  document.getElementById('cmp-result').classList.add('show');
+}
+
+// ══════════════════════════════════════════════
 // TAB
 // ══════════════════════════════════════════════
 function switchTab(tab){
   document.getElementById('tab-pos').classList.toggle('active', tab==='pos');
   document.getElementById('tab-sum').classList.toggle('active', tab==='sum');
-  document.getElementById('rp-pos').style.display = tab==='pos'?'flex':'none';
-  document.getElementById('rp-sum').style.display = tab==='sum'?'flex':'none';
-  if(tab==='sum') renderSummary();
+  document.getElementById('rp-pos').classList.toggle('rp-hidden', tab!=='pos');
+  document.getElementById('rp-sum').classList.toggle('active', tab==='sum');
+  if(tab==='sum'){
+    // active 적용 후 레이아웃이 확정된 다음 프레임에 렌더
+    requestAnimationFrame(()=>{ renderSummary(); renderHeatmap(); });
+  }
 }
+
+// ══════════════════════════════════════════════
+// SUM SUB-TAB
+// ══════════════════════════════════════════════
+function switchSumSub(sub){
+  document.getElementById('ssb-list').classList.toggle('active', sub==='list');
+  document.getElementById('ssb-heatmap').classList.toggle('active', sub==='heatmap');
+  document.getElementById('sum-list-view').style.display = sub==='list'?'flex':'none';
+  document.getElementById('sum-heatmap-view').style.display = sub==='heatmap'?'flex':'none';
+  if(sub==='heatmap') renderHeatmap();
+}
+
+// ══════════════════════════════════════════════
+// HEATMAP
+// ══════════════════════════════════════════════
+const HM_RANKS = ['부장','차장','과장','대리','사원'];
+const HM_DEPTS = ['B사업부','C사업부','D사업부','경영전략실'];
+
+function hmLevel(pct){
+  if(pct<=-10) return 5;
+  if(pct<=-5)  return 4;
+  if(pct<0)    return 3;
+  if(pct<=5)   return 2;
+  if(pct<=15)  return 1;
+  return 0;
+}
+
+function hmDeptGroup(d){
+  return DEPT_GROUP[d]||d;
+}
+
+function renderHeatmap(){
+  const tbl = document.getElementById('hm-table');
+  if(!tbl) return;
+
+  // 데이터 집계: dept × rank → {pcts[], members[]}
+  const cells = {};
+  HM_DEPTS.forEach(dep=>{
+    HM_RANKS.forEach(rk=>{
+      cells[dep+'|'+rk] = {pcts:[], members:[]};
+    });
+  });
+
+  DATA.forEach(d=>{
+    const dep = hmDeptGroup(d.d);
+    const rk  = rdsp(d.r);
+    const key = dep+'|'+rk;
+    if(!cells[key]) return;
+    const esSal = ADJ[d.no] ? ADJ[d.no].newSal : d.sal;
+    const pct   = (esSal - d.tm) / d.tm * 100;
+    cells[key].pcts.push(pct);
+    cells[key].members.push({n:d.n, sal:esSal, tm:d.tm, pct});
+  });
+
+  // 테이블 렌더
+  let html = '<tr><th class="hm-th dept">사업부 \\ 직급</th>';
+  HM_RANKS.forEach(rk=>{ html+=`<th class="hm-th">${rk}</th>`; });
+  html += '</tr>';
+
+  HM_DEPTS.forEach(dep=>{
+    html += `<tr><th class="hm-th dept">${dep.replace('사업부','').replace('경영전략실','경영전략실')}</th>`;
+    HM_RANKS.forEach(rk=>{
+      const key = dep+'|'+rk;
+      const cell = cells[key];
+      if(!cell||!cell.pcts.length){
+        html += '<td class="hm-cell empty"><span style="color:var(--t4);font-size:11px">—</span></td>';
+        return;
+      }
+      const avgPct = cell.pcts.reduce((a,b)=>a+b,0)/cell.pcts.length;
+      const lvl = hmLevel(avgPct);
+      const sign = avgPct>=0?'+':'';
+      const dataStr = JSON.stringify(cell.members.map(m=>({n:m.n,pct:m.pct.toFixed(1)}))).replace(/"/g,'&quot;');
+      html += `<td class="hm-cell hm-lvl-${lvl}" onclick="showHmPop(event,'${dep}','${rk}','${sign}${avgPct.toFixed(1)}%',this)" data-members="${dataStr}">
+        <div class="hm-cell-pct">${sign}${avgPct.toFixed(1)}%</div>
+        <div class="hm-cell-cnt">${cell.pcts.length}명</div>
+      </td>`;
+    });
+    html += '</tr>';
+  });
+
+  tbl.innerHTML = html;
+}
+
+let hmPopTimer = null;
+function showHmPop(e, dept, rank, avgPct, cellEl){
+  clearTimeout(hmPopTimer);
+  const pop = document.getElementById('hm-popover');
+  const dataStr = cellEl.getAttribute('data-members');
+  let members = [];
+  try{ members = JSON.parse(dataStr.replace(/&quot;/g,'"')); }catch(err){}
+
+  pop.innerHTML = `<div class="hm-pop-title">${dept.replace('사업부','')} · ${rank} (평균 ${avgPct})</div>`
+    + members.sort((a,b)=>parseFloat(b.pct)-parseFloat(a.pct)).map(m=>{
+      const sign = parseFloat(m.pct)>=0?'+':'';
+      const col = parseFloat(m.pct)<0?'var(--floor)':parseFloat(m.pct)>15?'var(--cap)':'var(--ok)';
+      return `<div class="hm-pop-row"><span class="hm-pop-name">${m.n}</span><span class="hm-pop-val" style="color:${col}">${sign}${m.pct}%</span></div>`;
+    }).join('');
+
+  const rect = cellEl.getBoundingClientRect();
+  pop.style.left = Math.min(rect.right+6, window.innerWidth-290)+'px';
+  pop.style.top  = Math.max(rect.top, 8)+'px';
+  pop.classList.add('show');
+
+  // 3초 후 자동 닫힘
+  hmPopTimer = setTimeout(()=>pop.classList.remove('show'), 3000);
+}
+
+document.addEventListener('click', e=>{
+  if(!e.target.closest('.hm-cell')&&!e.target.closest('.hm-popover')){
+    document.getElementById('hm-popover').classList.remove('show');
+  }
+});
 
 // ══════════════════════════════════════════════
 // PICK
@@ -1290,6 +2456,37 @@ function updateAll(){
   updateGauge();
   renderList();
   updateBottomTable();
+}
+
+const HDR_LABELS = ['사업부','이름','직급','총경력','현 연봉','조정 연봉','인상률','인상액','테이블 최소','테이블대비%','상태','진급수당','고과'];
+const HDR_ALIGN  = ['left','left','left','left','right','right','right','right','right','right','left','right','left'];
+function syncSumHdr(){}
+
+// 컬럼 리사이즈
+function initColResize(){
+  const resizers = document.querySelectorAll('.sum-hdr-row .col-resizer');
+  resizers.forEach((resizer, i) => {
+    resizer.onmousedown = null; // 중복 방지
+    resizer.addEventListener('mousedown', e => {
+      e.preventDefault();
+      const td = resizer.parentElement;
+      let startX = e.clientX;
+      let startW = td.getBoundingClientRect().width;
+      const col = document.querySelectorAll('.sum-table colgroup col')[i];
+      resizer.classList.add('dragging');
+      const onMove = e => {
+        const w = Math.max(30, startW + e.clientX - startX);
+        if(col) col.style.width = w + 'px';
+      };
+      const onUp = () => {
+        resizer.classList.remove('dragging');
+        document.removeEventListener('mousemove', onMove);
+        document.removeEventListener('mouseup', onUp);
+      };
+      document.addEventListener('mousemove', onMove);
+      document.addEventListener('mouseup', onUp);
+    });
+  });
 }
 
 function go(){ updateAll(); }
