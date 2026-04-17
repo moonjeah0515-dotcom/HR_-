@@ -3,25 +3,24 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="MOON HR Portfolio — 연봉 조정 BI 대시보드. HR 기획자 Moon의 포트폴리오 프로젝트.">
-<title>MOON HR · Portfolio — 연봉 조정 BI</title>
+<title>MOON HR HR · 연봉조정 BI v8</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --bg:#f0f2f6;--s1:#ffffff;--s2:#f5f6fa;--s3:#eceef5;
-  --b1:#dde1ee;--b2:#c8cedf;--b3:#adb5cc;
-  --floor:#c0343c;--floor-a:rgba(192,52,60,.08);--floor-b:rgba(192,52,60,.22);
-  --cap:#9a7020;--cap-a:rgba(154,112,32,.08);--cap-b:rgba(154,112,32,.22);
-  --ok:#1e7a54;--ok-a:rgba(30,122,84,.08);--ok-b:rgba(30,122,84,.22);
-  --adj:#2d5be3;--adj-a:rgba(45,91,227,.08);--adj-b:rgba(45,91,227,.25);
-  --promo:#6d28d9;--promo-a:rgba(109,40,217,.08);--promo-b:rgba(109,40,217,.25);
-  --warn:#b84a00;--warn-a:rgba(184,74,0,.09);--warn-b:rgba(184,74,0,.28);
-  --blue:#2563eb;--blue-a:rgba(37,99,235,.08);
-  --ci-blue:#4a90d9;--ci-purple:#6d28d9;--ci-royal:#1e3a5f;--ci-indigo:#152d4a;
-  --t1:#1a2035;--t2:#44506a;--t3:#7a8499;--t4:#bec5d4;
+  --bg:#f2f3f8;--s1:#ffffff;--s2:#f0f1f7;--s3:#e8eaf2;
+  --b1:#dde0ec;--b2:#c8cce0;--b3:#b0b6d0;
+  --floor:#b83038;--floor-a:rgba(184,48,56,.08);--floor-b:rgba(184,48,56,.22);
+  --cap:#a07828;--cap-a:rgba(160,120,40,.08);--cap-b:rgba(160,120,40,.22);
+  --ok:#287858;--ok-a:rgba(40,120,88,.08);--ok-b:rgba(40,120,88,.22);
+  --adj:#3C50C1;--adj-a:rgba(60,80,193,.08);--adj-b:rgba(60,80,193,.25);
+  --promo:#7c3aed;--promo-a:rgba(124,58,237,.08);--promo-b:rgba(124,58,237,.25);
+  --warn:#c05000;--warn-a:rgba(192,80,0,.09);--warn-b:rgba(192,80,0,.28);
+  --blue:#2878c0;--blue-a:rgba(40,120,192,.08);
+  --ci-blue:#3AA9F6;--ci-purple:#6828a8;--ci-royal:#1e3a5f;--ci-indigo:#152d4a;
+  --t1:#1a1d2e;--t2:#4a5070;--t3:#7a809a;--t4:#c0c4d4;
   --mono:'DM Mono',monospace;--sans:'Noto Sans KR',sans-serif;
   --r6:6px;--r8:8px;--r10:10px;
 }
@@ -1086,78 +1085,113 @@ const TBL = {
 // 직급별 테이블 최대값 (직급 상한)
 const TBL_MAX = {'부장':84500000,'차장':72000000,'과장':62000000,'대리':51000000,'사원':40000000};
 
+// ── 경력 년수 올림 (사회통념 기준: 1개월이라도 있으면 +1년) ──
+// 예) 8년 1개월 → 9, 5년 0개월 → 5, 정수 입력 8 → 8
+function ceilTy(tc){
+  if(!tc) return 0;
+  const str = String(tc).trim();
+  // "N년 M개월" 형태 파싱
+  const m = str.match(/(\d+)\s*년\s*(\d+)\s*개월/);
+  if(m) {
+    const yr = parseInt(m[1]); const mo = parseInt(m[2]);
+    return mo > 0 ? yr + 1 : yr;
+  }
+  // "N년" 형태 (개월 없음)
+  const m2 = str.match(/(\d+)\s*년/);
+  if(m2) return parseInt(m2[1]);
+  // 숫자만 입력된 경우 (소수면 올림: 8.08 → 9)
+  const n = parseFloat(str);
+  if(!isNaN(n)) return n % 1 === 0 ? Math.round(n) : Math.ceil(n);
+  return 0;
+}
+
+// ── 년차 표기: 만 N년 = N+1년차 (삼성 기준, 표시 전용) ──
+// 예) ty:8 (만 8년) → "9년차", ty:5 → "6년차"
+function yrCh(ty){ return (ty+1)+'년차'; }
+
+// ── TBL 조회: 만 년수(floor) 기준 ──
+// TBL 범위 초과 시 해당 직급 최대값 적용
+function lookupTm(rank, ty){
+  const base = RANK_MAP[rank]||rank;
+  const pts  = TBL[base];
+  if(!pts) return TBL_MAX[base]||0;
+  let tm = pts[0][1];
+  for(const [yr,amt] of pts){ if(ty>=yr) tm=amt; }
+  return tm;
+}
+
 // 진급 보조지표: 총경력 기준 (참고용)
 const PROMO_MIN = {'사원':3,'대리':9,'과장':14,'차장':19};
 const PROMO_TO  = {'사원':'대리','대리':'과장','과장':'차장','차장':'부장'};
 const PROMO_BONUS = {'사원':1000000,'대리':1000000,'과장':2000000,'차장':2000000};
 
 const DATA = [
-  {no:1,n:'이상우',r:'차장',d:'디지털서비스사업부',tc:'16년 10개월',ty:16,py:5.75,sal:62000000,tm:68000000,pp:0,nh:false},
-  {no:2,n:'서유진',r:'대리',d:'디지털서비스사업부',tc:'8년 4개월',ty:8,py:4.75,sal:62300000,tm:51000000,pp:0,nh:false},
-  {no:3,n:'안소연',r:'대리',d:'인프라솔루션사업부',tc:'5년 2개월',ty:5,py:3.08,sal:51300000,tm:44000000,pp:0,nh:false},
-  {no:4,n:'송준혁',r:'차장',d:'플랫폼사업부',tc:'17년 10개월',ty:17,py:0.33,sal:77300000,tm:70000000,pp:0,nh:true},
-  {no:5,n:'장재원',r:'부장',d:'디지털서비스사업부',tc:'23년 7개월',ty:23,py:5.75,sal:86200000,tm:79500000,pp:2400000,nh:false},
-  {no:6,n:'강영민',r:'대리',d:'인프라솔루션사업부',tc:'5년 5개월',ty:5,py:1.5,sal:41800000,tm:44000000,pp:0,nh:true},
-  {no:7,n:'정민재',r:'과장',d:'경영지원실/전략기획팀',tc:'10년 2개월',ty:10,py:4.67,sal:57100000,tm:55000000,pp:0,nh:false},
-  {no:8,n:'오준혁',r:'대리',d:'인프라솔루션사업부',tc:'8년 7개월',ty:8,py:1.67,sal:60200000,tm:51000000,pp:0,nh:false},
-  {no:9,n:'정상우',r:'부장',d:'경영지원실/인사총무팀',tc:'25년 11개월',ty:25,py:5.17,sal:81400000,tm:82500000,pp:3600000,nh:false},
-  {no:10,n:'강현우',r:'대리',d:'플랫폼사업부',tc:'6년 6개월',ty:6,py:2.67,sal:48100000,tm:46000000,pp:0,nh:false},
-  {no:11,n:'정태양',r:'대리',d:'경영지원실/전략기획팀',tc:'4년 11개월',ty:4,py:4.58,sal:40400000,tm:42000000,pp:0,nh:false},
-  {no:12,n:'김하준',r:'과장',d:'플랫폼사업부',tc:'9년 2개월',ty:9,py:0.5,sal:55500000,tm:53000000,pp:0,nh:false},
-  {no:13,n:'오예진',r:'대리',d:'인프라솔루션사업부',tc:'4년 1개월',ty:4,py:1.0,sal:43500000,tm:42000000,pp:0,nh:false},
-  {no:14,n:'권지성',r:'대리',d:'플랫폼사업부',tc:'7년 1개월',ty:7,py:3.08,sal:45800000,tm:48500000,pp:0,nh:false},
-  {no:15,n:'홍하린',r:'차장',d:'경영지원실/전략기획팀',tc:'16년 2개월',ty:16,py:4.25,sal:75400000,tm:68000000,pp:0,nh:false},
-  {no:16,n:'윤상우',r:'사원',d:'인프라솔루션사업부',tc:'3년 6개월',ty:3,py:3.58,sal:39300000,tm:40000000,pp:0,nh:false},
-  {no:17,n:'임나연',r:'대리',d:'플랫폼사업부',tc:'8년 1개월',ty:8,py:2.92,sal:52200000,tm:51000000,pp:0,nh:false},
-  {no:18,n:'한민준',r:'과장',d:'인프라솔루션사업부',tc:'11년 11개월',ty:11,py:5.5,sal:57700000,tm:57500000,pp:0,nh:false},
-  {no:19,n:'오규현',r:'사원',d:'플랫폼사업부',tc:'2년 3개월',ty:2,py:0.25,sal:41600000,tm:37500000,pp:0,nh:false},
-  {no:20,n:'한종훈',r:'차장',d:'경영지원실/인사총무팀',tc:'14년 8개월',ty:14,py:4.67,sal:69800000,tm:64000000,pp:0,nh:false},
-  {no:21,n:'서미소',r:'부장',d:'경영지원실/전략기획팀',tc:'23년 3개월',ty:23,py:3.75,sal:87300000,tm:79500000,pp:2400000,nh:false},
-  {no:22,n:'송지훈',r:'사원',d:'디지털서비스사업부',tc:'2년 9개월',ty:2,py:1.42,sal:33000000,tm:37500000,pp:0,nh:true},
-  {no:23,n:'류은서',r:'대리',d:'인프라솔루션사업부',tc:'7년 6개월',ty:7,py:5.42,sal:43600000,tm:48500000,pp:0,nh:true},
-  {no:24,n:'권유진',r:'대리',d:'디지털서비스사업부',tc:'5년 5개월',ty:5,py:3.5,sal:54800000,tm:44000000,pp:0,nh:true},
-  {no:25,n:'김동현',r:'사원',d:'경영지원실/인사총무팀',tc:'3년 7개월',ty:3,py:0.58,sal:35700000,tm:40000000,pp:0,nh:true},
-  {no:26,n:'김보람',r:'대리',d:'플랫폼사업부',tc:'5년 10개월',ty:5,py:1.83,sal:38200000,tm:44000000,pp:0,nh:false},
-  {no:27,n:'정진호',r:'차장',d:'플랫폼사업부',tc:'14년 9개월',ty:14,py:3.75,sal:64300000,tm:64000000,pp:0,nh:true},
-  {no:28,n:'윤다현',r:'사원',d:'디지털서비스사업부',tc:'1년 3개월',ty:1,py:4.42,sal:33800000,tm:35000000,pp:0,nh:false},
-  {no:29,n:'서소연',r:'차장',d:'디지털서비스사업부',tc:'18년',ty:18,py:2.67,sal:70000000,tm:72000000,pp:1200000,nh:true},
-  {no:30,n:'정현우',r:'대리',d:'경영지원실/인사총무팀',tc:'6년 5개월',ty:6,py:2.17,sal:41700000,tm:46000000,pp:0,nh:false},
-  {no:31,n:'조소현',r:'부장',d:'플랫폼사업부',tc:'20년 1개월',ty:20,py:0.92,sal:77900000,tm:75000000,pp:0,nh:false},
-  {no:32,n:'임하린',r:'대리',d:'디지털서비스사업부',tc:'6년 5개월',ty:6,py:0.25,sal:57100000,tm:46000000,pp:0,nh:true},
-  {no:33,n:'서서연',r:'과장',d:'인프라솔루션사업부',tc:'12년 8개월',ty:12,py:4.5,sal:60200000,tm:60000000,pp:0,nh:true},
-  {no:34,n:'신소연',r:'대리',d:'인프라솔루션사업부',tc:'4년 11개월',ty:4,py:5.92,sal:47500000,tm:42000000,pp:0,nh:false},
-  {no:35,n:'강민준',r:'대리',d:'플랫폼사업부',tc:'7년 1개월',ty:7,py:0.42,sal:50400000,tm:48500000,pp:0,nh:true},
-  {no:36,n:'윤동현',r:'대리',d:'플랫폼사업부',tc:'5년 3개월',ty:5,py:0.58,sal:53500000,tm:44000000,pp:0,nh:true},
-  {no:37,n:'임상우',r:'부장',d:'디지털서비스사업부',tc:'26년 11개월',ty:26,py:5.0,sal:72500000,tm:84500000,pp:2400000,nh:false},
-  {no:38,n:'최은서',r:'대리',d:'디지털서비스사업부',tc:'4년 5개월',ty:4,py:1.67,sal:40600000,tm:42000000,pp:0,nh:false},
-  {no:39,n:'장도윤',r:'전임',d:'플랫폼사업부',tc:'6년 11개월',ty:6,py:1.5,sal:51400000,tm:46000000,pp:0,nh:false},
-  {no:40,n:'오혜린',r:'대리',d:'플랫폼사업부',tc:'4년 8개월',ty:4,py:0.42,sal:37000000,tm:42000000,pp:0,nh:true},
-  {no:41,n:'윤채원',r:'대리',d:'디지털서비스사업부',tc:'6년 9개월',ty:6,py:0.67,sal:41500000,tm:46000000,pp:0,nh:false},
-  {no:42,n:'오소연',r:'대리',d:'인프라솔루션사업부',tc:'8년 8개월',ty:8,py:1.0,sal:49800000,tm:51000000,pp:0,nh:true},
-  {no:43,n:'황지윤',r:'부장',d:'경영지원실/인사총무팀',tc:'22년 8개월',ty:22,py:3.17,sal:87700000,tm:78000000,pp:0,nh:false},
-  {no:44,n:'안도윤',r:'대리',d:'경영지원실/인사총무팀',tc:'7년',ty:7,py:4.42,sal:55300000,tm:48500000,pp:0,nh:false},
-  {no:45,n:'김태민',r:'과장',d:'인프라솔루션사업부',tc:'11년 5개월',ty:11,py:2.25,sal:62600000,tm:57500000,pp:0,nh:false},
-  {no:46,n:'홍우진',r:'차장',d:'디지털서비스사업부',tc:'18년 4개월',ty:18,py:3.5,sal:77700000,tm:72000000,pp:0,nh:false},
-  {no:47,n:'임진호',r:'대리',d:'플랫폼사업부',tc:'6년 5개월',ty:6,py:4.92,sal:52200000,tm:46000000,pp:0,nh:false},
-  {no:48,n:'임수빈',r:'대리',d:'플랫폼사업부',tc:'8년 9개월',ty:8,py:4.75,sal:47600000,tm:51000000,pp:0,nh:false},
-  {no:49,n:'신하린',r:'차장',d:'디지털서비스사업부',tc:'14년',ty:14,py:4.17,sal:70800000,tm:64000000,pp:1800000,nh:false},
-  {no:50,n:'강민서',r:'사원',d:'인프라솔루션사업부',tc:'2년 4개월',ty:2,py:4.08,sal:37400000,tm:37500000,pp:0,nh:false},
-  {no:51,n:'장보람',r:'대리',d:'디지털서비스사업부',tc:'6년 1개월',ty:6,py:1.42,sal:58000000,tm:46000000,pp:0,nh:false},
-  {no:52,n:'김다현',r:'대리',d:'경영지원실/전략기획팀',tc:'4년 5개월',ty:4,py:0.42,sal:42800000,tm:42000000,pp:0,nh:false},
-  {no:53,n:'정수빈',r:'대리',d:'경영지원실/인사총무팀',tc:'6년 8개월',ty:6,py:1.5,sal:42700000,tm:46000000,pp:0,nh:false},
-  {no:54,n:'송지윤',r:'과장',d:'인프라솔루션사업부',tc:'11년 11개월',ty:11,py:3.67,sal:67100000,tm:57500000,pp:0,nh:false},
-  {no:55,n:'황소연',r:'사원',d:'디지털서비스사업부',tc:'3년 9개월',ty:3,py:0.17,sal:48400000,tm:40000000,pp:0,nh:false},
-  {no:56,n:'박현진',r:'대리',d:'플랫폼사업부',tc:'8년 4개월',ty:8,py:3.0,sal:47600000,tm:51000000,pp:0,nh:false},
-  {no:57,n:'서민재',r:'대리',d:'플랫폼사업부',tc:'6년 1개월',ty:6,py:2.5,sal:45300000,tm:46000000,pp:0,nh:true},
-  {no:58,n:'정하린',r:'차장',d:'플랫폼사업부',tc:'18년 7개월',ty:18,py:5.0,sal:75100000,tm:72000000,pp:0,nh:false},
-  {no:59,n:'강진아',r:'전임',d:'디지털서비스사업부',tc:'4년 11개월',ty:4,py:3.0,sal:49300000,tm:42000000,pp:0,nh:true},
-  {no:60,n:'한수빈',r:'차장',d:'경영지원실/전략기획팀',tc:'18년 8개월',ty:18,py:0.25,sal:76600000,tm:72000000,pp:0,nh:false},
-  {no:61,n:'조현진',r:'차장',d:'인프라솔루션사업부',tc:'18년 3개월',ty:18,py:3.08,sal:73000000,tm:72000000,pp:1800000,nh:true},
-  {no:62,n:'한현진',r:'선임',d:'플랫폼사업부',tc:'7년 3개월',ty:7,py:2.08,sal:46200000,tm:48500000,pp:0,nh:true},
-  {no:63,n:'최현진',r:'대리',d:'인프라솔루션사업부',tc:'5년 11개월',ty:5,py:3.67,sal:39300000,tm:44000000,pp:0,nh:false},
-  {no:64,n:'권태민',r:'사원',d:'경영지원실/인사총무팀',tc:'2년 4개월',ty:2,py:3.25,sal:46000000,tm:37500000,pp:0,nh:false},
-  {no:65,n:'임영민',r:'대리',d:'경영지원실/전략기획팀',tc:'6년 10개월',ty:6,py:2.25,sal:54100000,tm:46000000,pp:0,nh:false},
-  {no:66,n:'권도윤',r:'차장',d:'디지털서비스사업부',tc:'15년 7개월',ty:15,py:2.92,sal:71300000,tm:66000000,pp:0,nh:false}
+  {no:1,n:'정현진',r:'대리',d:'인프라솔루션사업부',tc:'6년 7개월',ty:6,py:0.58,sal:51700000,tm:46000000,pp:0,nh:true},
+  {no:2,n:'강도윤',r:'부장',d:'플랫폼사업부',tc:'20년 8개월',ty:20,py:5.0,sal:84600000,tm:75000000,pp:0,nh:false},
+  {no:3,n:'강민준',r:'대리',d:'디지털서비스사업부',tc:'4년 1개월',ty:4,py:0.42,sal:37600000,tm:42000000,pp:0,nh:true},
+  {no:4,n:'정동현',r:'차장',d:'디지털서비스사업부',tc:'15년 8개월',ty:15,py:0.92,sal:72900000,tm:66000000,pp:0,nh:false},
+  {no:5,n:'류민서',r:'대리',d:'플랫폼사업부',tc:'4년 4개월',ty:4,py:3.67,sal:46400000,tm:42000000,pp:0,nh:false},
+  {no:6,n:'안지훈',r:'사원',d:'플랫폼사업부',tc:'2년 6개월',ty:2,py:5.08,sal:35600000,tm:37500000,pp:0,nh:false},
+  {no:7,n:'권지훈',r:'차장',d:'디지털서비스사업부',tc:'15년 2개월',ty:15,py:5.33,sal:77000000,tm:66000000,pp:0,nh:true},
+  {no:8,n:'조민재',r:'전임',d:'플랫폼사업부',tc:'7년 7개월',ty:7,py:5.17,sal:42000000,tm:48500000,pp:0,nh:false},
+  {no:9,n:'오나연',r:'부장',d:'경영지원실/인사총무팀',tc:'19년 2개월',ty:19,py:5.75,sal:79600000,tm:73000000,pp:0,nh:false},
+  {no:10,n:'안가은',r:'사원',d:'경영지원실/전략기획팀',tc:'2년 11개월',ty:2,py:3.0,sal:34600000,tm:37500000,pp:0,nh:false},
+  {no:11,n:'홍영민',r:'대리',d:'디지털서비스사업부',tc:'8년 8개월',ty:8,py:5.67,sal:47600000,tm:51000000,pp:0,nh:true},
+  {no:12,n:'정지윤',r:'차장',d:'디지털서비스사업부',tc:'14년 6개월',ty:14,py:6.0,sal:70100000,tm:64000000,pp:0,nh:true},
+  {no:13,n:'김보람',r:'대리',d:'인프라솔루션사업부',tc:'4년',ty:4,py:4.58,sal:46000000,tm:42000000,pp:0,nh:false},
+  {no:14,n:'김연수',r:'사원',d:'인프라솔루션사업부',tc:'1년 5개월',ty:1,py:1.92,sal:31000000,tm:35000000,pp:0,nh:false},
+  {no:15,n:'임규현',r:'과장',d:'경영지원실/전략기획팀',tc:'9년 10개월',ty:9,py:0.5,sal:52000000,tm:53000000,pp:0,nh:true},
+  {no:16,n:'윤규현',r:'대리',d:'플랫폼사업부',tc:'8년 11개월',ty:8,py:0.5,sal:46500000,tm:51000000,pp:0,nh:false},
+  {no:17,n:'임상우',r:'사원',d:'플랫폼사업부',tc:'2년 3개월',ty:2,py:0.5,sal:38900000,tm:37500000,pp:0,nh:false},
+  {no:18,n:'박유진',r:'대리',d:'경영지원실/전략기획팀',tc:'7년',ty:7,py:0.83,sal:41800000,tm:48500000,pp:0,nh:true},
+  {no:19,n:'신민준',r:'대리',d:'인프라솔루션사업부',tc:'6년 11개월',ty:6,py:2.92,sal:44100000,tm:46000000,pp:0,nh:true},
+  {no:20,n:'서하은',r:'차장',d:'인프라솔루션사업부',tc:'18년',ty:18,py:2.67,sal:67600000,tm:72000000,pp:0,nh:false},
+  {no:21,n:'오연수',r:'차장',d:'경영지원실/인사총무팀',tc:'18년 6개월',ty:18,py:2.75,sal:80800000,tm:72000000,pp:0,nh:true},
+  {no:22,n:'정하린',r:'차장',d:'경영지원실/인사총무팀',tc:'17년 8개월',ty:17,py:1.92,sal:78100000,tm:70000000,pp:0,nh:true},
+  {no:23,n:'임은서',r:'대리',d:'플랫폼사업부',tc:'5년 10개월',ty:5,py:3.08,sal:51400000,tm:44000000,pp:0,nh:false},
+  {no:24,n:'강하린',r:'사원',d:'인프라솔루션사업부',tc:'1년 2개월',ty:1,py:0.92,sal:40200000,tm:35000000,pp:0,nh:false},
+  {no:25,n:'임혜린',r:'대리',d:'경영지원실/인사총무팀',tc:'8년 2개월',ty:8,py:5.17,sal:54300000,tm:51000000,pp:0,nh:false},
+  {no:26,n:'황진아',r:'과장',d:'디지털서비스사업부',tc:'11년 6개월',ty:11,py:1.58,sal:53300000,tm:57500000,pp:0,nh:true},
+  {no:27,n:'홍준혁',r:'대리',d:'플랫폼사업부',tc:'4년 5개월',ty:4,py:4.58,sal:43700000,tm:42000000,pp:0,nh:false},
+  {no:28,n:'최성민',r:'대리',d:'플랫폼사업부',tc:'8년 3개월',ty:8,py:0.33,sal:49100000,tm:51000000,pp:0,nh:false},
+  {no:29,n:'박소연',r:'대리',d:'인프라솔루션사업부',tc:'4년 9개월',ty:4,py:3.33,sal:48800000,tm:42000000,pp:0,nh:false},
+  {no:30,n:'송영민',r:'차장',d:'플랫폼사업부',tc:'18년 2개월',ty:18,py:3.75,sal:68700000,tm:72000000,pp:1200000,nh:false},
+  {no:31,n:'류채원',r:'대리',d:'경영지원실/인사총무팀',tc:'7년 2개월',ty:7,py:5.17,sal:48200000,tm:48500000,pp:0,nh:false},
+  {no:32,n:'장종훈',r:'대리',d:'디지털서비스사업부',tc:'8년 2개월',ty:8,py:5.25,sal:55500000,tm:51000000,pp:0,nh:true},
+  {no:33,n:'황은서',r:'전임',d:'디지털서비스사업부',tc:'4년',ty:4,py:4.5,sal:43000000,tm:42000000,pp:0,nh:false},
+  {no:34,n:'황지성',r:'대리',d:'경영지원실/인사총무팀',tc:'7년',ty:7,py:4.17,sal:54400000,tm:48500000,pp:0,nh:false},
+  {no:35,n:'윤연수',r:'과장',d:'인프라솔루션사업부',tc:'12년 1개월',ty:12,py:3.58,sal:58000000,tm:60000000,pp:0,nh:false},
+  {no:36,n:'장지훈',r:'대리',d:'경영지원실/인사총무팀',tc:'7년 4개월',ty:7,py:4.83,sal:49900000,tm:48500000,pp:0,nh:false},
+  {no:37,n:'김다현',r:'대리',d:'플랫폼사업부',tc:'6년 5개월',ty:6,py:5.17,sal:55400000,tm:46000000,pp:0,nh:false},
+  {no:38,n:'안다현',r:'대리',d:'인프라솔루션사업부',tc:'5년 11개월',ty:5,py:2.33,sal:40800000,tm:44000000,pp:0,nh:true},
+  {no:39,n:'임지성',r:'차장',d:'디지털서비스사업부',tc:'16년 1개월',ty:16,py:3.58,sal:73900000,tm:68000000,pp:0,nh:true},
+  {no:40,n:'한규현',r:'사원',d:'디지털서비스사업부',tc:'1년 9개월',ty:1,py:5.83,sal:44300000,tm:35000000,pp:0,nh:false},
+  {no:41,n:'권서진',r:'차장',d:'플랫폼사업부',tc:'18년 7개월',ty:18,py:2.92,sal:80800000,tm:72000000,pp:0,nh:false},
+  {no:42,n:'안서진',r:'과장',d:'디지털서비스사업부',tc:'10년 6개월',ty:10,py:2.25,sal:49100000,tm:55000000,pp:0,nh:false},
+  {no:43,n:'송다현',r:'부장',d:'플랫폼사업부',tc:'21년 9개월',ty:21,py:3.42,sal:84200000,tm:76500000,pp:1800000,nh:false},
+  {no:44,n:'송지성',r:'과장',d:'경영지원실/전략기획팀',tc:'13년 11개월',ty:13,py:4.5,sal:69200000,tm:62000000,pp:0,nh:true},
+  {no:45,n:'류현진',r:'대리',d:'디지털서비스사업부',tc:'8년 10개월',ty:8,py:5.58,sal:55600000,tm:51000000,pp:0,nh:false},
+  {no:46,n:'오지훈',r:'대리',d:'인프라솔루션사업부',tc:'8년 8개월',ty:8,py:3.83,sal:61800000,tm:51000000,pp:0,nh:false},
+  {no:47,n:'신종훈',r:'대리',d:'인프라솔루션사업부',tc:'5년 5개월',ty:5,py:4.25,sal:40600000,tm:44000000,pp:0,nh:false},
+  {no:48,n:'홍성민',r:'대리',d:'디지털서비스사업부',tc:'5년 3개월',ty:5,py:0.42,sal:51700000,tm:44000000,pp:0,nh:true},
+  {no:49,n:'권수빈',r:'차장',d:'플랫폼사업부',tc:'15년 3개월',ty:15,py:1.83,sal:73800000,tm:66000000,pp:0,nh:false},
+  {no:50,n:'오소연',r:'부장',d:'인프라솔루션사업부',tc:'24년 9개월',ty:24,py:4.33,sal:69800000,tm:81000000,pp:1800000,nh:true},
+  {no:51,n:'정준혁',r:'차장',d:'경영지원실/인사총무팀',tc:'16년 4개월',ty:16,py:4.58,sal:76800000,tm:68000000,pp:0,nh:true},
+  {no:52,n:'신지윤',r:'선임',d:'인프라솔루션사업부',tc:'4년 7개월',ty:4,py:3.75,sal:36100000,tm:42000000,pp:0,nh:false},
+  {no:53,n:'최은서',r:'대리',d:'플랫폼사업부',tc:'7년 8개월',ty:7,py:2.17,sal:41900000,tm:48500000,pp:0,nh:false},
+  {no:54,n:'강진아',r:'과장',d:'경영지원실/전략기획팀',tc:'12년 2개월',ty:12,py:1.08,sal:66300000,tm:60000000,pp:0,nh:false},
+  {no:55,n:'서서연',r:'부장',d:'플랫폼사업부',tc:'26년 2개월',ty:26,py:4.67,sal:95500000,tm:84500000,pp:3600000,nh:false},
+  {no:56,n:'임우진',r:'차장',d:'플랫폼사업부',tc:'14년',ty:14,py:0.83,sal:58600000,tm:64000000,pp:0,nh:false},
+  {no:57,n:'박지훈',r:'대리',d:'디지털서비스사업부',tc:'7년 6개월',ty:7,py:0.67,sal:58800000,tm:48500000,pp:0,nh:false},
+  {no:58,n:'신민재',r:'대리',d:'경영지원실/전략기획팀',tc:'4년 5개월',ty:4,py:2.75,sal:38900000,tm:42000000,pp:0,nh:false},
+  {no:59,n:'홍소연',r:'부장',d:'경영지원실/전략기획팀',tc:'21년 6개월',ty:21,py:3.42,sal:66500000,tm:76500000,pp:0,nh:true},
+  {no:60,n:'홍동현',r:'사원',d:'인프라솔루션사업부',tc:'1년 10개월',ty:1,py:0.92,sal:35500000,tm:35000000,pp:0,nh:false},
+  {no:61,n:'장연수',r:'대리',d:'디지털서비스사업부',tc:'4년 9개월',ty:4,py:3.5,sal:44600000,tm:42000000,pp:0,nh:false},
+  {no:62,n:'이태민',r:'대리',d:'플랫폼사업부',tc:'8년 6개월',ty:8,py:5.75,sal:61200000,tm:51000000,pp:0,nh:true},
+  {no:63,n:'조예진',r:'대리',d:'플랫폼사업부',tc:'6년 6개월',ty:6,py:5.75,sal:43000000,tm:46000000,pp:0,nh:false},
+  {no:64,n:'신상우',r:'사원',d:'디지털서비스사업부',tc:'3년 8개월',ty:3,py:4.83,sal:39000000,tm:40000000,pp:0,nh:true},
+  {no:65,n:'박수빈',r:'대리',d:'인프라솔루션사업부',tc:'6년 3개월',ty:6,py:2.75,sal:46300000,tm:46000000,pp:0,nh:true},
+  {no:66,n:'송현우',r:'대리',d:'디지털서비스사업부',tc:'8년 6개월',ty:8,py:1.42,sal:53700000,tm:51000000,pp:0,nh:false}
 ];
 
 // 진급 보조지표 자동계산 (참고용)
@@ -1418,7 +1452,7 @@ function renderList(){
       <div class="ei-av" style="background:${avBg}15;color:${avBg};outline:1px solid ${avBg}30">${d.n[0]}</div>
       <div class="ei-body">
         <div class="ei-name">${d.n}${nhTag}${promoCandTag}${promoConfTag}${riskTag}</div>
-        <div class="ei-sub"><span class="dp ${dc}">${deptShort(d.d)}</span> ${rdsp(d.r)} · ${d.tc}</div>
+        <div class="ei-sub"><span class="dp ${dc}">${deptShort(d.d)}</span> ${rdsp(d.r)} · ${d.tc} (${yrCh(d.ty)})</div>
       </div>
       <div class="ei-badges">${apvTag}${gradeTag}<span class="ei-st ${stC}">${stL}</span></div>
     </div>`;
@@ -1468,7 +1502,7 @@ function renderProfile(d){
   const promoHtml = isPromoCand ? `
     <div class="promo-box">
       <div class="promo-title">진급 검토</div>
-      <div class="promo-cand-info">총경력 만 ${d.ty}년 · ${rk}→${d.promoTo} 대상</div>
+      <div class="promo-cand-info">총경력 ${d.tc} → <strong>${yrCh(d.ty)}</strong> · ${rk}→${d.promoTo} 대상</div>
       <div class="promo-check-row">
         <input type="checkbox" id="promo-chk-${d.no}" ${isPromoConf?'checked':''} onchange="togglePromo(${d.no})">
         <label for="promo-chk-${d.no}">진급 확정</label>
@@ -1499,8 +1533,9 @@ function renderProfile(d){
             ${d.nh?'<span class="new-tag">경력입사</span>':''}
             ${isPromoCand?'<span class="promo-tag">진급↑</span>':''}
           </div>
-          <div class="pf-dept">${rk} · ${d.tc} · 진급년차 ${d.py.toFixed(1)}년</div>
+          <div class="pf-dept">${rk} · 총경력 <strong>${d.tc}</strong> <span style="font-size:10px;color:var(--ci-royal);font-weight:700;background:var(--adj-a);padding:1px 5px;border-radius:3px;border:1px solid var(--adj-b)">${yrCh(d.ty)}</span> · 진급년차 ${d.py.toFixed(1)}년</div>
           <div class="pf-stats">
+            <div class="ps"><div class="ps-v" style="color:var(--t1)">${d.tc}</div><div class="ps-l">총경력 (${yrCh(d.ty)})</div></div>
             <div class="ps"><div class="ps-v">${fw(d.sal)}</div><div class="ps-l">현 연봉</div></div>
             <div class="ps"><div class="ps-v" style="color:var(--t2)">${fw(d.tm)}</div><div class="ps-l">테이블 최소</div></div>
             <div class="ps"><div class="ps-v" style="color:${stColor(d.st)}">${d.df>=0?'+':''}${fw(d.df)}</div><div class="ps-l">테이블 대비</div></div>
@@ -1558,7 +1593,7 @@ function renderProfile(d){
       <div class="pf-col-right-promo">
         <div class="pf-rp-title">진급 검토${isPromoCand?` <span style="font-size:9px;color:var(--promo);font-weight:700">↑대상</span>`:''}</div>
         <div class="promo-box">
-          <div class="promo-cand-info">${rk}→${PROMO_TO[rdsp(d.r)]||'없음'}${isPromoCand?` (만 ${d.ty}년)`:' (특진)'}</div>
+          <div class="promo-cand-info">${rk}→${PROMO_TO[rdsp(d.r)]||'없음'}${isPromoCand?` (만 ${d.ty}년 = ${yrCh(d.ty)})`:' (특진)'}</div>
           <div class="promo-check-row">
             <input type="checkbox" id="promo-chk-${d.no}" ${isPromoConf?'checked':''} onchange="togglePromo(${d.no})">
             <label for="promo-chk-${d.no}">진급 확정</label>
@@ -1783,7 +1818,7 @@ function renderPosChart(d){
         titleColor:'#1a1d2e',bodyColor:'#4a5070',padding:8,
         callbacks:{
           label:c=>c.raw.name?`${c.raw.name} · ${Math.round(c.raw.y).toLocaleString()}만 · ${c.raw.st}`:`${c.dataset.label}: ${Math.round(c.raw.y).toLocaleString()}만`,
-          title:items=>items[0].raw.x!=null?`총경력 만 ${items[0].raw.x}년`:''
+          title:items=>items[0].raw.x!=null?`만 ${items[0].raw.x}년 = ${items[0].raw.x+1}년차`:''
         }}},
     scales:{
       x:{type:'linear',min:0,max:30,
@@ -1918,7 +1953,7 @@ function exportCSV(){
   const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});
   const url=URL.createObjectURL(blob);
   const a=document.createElement('a');
-  a.href=url;a.download='MOONHR_연봉조정_'+new Date().toISOString().slice(0,10)+'.csv';
+  a.href=url;a.download='MOON HR_연봉조정_'+new Date().toISOString().slice(0,10)+'.csv';
   a.click();URL.revokeObjectURL(url);
 }
 
@@ -2178,7 +2213,7 @@ function buildReport(){
   document.getElementById('report-body').innerHTML = `
     <div class="rpt-header">
       <div class="rpt-title">2026년 연봉 조정 검토 보고서</div>
-      <div class="rpt-subtitle">MOON HR · 인사팀 · ${dateStr} 기준 · 총 ${DATA.length}명 (임원 제외)</div>
+      <div class="rpt-subtitle">MOON HR · 경영지원팀 · ${dateStr} 기준 · 총 ${DATA.length}명 (임원 제외)</div>
     </div>
 
     <div class="rpt-kpi-grid">
@@ -2843,7 +2878,7 @@ function downloadTemplate(){
   ws3['!cols'] = [{wch:8},{wch:12},{wch:16}];
   XLSX.utils.book_append_sheet(wb, ws3, '직급테이블기준');
 
-  XLSX.writeFile(wb, 'MOONHR_연봉조정_양식.xlsx');
+  XLSX.writeFile(wb, 'MOON HR_연봉조정_양식.xlsx');
   showToast('✓ 양식 다운로드 완료 (현재 데이터 포함)');
 }
 
@@ -2871,10 +2906,10 @@ function handleXlsxUpload(e){
         const rk  = String(r[2]||'').trim();
         const d   = String(r[3]||'').trim();
         const tc  = String(r[4]||'').trim();
-        const ty  = parseFloat(r[5])||0;
+        const ty  = parseFloat(r[5])||0;           // 만 년수(floor) — Excel 입력값 그대로
         const py  = parseFloat(r[6])||0;
         const sal = parseInt(r[7])||0;
-        const tm  = parseInt(r[8])||0;
+        const tm  = lookupTm(String(r[2]||'').trim(), ty); // floor ty 기준 TBL 재계산
         const pp  = parseInt(r[9])||0;
         const nh  = String(r[10]).toUpperCase()==='TRUE';
         return {no,n,r:rk,d,tc,ty,py,sal,tm,pp,nh};
@@ -2886,6 +2921,8 @@ function handleXlsxUpload(e){
       DATA.length = 0;
       newData.forEach(row=>{
         const mapped_rk = RANK_MAP[row.r]||row.r;
+        // tm을 ceiling ty 기준으로 재보정 (업로드 시 Excel tm 칼럼 무시하고 TBL 기준 적용)
+        row.tm = lookupTm(row.r, row.ty);
         const min = PROMO_MIN[mapped_rk];
         row.isPromoCand = min!=null && row.ty>=min;
         row.promoTo     = PROMO_TO[mapped_rk]||'';
@@ -3091,13 +3128,23 @@ document.addEventListener('keydown', e => {
 // ══════════════════════════════════════════════
 // INIT
 // ══════════════════════════════════════════════
+
+// DEMO DATA 초기 보정: ty=만 년수(floor) 유지, tm만 TBL 재계산
+DATA.forEach(d=>{
+  d.tm = lookupTm(d.r, d.ty);   // floor ty 기준 TBL 재계산
+  const rk  = RANK_MAP[d.r]||d.r;
+  const min = PROMO_MIN[rk];
+  d.isPromoCand   = min!=null && d.ty>=min;  // 만 년수 기준 진급 판단
+  d.promoTo       = PROMO_TO[rk]||'';
+  d.promoBonusAmt = PROMO_BONUS[rk]||0;
+  d.df = d.sal - d.tm;
+  d.st = d.df<0?'Floor 미달':d.df>5000000?'Cap 초과':'정상';
+});
+
 updateAll();
 applyPreset('default');
 initDeptDynamic();  // 사업부 동적 초기화
 autoZoom();
-// 구버전 키 정리
-try { localStorage.removeItem('aromit_scenarios'); } catch(e){}
-
 </script>
 </body>
 </html>
