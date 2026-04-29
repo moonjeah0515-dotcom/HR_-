@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>성과관리 시스템 — HR SaaS Module</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#f2f3f7;--s1:#fff;--s2:#f6f7fb;--s3:#ecedf4;
+  --b1:#dde0ec;--b2:#c8cce0;
+  --ink:#1a1d2e;--ink2:#4a5070;--ink3:#7a809a;--ink4:#b0b4c8;
+  --accent:#1a2fff;--accent-pale:#eef0ff;
+  --ok:#22805a;--ok-bg:#e8f5ee;
+  --warn:#a07828;--warn-bg:#fef8ec;
+  --danger:#c03040;--danger-bg:#fceef0;
+  --purple:#6840b8;--purple-bg:#f0ecf8;
+  --teal:#1880a0;--teal-bg:#e8f4f8;
+  --mono:'DM Mono',monospace;--sans:'Noto Sans KR',sans-serif;
+  --r:8px;
+}
+body{font-family:var(--sans);background:var(--bg);color:var(--ink);font-size:13px;min-height:100vh}
+.hd{background:#1e2140;padding:0 28px;display:flex;align-items:center;height:44px;gap:16px;position:sticky;top:0;z-index:100}
+.logo{font-size:14px;font-weight:700;color:#fff}.logo em{color:#6ea8ff;font-style:normal}
+.hd-sep{width:1px;height:16px;background:rgba(255,255,255,.12)}
+.hd-title{font-size:11px;color:rgba(255,255,255,.45)}
+.hd-right{margin-left:auto;display:flex;gap:8px}
+.hd-badge{font-size:9px;padding:3px 10px;border-radius:20px;background:rgba(255,255,255,.07);color:rgba(255,255,255,.5)}
+.tabs{display:flex;gap:0;padding:0 28px;background:var(--s1);border-bottom:1px solid var(--b1)}
+.tab{padding:10px 20px;font-size:11px;font-weight:500;color:var(--ink3);cursor:pointer;border-bottom:2px solid transparent;transition:all .12s}
+.tab:hover{color:var(--ink)}.tab.active{color:var(--accent);border-bottom-color:var(--accent)}
+.toolbar{display:flex;align-items:center;gap:10px;padding:10px 28px;background:var(--s1);border-bottom:1px solid var(--b1)}
+.toolbar select{padding:6px 10px;border:1px solid var(--b1);border-radius:6px;font-size:12px;font-family:var(--sans);background:var(--s2);color:var(--ink)}
+.toolbar label{font-size:11px;color:var(--ink3);font-weight:500}
+.toolbar-right{margin-left:auto;display:flex;gap:6px}
+.btn{padding:6px 14px;border:none;border-radius:6px;font-size:11px;font-weight:600;font-family:var(--sans);cursor:pointer;transition:all .12s}
+.btn-primary{background:var(--accent);color:#fff}.btn-primary:hover{background:#0f1bcc}
+.btn-ghost{background:none;border:1px solid var(--b1);color:var(--ink3)}.btn-ghost:hover{border-color:var(--accent);color:var(--accent)}
+.btn-ok{background:var(--ok);color:#fff}
+.content{padding:16px 28px}
+.view{display:none}.view.active{display:block}
+
+/* KPI */
+.kpi-strip{display:grid;grid-template-columns:repeat(auto-fit,minmax(155px,1fr));gap:10px;margin-bottom:16px}
+.kpi{background:var(--s1);border:1px solid var(--b1);border-radius:var(--r);padding:14px 16px}
+.kpi-label{font-size:10px;color:var(--ink4);font-weight:500;letter-spacing:.4px;text-transform:uppercase;margin-bottom:3px}
+.kpi-val{font-family:var(--mono);font-size:22px;font-weight:500;color:var(--ink)}
+.kpi-val span{font-size:11px;color:var(--ink3);font-weight:400}
+.kpi-sub{font-size:10px;color:var(--ink4);margin-top:2px}
+
+/* TABLE */
+.tbl-wrap{background:var(--s1);border:1px solid var(--b1);border-radius:var(--r);overflow:hidden;margin-bottom:16px}
+.tbl-title{padding:12px 16px;font-size:12px;font-weight:700;border-bottom:1px solid var(--b1);display:flex;align-items:center;gap:8px}
+.tbl-title::before{content:'';width:3px;height:14px;background:var(--accent);border-radius:2px}
+table{width:100%;border-collapse:collapse;font-size:12px}
+th{text-align:left;font-size:10px;font-weight:600;color:var(--ink4);letter-spacing:.4px;text-transform:uppercase;padding:8px 12px;border-bottom:2px solid var(--b1);position:sticky;top:0;background:var(--s1)}
+td{padding:8px 12px;border-bottom:1px solid var(--s3);color:var(--ink2)}
+tr:hover td{background:var(--accent-pale)}
+.mono{font-family:var(--mono);color:var(--ink)}
+.tag{display:inline-block;font-size:9px;font-weight:600;padding:2px 7px;border-radius:3px}
+.tag-ok{background:var(--ok-bg);color:var(--ok)}
+.tag-warn{background:var(--warn-bg);color:var(--warn)}
+.tag-danger{background:var(--danger-bg);color:var(--danger)}
+.tag-info{background:var(--accent-pale);color:var(--accent)}
+.tag-purple{background:var(--purple-bg);color:var(--purple)}
+.tag-teal{background:var(--teal-bg);color:var(--teal)}
+.total-row td{font-weight:700;border-top:2px solid var(--b1);background:var(--s2)}
+
+/* FTE BAR */
+.fte-bar-wrap{display:flex;align-items:center;gap:8px}
+.fte-bar{height:20px;border-radius:3px;display:flex;overflow:hidden;flex:1}
+.fte-seg{height:100%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:600;color:#fff;min-width:20px}
+
+/* GRADE */
+.grade-badge{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;font-size:13px;font-weight:700}
+.grade-S{background:linear-gradient(135deg,#ffd700,#ff9500);color:#fff}
+.grade-A{background:var(--accent);color:#fff}
+.grade-B{background:var(--ok);color:#fff}
+.grade-C{background:var(--warn);color:#fff}
+.grade-D{background:var(--danger);color:#fff}
+
+/* EVAL INPUT */
+.eval-row{display:grid;grid-template-columns:1fr 60px;gap:8px;align-items:center;padding:6px 0;border-bottom:1px solid var(--s3)}
+.eval-row:last-child{border:none}
+.eval-item-label{font-size:12px;color:var(--ink2)}
+.eval-score{display:flex;gap:3px}
+.eval-score button{width:28px;height:28px;border:1px solid var(--b1);border-radius:4px;background:var(--s2);font-size:11px;font-weight:600;color:var(--ink3);cursor:pointer;font-family:var(--mono);transition:all .1s}
+.eval-score button.selected{background:var(--accent);color:#fff;border-color:var(--accent)}
+.eval-score button:hover{border-color:var(--accent)}
+
+/* DIST CHART */
+.dist-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin:16px 0}
+.dist-col{text-align:center}
+.dist-bar-outer{height:160px;background:var(--s2);border-radius:4px;display:flex;align-items:flex-end;justify-content:center;position:relative;margin-bottom:6px}
+.dist-bar-inner{width:60%;border-radius:4px 4px 0 0;transition:height .4s ease;display:flex;align-items:flex-end;justify-content:center;padding-bottom:4px}
+.dist-bar-num{font-family:var(--mono);font-size:11px;font-weight:600;color:#fff}
+.dist-label{font-size:12px;font-weight:700}
+.dist-pct{font-family:var(--mono);font-size:10px;color:var(--ink3)}
+.dist-target{font-size:9px;color:var(--ink4);margin-top:2px}
+
+/* SALARY LINK */
+.link-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;margin-top:16px}
+.link-card{background:var(--s1);border:1px solid var(--b1);border-radius:var(--r);padding:14px;text-align:center}
+.link-card .lc-grade{font-size:18px;font-weight:700;margin-bottom:4px}
+.link-card .lc-rate{font-family:var(--mono);font-size:24px;font-weight:500;margin-bottom:2px}
+.link-card .lc-count{font-size:11px;color:var(--ink3)}
+.link-card .lc-cost{font-family:var(--mono);font-size:12px;color:var(--ink2);margin-top:6px;padding-top:6px;border-top:1px solid var(--s3)}
+
+/* SETTINGS */
+.settings-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px}
+.setting-card{background:var(--s1);border:1px solid var(--b1);border-radius:var(--r);padding:16px}
+.setting-card h3{font-size:12px;font-weight:700;margin-bottom:12px;display:flex;align-items:center;gap:6px}
+.setting-card h3::before{content:'';width:3px;height:12px;border-radius:2px;background:var(--accent)}
+.fg{margin-bottom:10px}
+.fg label{display:block;font-size:11px;font-weight:500;color:var(--ink2);margin-bottom:3px}
+.fg input,.fg select{width:100%;padding:6px 10px;border:1px solid var(--b1);border-radius:6px;font-size:12px;font-family:var(--sans);background:var(--s2);color:var(--ink)}
+.fg input:focus{outline:none;border-color:var(--accent);background:#fff}
+.fg .help{font-size:10px;color:var(--ink4);margin-top:2px}
+.frow{display:flex;gap:8px}.frow .fg{flex:1}
+
+@media print{.hd,.tabs,.toolbar{display:none!important}.content{padding:10px}}
+</style>
+</head>
+<body>
+
+<div class="hd">
+  <div class="logo">HR <em>SaaS</em></div><div class="hd-sep"></div>
+  <div class="hd-title">성과관리 시스템 (FTE 기반)</div>
+  <div class="hd-right"><div class="hd-badge">M4 · 성과관리</div><div class="hd-badge">Portfolio Demo</div></div>
+</div>
+
+<div class="tabs">
+  <div class="tab active" onclick="switchView('fte')">FTE 현황</div>
+  <div class="tab" onclick="switchView('eval')">평가 입력</div>
+  <div class="tab" onclick="switchView('dist')">등급 배분</div>
+  <div class="tab" onclick="switchView('salary')">연봉 연동</div>
+</div>
+
+<div class="toolbar">
+  <label>평가 기간</label>
+  <select id="evalPeriod"><option>2026년 상반기</option><option>2025년 하반기</option></select>
+  <label style="margin-left:12px">부서</label>
+  <select id="deptFilter" onchange="renderAll()"><option value="all">전체</option></select>
+  <div class="toolbar-right">
+    <button class="btn btn-ghost" onclick="generate()">데모 데이터 생성</button>
+    <button class="btn btn-primary" onclick="autoGrade()">등급 자동 배분</button>
+  </div>
+</div>
+
+<div class="content">
+  <div class="view active" id="v-fte"></div>
+  <div class="view" id="v-eval"></div>
+  <div class="view" id="v-dist"></div>
+  <div class="view" id="v-salary"></div>
+</div>
+
+<script>
+const DEPTS=['개발1팀','개발2팀','기획팀','인프라팀','경영지원'];
+const EMP_TYPES=[
+  {id:'regular',label:'정규직',color:'#1a2fff',fte:1.0},
+  {id:'contract',label:'계약직',color:'#6840b8',fte:1.0},
+  {id:'dispatch',label:'파견직',color:'#1880a0',fte:0.8},
+  {id:'parttime',label:'파트타임',color:'#a07828',fte:0.5}
+];
+const GRADES=[
+  {id:'S',label:'S',color:'#ff9500',bg:'linear-gradient(135deg,#ffd700,#ff9500)',target:10},
+  {id:'A',label:'A',color:'#1a2fff',bg:'#1a2fff',target:20},
+  {id:'B',label:'B',color:'#22805a',bg:'#22805a',target:40},
+  {id:'C',label:'C',color:'#a07828',bg:'#a07828',target:20},
+  {id:'D',label:'D',color:'#c03040',bg:'#c03040',target:10}
+];
+const KPI_ITEMS=['프로젝트 납기 준수율','코드 품질 / 산출물 완성도','고객 만족도 / 내부 피드백','업무 효율 개선 기여'];
+const COMP_ITEMS=['커뮤니케이션','문제 해결력','팀워크','자기 개발'];
+const GRADE_RATES={S:8,A:5,B:3,C:1,D:0};
+
+const fmt=n=>Math.round(n).toLocaleString('ko-KR');
+let employees=[];
+
+function generate(){
+  const names=['직원A','직원B','직원C','직원D','직원E','직원F','직원G','직원H',
+    '직원I','직원J','직원K','직원L','직원M','직원N','직원O','직원P',
+    '직원Q','직원R','직원S','직원T'];
+
+  employees=names.map((name,i)=>{
+    const dept=DEPTS[i%DEPTS.length];
+    const etIdx=i<14?0:i<16?1:i<18?2:3;
+    const et=EMP_TYPES[etIdx];
+    const salary=Math.round((2800000+Math.random()*2500000)/10000)*10000;
+    const kpiScores=KPI_ITEMS.map(()=>Math.floor(Math.random()*3)+3);
+    const compScores=COMP_ITEMS.map(()=>Math.floor(Math.random()*3)+3);
+    const kpiAvg=kpiScores.reduce((a,b)=>a+b,0)/kpiScores.length;
+    const compAvg=compScores.reduce((a,b)=>a+b,0)/compScores.length;
+    const totalScore=Math.round((kpiAvg*0.6+compAvg*0.4)*100)/100;
+
+    return {
+      id:i+1,name,dept,empType:et,salary,
+      kpiScores,compScores,kpiAvg,compAvg,totalScore,
+      grade:null,raisePct:null
+    };
+  });
+
+  // Populate dept filter
+  const sel=document.getElementById('deptFilter');
+  sel.innerHTML='<option value="all">전체</option>'+DEPTS.map(d=>`<option>${d}</option>`).join('');
+
+  autoGrade();
+}
+
+function getFiltered(){
+  const d=document.getElementById('deptFilter').value;
+  return d==='all'?employees:employees.filter(e=>e.dept===d);
+}
+
+function autoGrade(){
+  // Sort by totalScore desc, assign grades by target %
+  const sorted=[...employees].sort((a,b)=>b.totalScore-a.totalScore);
+  const n=sorted.length;
+  let idx=0;
+  GRADES.forEach(g=>{
+    const count=Math.max(1,Math.round(n*g.target/100));
+    for(let i=0;i<count&&idx<n;i++,idx++){
+      sorted[idx].grade=g.id;
+      sorted[idx].raisePct=GRADE_RATES[g.id];
+    }
+  });
+  // Remaining get B
+  while(idx<n){sorted[idx].grade='B';sorted[idx].raisePct=GRADE_RATES.B;idx++;}
+  renderAll();
+}
+
+function renderAll(){
+  renderFTE();
+  renderEval();
+  renderDist();
+  renderSalary();
+}
+
+/* ═══ FTE 현황 ═══ */
+function renderFTE(){
+  const list=getFiltered();
+  const totalHC=list.length;
+  const totalFTE=list.reduce((s,e)=>s+e.empType.fte,0);
+  const regular=list.filter(e=>e.empType.id==='regular').length;
+  const nonRegular=totalHC-regular;
+
+  // Dept breakdown
+  const deptData=DEPTS.map(d=>{
+    const members=list.filter(e=>e.dept===d);
+    const hc=members.length;
+    const fte=members.reduce((s,e)=>s+e.empType.fte,0);
+    const types=EMP_TYPES.map(et=>({...et,count:members.filter(e=>e.empType.id===et.id).length}));
+    const avgSalary=hc?Math.round(members.reduce((s,e)=>s+e.salary,0)/hc):0;
+    return {dept:d,hc,fte:Math.round(fte*10)/10,types,avgSalary,costPerFTE:fte?Math.round(members.reduce((s,e)=>s+e.salary,0)/fte):0};
+  }).filter(d=>d.hc>0);
+
+  document.getElementById('v-fte').innerHTML=`
+    <div class="kpi-strip">
+      <div class="kpi"><div class="kpi-label">HC (머릿수)</div><div class="kpi-val">${totalHC}<span>명</span></div></div>
+      <div class="kpi"><div class="kpi-label">FTE (실질공수)</div><div class="kpi-val">${totalFTE.toFixed(1)}<span>명</span></div><div class="kpi-sub">HC 대비 ${(totalFTE/totalHC*100).toFixed(0)}%</div></div>
+      <div class="kpi"><div class="kpi-label">정규직</div><div class="kpi-val">${regular}<span>명</span></div><div class="kpi-sub">${(regular/totalHC*100).toFixed(0)}%</div></div>
+      <div class="kpi"><div class="kpi-label">비정규</div><div class="kpi-val">${nonRegular}<span>명</span></div><div class="kpi-sub">계약·파견·파트타임</div></div>
+      <div class="kpi"><div class="kpi-label">FTE당 평균 인건비</div><div class="kpi-val">${fmt(Math.round(list.reduce((s,e)=>s+e.salary,0)/totalFTE))}<span>원</span></div></div>
+    </div>
+    <div class="tbl-wrap">
+      <div class="tbl-title">부서별 HC vs FTE 비교</div>
+      <table>
+        <tr><th>부서</th><th>HC</th><th>FTE</th><th>고용형태 구성</th><th>FTE 비율</th><th>평균 급여</th><th>FTE당 인건비</th></tr>
+        ${deptData.map(d=>`<tr>
+          <td style="font-weight:600">${d.dept}</td>
+          <td class="mono">${d.hc}</td>
+          <td class="mono" style="font-weight:600">${d.fte}</td>
+          <td><div class="fte-bar-wrap"><div class="fte-bar" style="width:120px">${d.types.filter(t=>t.count).map(t=>`<div class="fte-seg" style="width:${t.count/d.hc*100}%;background:${t.color}" title="${t.label} ${t.count}명">${t.count}</div>`).join('')}</div></div></td>
+          <td class="mono">${(d.fte/d.hc*100).toFixed(0)}%</td>
+          <td class="mono">${fmt(d.avgSalary)}</td>
+          <td class="mono" style="font-weight:600">${fmt(d.costPerFTE)}</td>
+        </tr>`).join('')}
+        <tr class="total-row">
+          <td>합계</td><td class="mono">${totalHC}</td><td class="mono">${totalFTE.toFixed(1)}</td>
+          <td></td><td class="mono">${(totalFTE/totalHC*100).toFixed(0)}%</td>
+          <td class="mono">${fmt(Math.round(list.reduce((s,e)=>s+e.salary,0)/totalHC))}</td>
+          <td class="mono">${fmt(Math.round(list.reduce((s,e)=>s+e.salary,0)/totalFTE))}</td>
+        </tr>
+      </table>
+    </div>
+    <div style="display:flex;gap:8px;margin-top:8px">
+      ${EMP_TYPES.map(t=>`<span style="display:flex;align-items:center;gap:4px;font-size:11px;color:var(--ink3)"><span style="width:10px;height:10px;border-radius:2px;background:${t.color}"></span>${t.label} (FTE ${t.fte})</span>`).join('')}
+    </div>
+  `;
+}
+
+/* ═══ 평가 입력 ═══ */
+function renderEval(){
+  const list=getFiltered();
+  document.getElementById('v-eval').innerHTML=`
+    <div class="tbl-wrap">
+      <div class="tbl-title">KPI(60%) + 역량(40%) 평가 현황</div>
+      <table>
+        <tr><th>이름</th><th>부서</th><th>유형</th>${KPI_ITEMS.map(k=>`<th style="font-size:9px;max-width:70px">${k}</th>`).join('')}<th>KPI 평균</th>${COMP_ITEMS.map(c=>`<th style="font-size:9px;max-width:60px">${c}</th>`).join('')}<th>역량 평균</th><th>종합</th><th>등급</th></tr>
+        ${list.map(e=>{
+          const gradeObj=GRADES.find(g=>g.id===e.grade);
+          return `<tr>
+            <td style="font-weight:600">${e.name}</td>
+            <td>${e.dept}</td>
+            <td><span class="tag" style="background:${e.empType.color}15;color:${e.empType.color}">${e.empType.label}</span></td>
+            ${e.kpiScores.map(s=>`<td class="mono" style="${s>=4?'color:var(--ok);font-weight:600':s<=2?'color:var(--danger)':''}">${s}</td>`).join('')}
+            <td class="mono" style="font-weight:600">${e.kpiAvg.toFixed(1)}</td>
+            ${e.compScores.map(s=>`<td class="mono" style="${s>=4?'color:var(--ok);font-weight:600':s<=2?'color:var(--danger)':''}">${s}</td>`).join('')}
+            <td class="mono" style="font-weight:600">${e.compAvg.toFixed(1)}</td>
+            <td class="mono" style="font-weight:700;font-size:14px">${e.totalScore.toFixed(2)}</td>
+            <td>${gradeObj?`<span class="grade-badge grade-${e.grade}">${e.grade}</span>`:''}</td>
+          </tr>`;
+        }).join('')}
+      </table>
+    </div>
+    <div style="font-size:11px;color:var(--ink3);margin-top:8px">
+      종합 점수 = KPI 평균(60%) + 역량 평균(40%) | 5점 척도 | 점수 클릭 시 수정 가능 (데모)
+    </div>
+  `;
+}
+
+/* ═══ 등급 배분 ═══ */
+function renderDist(){
+  const list=getFiltered();
+  const n=list.length;
+  const gradeData=GRADES.map(g=>{
+    const count=list.filter(e=>e.grade===g.id).length;
+    const pct=n?Math.round(count/n*100):0;
+    return {...g,count,pct};
+  });
+  const maxCount=Math.max(...gradeData.map(g=>g.count),1);
+
+  document.getElementById('v-dist').innerHTML=`
+    <div class="kpi-strip">
+      <div class="kpi"><div class="kpi-label">평가 대상</div><div class="kpi-val">${n}<span>명</span></div></div>
+      ${gradeData.map(g=>`<div class="kpi"><div class="kpi-label">${g.id}등급</div><div class="kpi-val" style="color:${g.color}">${g.count}<span>명 (${g.pct}%)</span></div><div class="kpi-sub">목표 ${g.target}%</div></div>`).join('')}
+    </div>
+    <div class="tbl-wrap" style="padding:20px">
+      <div class="tbl-title">등급 분포 (실제 vs 목표)</div>
+      <div class="dist-grid">
+        ${gradeData.map(g=>`<div class="dist-col">
+          <div class="dist-bar-outer">
+            <div class="dist-bar-inner" style="height:${g.count/maxCount*100}%;background:${g.bg}">
+              <span class="dist-bar-num">${g.count}</span>
+            </div>
+          </div>
+          <div class="dist-label" style="color:${g.color}">${g.id}</div>
+          <div class="dist-pct">${g.pct}%</div>
+          <div class="dist-target">목표 ${g.target}%</div>
+        </div>`).join('')}
+      </div>
+    </div>
+    <div class="tbl-wrap">
+      <div class="tbl-title">등급별 인원 명단</div>
+      <table>
+        <tr><th>등급</th><th>이름</th><th>부서</th><th>종합 점수</th><th>유형</th><th>현재 급여</th></tr>
+        ${gradeData.flatMap(g=>list.filter(e=>e.grade===g.id).sort((a,b)=>b.totalScore-a.totalScore).map(e=>`<tr>
+          <td><span class="grade-badge grade-${e.grade}">${e.grade}</span></td>
+          <td style="font-weight:600">${e.name}</td>
+          <td>${e.dept}</td>
+          <td class="mono" style="font-weight:600">${e.totalScore.toFixed(2)}</td>
+          <td><span class="tag" style="background:${e.empType.color}15;color:${e.empType.color}">${e.empType.label}</span></td>
+          <td class="mono">${fmt(e.salary)}</td>
+        </tr>`)).join('')}
+      </table>
+    </div>
+  `;
+}
+
+/* ═══ 연봉 연동 ═══ */
+function renderSalary(){
+  const list=getFiltered();
+  const gradeData=GRADES.map(g=>{
+    const members=list.filter(e=>e.grade===g.id);
+    const count=members.length;
+    const rate=GRADE_RATES[g.id];
+    const totalCurrent=members.reduce((s,e)=>s+e.salary,0);
+    const totalRaise=Math.round(totalCurrent*rate/100);
+    return {...g,count,rate,totalCurrent,totalRaise,avgCurrent:count?Math.round(totalCurrent/count):0};
+  });
+
+  const grandCurrent=list.reduce((s,e)=>s+e.salary,0);
+  const grandRaise=gradeData.reduce((s,g)=>s+g.totalRaise,0);
+  const avgRaise=grandCurrent?Math.round(grandRaise/grandCurrent*10000)/100:0;
+
+  document.getElementById('v-salary').innerHTML=`
+    <div class="kpi-strip">
+      <div class="kpi"><div class="kpi-label">현재 총 인건비</div><div class="kpi-val">${fmt(grandCurrent)}<span>원/월</span></div></div>
+      <div class="kpi"><div class="kpi-label">인상 총액</div><div class="kpi-val" style="color:var(--accent)">${fmt(grandRaise)}<span>원/월</span></div></div>
+      <div class="kpi"><div class="kpi-label">평균 인상률</div><div class="kpi-val">${avgRaise}<span>%</span></div></div>
+      <div class="kpi"><div class="kpi-label">인상 후 총 인건비</div><div class="kpi-val">${fmt(grandCurrent+grandRaise)}<span>원/월</span></div></div>
+      <div class="kpi"><div class="kpi-label">연간 추가 비용</div><div class="kpi-val" style="color:var(--danger)">${fmt(grandRaise*12)}<span>원</span></div></div>
+    </div>
+
+    <div class="link-grid">
+      ${gradeData.map(g=>`<div class="link-card">
+        <div class="lc-grade" style="color:${g.color}"><span class="grade-badge grade-${g.id}" style="width:36px;height:36px;font-size:16px">${g.id}</span></div>
+        <div class="lc-rate" style="color:${g.color}">+${g.rate}%</div>
+        <div class="lc-count">${g.count}명</div>
+        <div class="lc-cost">월 +${fmt(g.totalRaise)}원</div>
+      </div>`).join('')}
+    </div>
+
+    <div class="tbl-wrap" style="margin-top:16px">
+      <div class="tbl-title">등급별 연봉 인상 시뮬레이션 → 연봉 조정 BI(No.03) 연동</div>
+      <table>
+        <tr><th>이름</th><th>부서</th><th>등급</th><th>현재 급여</th><th>인상률</th><th>인상액</th><th>인상 후 급여</th></tr>
+        ${list.sort((a,b)=>{const go='SABCD';return go.indexOf(a.grade)-go.indexOf(b.grade)||b.totalScore-a.totalScore;}).map(e=>{
+          const raise=Math.round(e.salary*e.raisePct/100);
+          return `<tr>
+            <td style="font-weight:600">${e.name}</td>
+            <td>${e.dept}</td>
+            <td><span class="grade-badge grade-${e.grade}" style="width:24px;height:24px;font-size:11px">${e.grade}</span></td>
+            <td class="mono">${fmt(e.salary)}</td>
+            <td class="mono" style="color:${GRADES.find(g=>g.id===e.grade).color};font-weight:600">+${e.raisePct}%</td>
+            <td class="mono" style="color:var(--accent)">+${fmt(raise)}</td>
+            <td class="mono" style="font-weight:700">${fmt(e.salary+raise)}</td>
+          </tr>`;
+        }).join('')}
+        <tr class="total-row">
+          <td colspan="3">합계 (${list.length}명)</td>
+          <td class="mono">${fmt(grandCurrent)}</td>
+          <td class="mono">+${avgRaise}%</td>
+          <td class="mono" style="color:var(--accent)">+${fmt(grandRaise)}</td>
+          <td class="mono">${fmt(grandCurrent+grandRaise)}</td>
+        </tr>
+      </table>
+    </div>
+    <div style="margin-top:12px;padding:10px 14px;background:var(--accent-pale);border-radius:6px;font-size:11px;color:var(--accent);display:flex;align-items:center;gap:8px">
+      <span style="font-size:14px">🔗</span> 인상 확정 데이터를 연봉 조정 BI 대시보드(No.03)로 전달하면, 연봉 테이블 자동 업데이트 + 근로계약서 자동생성(No.04)까지 연동됩니다.
+    </div>
+  `;
+}
+
+function switchView(v){
+  const views=['fte','eval','dist','salary'];
+  document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('active',i===views.indexOf(v)));
+  document.querySelectorAll('.view').forEach(el=>el.classList.remove('active'));
+  document.getElementById('v-'+v).classList.add('active');
+}
+
+generate();
+</script>
+</body>
+</html>

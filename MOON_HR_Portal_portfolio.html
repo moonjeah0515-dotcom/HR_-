@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>MOON HR · Smart Portal v2</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --bg:#f2f3f8; --surface:#ffffff; --border:#dde0ec; --text:#1a1d21; --sub:#6b7280;
+      --ci-blue:#2878c0; --ci-purple:#6828a8; --ci-royal:#3C50C1; --ci-indigo:#441F7D;
+      --ci-light-blue:#3AA9F6; --ci-light-purple:#A03BEF;
+      --ok:#287858; --warn:#a07828; --err:#b83038;
+      --radius:14px; --shadow:0 2px 12px rgba(0,0,0,0.07);
+      --shadow-hover:0 8px 30px rgba(0,0,0,0.13);
+      --t:0.22s cubic-bezier(.4,0,.2,1);
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
+    .layout{display:flex;min-height:100vh;}
+
+    /* ── 사이드바 ── */
+    .sidebar{width:220px;background:var(--ci-indigo);color:#fff;display:flex;flex-direction:column;padding:28px 0 20px;position:sticky;top:0;height:100vh;overflow-y:auto;flex-shrink:0;}
+    .sidebar-logo{padding:0 22px 24px;border-bottom:1px solid rgba(255,255,255,0.1);}
+    .brand{font-size:1.25rem;font-weight:700;letter-spacing:-0.5px;color:#fff;}
+    .brand-sub{font-size:0.68rem;color:rgba(255,255,255,0.5);margin-top:2px;letter-spacing:0.5px;}
+    .brand-ver{display:inline-block;background:var(--ci-light-blue);color:#fff;font-size:0.6rem;font-weight:700;padding:1px 6px;border-radius:8px;margin-left:6px;vertical-align:middle;}
+    .sidebar-nav{padding:16px 12px 0;flex:1;}
+    .nav-section-label{font-size:0.62rem;font-weight:700;color:rgba(255,255,255,0.35);letter-spacing:1.5px;text-transform:uppercase;padding:0 10px;margin:14px 0 6px;}
+    .nav-item{display:flex;align-items:center;gap:9px;padding:9px 10px;border-radius:8px;cursor:pointer;font-size:0.86rem;font-weight:500;color:rgba(255,255,255,0.72);transition:var(--t);margin-bottom:2px;border:none;background:none;width:100%;text-align:left;}
+    .nav-item:hover,.nav-item.active{background:rgba(255,255,255,0.13);color:#fff;}
+    .nav-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+    .sidebar-footer{padding:14px 22px 0;border-top:1px solid rgba(255,255,255,0.1);font-size:0.7rem;color:rgba(255,255,255,0.32);}
+
+    /* ── 메인 ── */
+    .main{flex:1;padding:36px 40px;overflow-x:hidden;}
+    .topbar{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:28px;}
+    .topbar h1{font-size:1.55rem;font-weight:700;letter-spacing:-0.8px;}
+    .topbar-right{display:flex;align-items:center;gap:9px;}
+    .date-chip{font-family:'DM Mono',monospace;font-size:0.76rem;color:var(--sub);background:var(--surface);border:1px solid var(--border);padding:4px 11px;border-radius:20px;}
+    .badge-v2{font-size:0.68rem;font-weight:700;padding:4px 10px;border-radius:20px;background:#e8f4ff;color:var(--ci-royal);border:1px solid #c5dcf5;}
+
+    /* 탭 */
+    .tab-bar{display:flex;gap:4px;margin-bottom:28px;background:var(--surface);padding:4px;border-radius:12px;border:1px solid var(--border);width:fit-content;}
+    .tab-btn{padding:8px 18px;border-radius:9px;border:none;background:transparent;font-family:'Noto Sans KR',sans-serif;font-size:0.84rem;font-weight:600;color:var(--sub);cursor:pointer;transition:var(--t);}
+    .tab-btn.active{background:var(--ci-royal);color:#fff;box-shadow:0 2px 8px rgba(60,80,193,0.25);}
+    .tab-btn:hover:not(.active){background:var(--bg);color:var(--text);}
+
+    /* 검색 */
+    .search-wrap{margin-bottom:26px;position:relative;}
+    .search-wrap input{width:100%;padding:12px 18px 12px 44px;border:1.5px solid var(--border);border-radius:var(--radius);font-size:0.9rem;font-family:'Noto Sans KR',sans-serif;background:var(--surface);color:var(--text);transition:var(--t);outline:none;}
+    .search-wrap input:focus{border-color:var(--ci-light-blue);box-shadow:0 0 0 3px rgba(58,169,246,0.13);}
+    .search-icon{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--sub);pointer-events:none;}
+
+    /* 섹션 & 카드 */
+    .section{margin-bottom:36px;}
+    .section-header{display:flex;align-items:center;gap:10px;margin-bottom:14px;}
+    .cat-badge{display:inline-flex;align-items:center;gap:7px;font-size:0.8rem;font-weight:700;padding:4px 12px;border-radius:20px;color:#fff;}
+    .count-chip{font-size:0.75rem;color:var(--sub);}
+    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:13px;}
+    .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:17px 19px;transition:var(--t);display:flex;flex-direction:column;gap:9px;position:relative;overflow:hidden;}
+    .card:hover{transform:translateY(-3px);box-shadow:var(--shadow-hover);border-color:transparent;}
+    .card-top{display:flex;align-items:center;gap:10px;}
+    .card-icon{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0;}
+    .card-name{font-size:0.92rem;font-weight:700;letter-spacing:-0.3px;line-height:1.3;}
+    .card-desc{font-size:0.78rem;color:var(--sub);line-height:1.5;}
+    .card-memo{background:#f8fafc;border:1px solid #eef0f2;border-radius:8px;padding:8px 11px;font-family:'DM Mono',monospace;font-size:0.74rem;color:#4b5563;line-height:1.65;}
+    .pw-val{color:transparent;text-shadow:0 0 7px rgba(0,0,0,0.4);cursor:pointer;transition:0.2s;user-select:none;}
+    .pw-val:hover,.pw-val.revealed{color:var(--ci-royal);text-shadow:none;}
+    .pw-label{color:var(--sub);}
+    .copy-btn{display:inline-flex;align-items:center;gap:4px;font-size:0.7rem;background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:2px 7px;cursor:pointer;margin-left:6px;font-family:'Noto Sans KR',sans-serif;color:var(--sub);transition:var(--t);}
+    .copy-btn:hover{background:var(--ci-royal);color:#fff;border-color:transparent;}
+    .card-link-btn{display:inline-flex;align-items:center;gap:5px;font-size:0.76rem;font-weight:600;color:var(--ci-royal);margin-top:auto;text-decoration:none;transition:var(--t);}
+    .card-link-btn:hover{opacity:0.7;}
+
+    /* 연락처 테이블 탭 */
+    .contact-table{width:100%;border-collapse:collapse;background:var(--surface);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);}
+    .contact-table th{background:var(--ci-royal);color:#fff;padding:10px 14px;font-size:0.78rem;font-weight:600;text-align:left;}
+    .contact-table td{padding:10px 14px;font-size:0.82rem;border-bottom:1px solid var(--border);}
+    .contact-table tr:last-child td{border-bottom:none;}
+    .contact-table tr:hover td{background:#f5f7ff;}
+    .cat-row td{background:#f0f2f8;font-weight:700;font-size:0.78rem;color:var(--ci-royal);}
+
+    /* 연간 일정 탭 */
+    .annual-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;}
+    .month-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);}
+    .month-header{background:var(--ci-royal);color:#fff;padding:10px 16px;font-size:0.9rem;font-weight:700;display:flex;align-items:center;justify-content:space-between;}
+    .month-header .evt-cnt{font-size:0.72rem;background:rgba(255,255,255,0.2);padding:2px 8px;border-radius:10px;}
+    .event-item{display:flex;align-items:flex-start;gap:10px;padding:9px 16px;border-bottom:1px solid var(--border);font-size:0.82rem;}
+    .event-item:last-child{border-bottom:none;}
+    .event-day{font-family:'DM Mono',monospace;font-size:0.72rem;color:var(--sub);min-width:28px;padding-top:1px;}
+    .event-content{flex:1;line-height:1.4;}
+
+    /* 회사정보 탭 */
+    .info-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px;}
+    .info-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);}
+    .info-card-title{font-size:0.8rem;font-weight:700;color:var(--ci-royal);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:14px;padding-bottom:10px;border-bottom:2px solid var(--ci-light-blue);}
+    .info-row{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid var(--border);font-size:0.85rem;}
+    .info-row:last-child{border-bottom:none;}
+    .info-label{color:var(--sub);font-size:0.8rem;}
+    .info-value{font-weight:500;font-family:'DM Mono',monospace;font-size:0.8rem;}
+
+    /* 빈/에러 상태 */
+    .empty-state{text-align:center;padding:60px 20px;color:var(--sub);}
+    .empty-state .icon{font-size:2.8rem;margin-bottom:12px;}
+    .tab-panel{display:none;}
+    .tab-panel.active{display:block;}
+
+    @media(max-width:768px){.sidebar{display:none;}.main{padding:20px 16px;}.grid{grid-template-columns:1fr 1fr;}.tab-btn{padding:7px 12px;font-size:0.78rem;}}
+    @media(max-width:480px){.grid{grid-template-columns:1fr;}.annual-grid{grid-template-columns:1fr;}}
+  </style>
+</head>
+<body>
+<script>
+// ── 엑셀에서 추출한 데이터 (오프라인 동작) ──────────────────
+const IDPW_DATA = [{"cat": "회사정보", "name": "주소", "url": "[비공개]", "id": "", "pw": "", "memo": ""}, {"cat": "회사정보", "name": "대표번호", "url": "[비공개]", "id": "", "pw": "", "memo": ""}, {"cat": "회사정보", "name": "팩스", "url": "[비공개]", "id": "", "pw": "", "memo": ""}, {"cat": "회사정보", "name": "사업자번호", "url": "[비공개]", "id": "", "pw": "", "memo": ""}, {"cat": "회사정보", "name": "법인등록번호", "url": "[비공개]", "id": "", "pw": "", "memo": ""}, {"cat": "기본계정", "name": "공동인증서", "url": "", "id": "", "pw": "", "memo": ""}, {"cat": "기본계정", "name": "법인인감카드", "url": "[비공개]", "id": "", "pw": "", "memo": ""}, {"cat": "회사운영사이트", "name": "회사홈페이지", "url": "https://www.moonhr-example.com", "id": "", "pw": "", "memo": ""}, {"cat": "회사운영사이트", "name": "그룹웨어", "url": "https://groupware.moonhr-example.com", "id": "", "pw": "", "memo": ""}, {"cat": "4대보험", "name": "건강보험공단EDI", "url": "https://insurance-edi.example.go.kr", "id": "user10_id", "pw": "Demo@0010!!", "memo": "4대보험 취득, 상실신고"}, {"cat": "4대보험", "name": "사회보험통합징수포털", "url": "https://insurance-portal.example.go.kr", "id": "", "pw": "", "memo": "건강, 연금 고지내역 확인 및 4대보험 완납증명서 발급"}, {"cat": "4대보험", "name": "고용산재토탈", "url": "http://labor-total.example.go.kr", "id": "user12_id", "pw": "Demo@0012!!", "memo": "고용, 산재 고지내역 확인 및 일자리안정자금 신청"}, {"cat": "4대보험", "name": "4대보험 정보연계센터", "url": "https://insurance-info.example.go.kr", "id": "user13_id", "pw": "Demo@0013!!", "memo": "4대보험 가입자명부 발급"}, {"cat": "4대보험", "name": "고용24", "url": "https://employment.example.go.kr/", "id": "user14_id", "pw": "Demo@0014!!", "memo": "일자리 관련 지원금 신청"}, {"cat": "관공서", "name": "국세청 홈택스", "url": "https://tax.example.go.kr", "id": "user15_id", "pw": "Demo@0015!!", "memo": "세금신고 및 계산서 발행, 국세 납세증명서 발급"}, {"cat": "관공서", "name": "정부24(민원24)", "url": "https://gov.example.kr", "id": "user16_id", "pw": "Demo@0016!!", "memo": "지방세 납세증명서 발급"}, {"cat": "관공서", "name": "고용노동부(노동포털)", "url": "http://labor.example.go.kr", "id": "", "pw": "", "memo": "민원, 취업규칙신고"}, {"cat": "관공서", "name": "중소기업현황정보시스템", "url": "https://sminfo.example.go.kr", "id": "user18_id", "pw": "Demo@0018!!", "memo": "중소기업확인서 발급"}, {"cat": "관공서", "name": "벤처확인종합관리시스템", "url": "https://venture.example.go.kr", "id": "user19_id", "pw": "Demo@0019!!", "memo": "벤처인증 및 확인서 발급"}, {"cat": "관공서", "name": "기술인증 관리시스템", "url": "https://innobiz.example.net/", "id": "user20_id", "pw": "Demo@0020!!", "memo": "이노비즈 인증"}, {"cat": "관공서", "name": "기업부설연구소 신고관리시스템", "url": "https://rnd.example.or.kr", "id": "", "pw": "", "memo": "기업부설연구소 현황신고관리"}, {"cat": "관공서", "name": "병역특례 관리시스템", "url": "https://rndjm.example.or.kr", "id": "user22_id", "pw": "Demo@0022!!", "memo": "병역특례업체 신청"}, {"cat": "관공서", "name": "중소기업 공공구매 종합정보", "url": "smpp.example.go.kr", "id": "user23_id", "pw": "Demo@0023!!", "memo": "직접생산증명서 발급"}, {"cat": "관공서", "name": "소프트웨어산업정보시스템", "url": "https://swit.example.or.kr", "id": "user24_id", "pw": "Demo@0024!!", "memo": "소프트웨어 사업자확인서 및 실적신고"}, {"cat": "관공서", "name": "전자수입인지", "url": "https://e-stamp.example.or.kr", "id": "", "pw": "", "memo": "인지세 납부(도급, 위임용)"}, {"cat": "관공서", "name": "특허청", "url": "https://patent.example.go.kr", "id": "", "pw": "", "memo": ""}, {"cat": "관공서", "name": "중소벤처24(법인)", "url": "https://smes.example.go.kr/", "id": "", "pw": "", "memo": ""}, {"cat": "관공서", "name": "나라장터", "url": "http://g2b.example.go.kr", "id": "user28_id", "pw": "Demo@0028!!", "memo": "지자체, 공공기관 입찰 및 계약"}, {"cat": "관공서", "name": "우체국", "url": "", "id": "user29_id", "pw": "Demo@0029!!", "memo": "우편물 주소 변경"}, {"cat": "금융기관", "name": "서울보증보험", "url": "https://sgic.example.co.kr", "id": "user30_id", "pw": "Demo@0030!!", "memo": "입찰ㆍ계약ㆍ선금 보증서발급"}, {"cat": "금융기관", "name": "기술보증기금(디지털지점)", "url": "https://kibo.example.or.kr", "id": "", "pw": "", "memo": "기술보증"}, {"cat": "금융기관", "name": "기업신용평가 A", "url": "https://ecredit.example.co.kr", "id": "user32_id", "pw": "Demo@0032!!", "memo": "기업신용평가"}, {"cat": "금융기관", "name": "기업신용평가 B", "url": "https://krating.example.co.kr", "id": "", "pw": "", "memo": "기업신용평가"}, {"cat": "금융기관", "name": "기업신용평가 C", "url": "https://srms.example.co.kr", "id": "user34_id", "pw": "Demo@0034!!", "memo": "기업신용평가"}, {"cat": "정부과제", "name": "기술개발사업 관리시스템(문종원1)", "url": "https://smtech.example.go.kr", "id": "user35_id", "pw": "Demo@0035!!", "memo": "중소기업 개발사업 종합관리시스템"}, {"cat": "정부과제", "name": "기술개발사업 관리시스템(문종원2)", "url": "https://smtech.example.go.kr", "id": "user36_id", "pw": "Demo@0036!!", "memo": "중소기업 개발사업 종합관리시스템"}, {"cat": "정부과제", "name": "기술개발사업 관리시스템(문종원3)", "url": "https://smtech.example.go.kr", "id": "user37_id", "pw": "Demo@0037!!", "memo": "중소기업 개발사업 종합관리시스템"}, {"cat": "정부과제", "name": "사업비집행시스템(문종원1)", "url": "https://gosims.example.go.kr", "id": "user38_id", "pw": "Demo@0038!!", "memo": "사업비 집행시스템"}, {"cat": "정부과제", "name": "사업비집행시스템(문종원4)", "url": "https://gosims.example.go.kr", "id": "user39_id", "pw": "Demo@0039!!", "memo": "사업비 집행시스템"}, {"cat": "정부과제", "name": "사업비집행시스템(문종원3)", "url": "https://gosims.example.go.kr", "id": "user40_id", "pw": "Demo@0040!!", "memo": "사업비 집행시스템"}, {"cat": "정부과제", "name": "통합RCMS", "url": "https://rcms.example.go.kr", "id": "user41_id", "pw": "Demo@0041!!", "memo": "과제지원금 처리"}, {"cat": "정부과제", "name": "정부과제 관리시스템 D", "url": "https://ezone.example.kr", "id": "user42_id", "pw": "", "memo": "사업관리 시스템"}, {"cat": "정부과제", "name": "연구비통합관리시스템(문종원1)", "url": "https://gaia.example.go.kr", "id": "user43_id", "pw": "Demo@0043!!", "memo": "사업비 집행시스템"}, {"cat": "정부과제", "name": "연구비통합관리시스템(문종원6)", "url": "https://gaia.example.go.kr", "id": "user44_id", "pw": "Demo@0044!!", "memo": "사업비 집행시스템"}, {"cat": "정부과제", "name": "과제정보관리시스템(문종원7)", "url": "https://pms.example.kr", "id": "user45_id", "pw": "Demo@0045!!", "memo": "사업비 집행시스템"}, {"cat": "정부과제", "name": "과제정보관리시스템(문종원3)", "url": "https://pms.example.kr", "id": "user46_id", "pw": "Demo@0046!!", "memo": "사업비 집행시스템"}, {"cat": "정부과제", "name": "과제정보관리시스템(문종원4)", "url": "https://pms.example.kr", "id": "user47_id", "pw": "Demo@0047!!", "memo": "사업비 집행시스템"}, {"cat": "정부과제", "name": "정부과제 관리시스템 E", "url": "https://smart.nipa.example.kr", "id": "user48_id", "pw": "Demo@0048!!", "memo": "nipa 사업관리시스템"}, {"cat": "정부과제", "name": "정부과제 비용관리시스템 E", "url": "https://nipa-rnd.example.com", "id": "user49_id", "pw": "Demo@0049!!", "memo": "nipa 사업비 집행 시스템"}, {"cat": "리조트", "name": "리조트 A(문종원1)", "url": "https://resort-a.example.kr", "id": "user50_id", "pw": "Demo@0050!!", "memo": ""}, {"cat": "리조트", "name": "리조트 A(문종원2)", "url": "https://resort-a.example.kr", "id": "user51_id", "pw": "Demo@0051!!", "memo": ""}, {"cat": "리조트", "name": "리조트 A(펜트하우스 무기명)", "url": "https://resort-a.example.kr", "id": "user52_id", "pw": "Demo@0052!!", "memo": ""}, {"cat": "리조트", "name": "리조트 A(레지던스 무기명)", "url": "https://resort-a.example.kr", "id": "user53_id", "pw": "Demo@0053!!", "memo": ""}, {"cat": "리조트", "name": "리조트 B", "url": "https://resort-b.example.co.kr/", "id": "user54_id", "pw": "Demo@0054!!", "memo": ""}, {"cat": "리조트", "name": "리조트 C", "url": "https://resort-c.example.com/", "id": "user55_id", "pw": "Demo@0055!!", "memo": ""}, {"cat": "계약 및 세금계산서", "name": "거래처 A 파트너포탈", "url": "https://partner.vendor-a.example.com", "id": "user56_id", "pw": "Demo@0056!!", "memo": "계약, 세금계산서 역발행"}, {"cat": "계약 및 세금계산서", "name": "거래처 A 기술지원", "url": "https://techcare.vendor-a.example.com/", "id": "user57_id", "pw": "Demo@0057!!", "memo": "기술자료요구서 서명"}, {"cat": "계약 및 세금계산서", "name": "거래처 B 협업포탈", "url": "https://partner.vendor-b.example.com", "id": "user58_id", "pw": "Demo@0058!!", "memo": ""}, {"cat": "계약 및 세금계산서", "name": "거래처 B-1 계약확정", "url": "partner.vendor-b2.example.com", "id": "user59_id", "pw": "Demo@0059!!", "memo": ""}, {"cat": "계약 및 세금계산서", "name": "거래처 A-1 파트너포탈", "url": "https://partner.vendor-a2.example.com", "id": "user60_id", "pw": "Demo@0060!!", "memo": ""}, {"cat": "계약 및 세금계산서", "name": "거래처 A 비즈포탈", "url": "https://biz.vendor-a.example.com", "id": "user61_id", "pw": "Demo@0061!!", "memo": "세금계산서 발행"}, {"cat": "계약 및 세금계산서", "name": "거래처 A 세금계산서", "url": "biz2.vendor-a.example.com", "id": "user62_id", "pw": "Demo@0062!!", "memo": "세금계산서 발행"}, {"cat": "계약 및 세금계산서", "name": "전자세금계산서 A", "url": "https://ebill-a.example.co.kr", "id": "user63_id", "pw": "Demo@0063!!", "memo": "세금계산서 발행"}, {"cat": "계약 및 세금계산서", "name": "전자세금계산서 B", "url": "https://ebill-b.example.co.kr", "id": "user64_id", "pw": "Demo@0064!!", "memo": ""}, {"cat": "계약 및 세금계산서", "name": "거래처 C 세금계산서", "url": "https://ebill-c.example.com", "id": "user65_id", "pw": "Demo@0065!!", "memo": "세금계산서 발행"}, {"cat": "계약 및 세금계산서", "name": "거래처 A 납부서 확인", "url": "https://mail.example.com", "id": "user66@example.com", "pw": "Demo@0066!!", "memo": ""}, {"cat": "계약 및 세금계산서", "name": "디지털서비스 포탈", "url": "", "id": "user67_id", "pw": "Demo@0067!!", "memo": ""}, {"cat": "인사업무", "name": "채용플랫폼 A", "url": "https://recruit-a.example.co.kr", "id": "user68_id", "pw": "Demo@0068!!", "memo": ""}, {"cat": "인사업무", "name": "채용플랫폼 B", "url": "https://recruit-b.example.co.kr", "id": "user69@example.com", "pw": "Demo@0069!!", "memo": ""}, {"cat": "인사업무", "name": "채용플랫폼 C", "url": "https://recruit-c.example.co.kr", "id": "user70@example.com", "pw": "Demo@0070!!", "memo": ""}, {"cat": "인사업무", "name": "채용플랫폼 D", "url": "https://recruit-d.example.co.kr", "id": "user71_id", "pw": "Demo@0071!!", "memo": ""}, {"cat": "인사업무", "name": "채용플랫폼 E", "url": "https://recruit-e.example.go.kr", "id": "", "pw": "", "memo": ""}, {"cat": "인사업무", "name": "채용플랫폼 F", "url": "http://recruit-f.example.co.kr", "id": "", "pw": "", "memo": ""}, {"cat": "인사업무", "name": "채용플랫폼 G", "url": "https://recruit-g.example.com", "id": "", "pw": "", "memo": ""}, {"cat": "인사업무", "name": "서울산업진흥원", "url": "https://support-a.example.kr/", "id": "", "pw": "", "memo": ""}, {"cat": "인사업무", "name": "중소기업인력지원사업", "url": "https://smes.example.go.kr/sanhakin/", "id": "", "pw": "", "memo": ""}, {"cat": "인사업무", "name": "서울일자리포털", "url": "http://support-c.example.go.kr/", "id": "", "pw": "", "memo": ""}, {"cat": "인사업무", "name": "고용24", "url": "https://employment.example.go.kr/", "id": "user78_id", "pw": "Demo@0078!!", "memo": ""}, {"cat": "인사업무", "name": "한국장애인고용공단", "url": "support-d.example.or.kr", "id": "user79_id", "pw": "Demo@0079!!", "memo": ""}, {"cat": "총무업무", "name": "명함제작 업체", "url": "https://print.example.co.kr/", "id": "user80_id", "pw": "Demo@0080!!", "memo": "명함 및 서류봉투 제작"}, {"cat": "총무업무", "name": "대한민국 법원 인터넷등기소", "url": "court.example.go.kr", "id": "user81_id", "pw": "Demo@0081!!", "memo": "인터넷 등기 발급"}, {"cat": "총무업무", "name": "화환 배송 업체", "url": "https://flower.example.kr", "id": "user82_id", "pw": "Demo@0082!!", "memo": "화환, 조화, 화분 배송"}, {"cat": "총무업무", "name": "근로자휴가지원사업", "url": "https://welfare-a.example.or.kr/", "id": "user83_id", "pw": "Demo@0083!!", "memo": "2024년 근로자휴가지원사업 신청"}, {"cat": "총무업무", "name": "복지플랫폼(기업관리자)", "url": "https://welfare-b.example.net", "id": "user84_id", "pw": "Demo@0084!!", "memo": ""}, {"cat": "총무업무", "name": "복지플랫폼(문종원5)", "url": "https://welfare-b.example.net", "id": "user85_id", "pw": "Demo@0085!!", "memo": ""}, {"cat": "총무업무", "name": "음료 구독 서비스(A지점)", "url": "https://beverage.example.com", "id": "user86@example.com", "pw": "Demo@0086!!", "memo": "캡슐커피 주문"}, {"cat": "총무업무", "name": "음료 구독 서비스(B지점)", "url": "https://beverage.example.com", "id": "user87@example.com", "pw": "Demo@0087!!", "memo": "캡슐커피 주문"}, {"cat": "총무업무", "name": "산업보건 교육기관", "url": "https://safety-edu.example.or.kr", "id": "user88@example.com", "pw": "Demo@0088!!", "memo": "산업안전보건 관리감독자 교육"}, {"cat": "총무업무", "name": "온라인 교육 플랫폼", "url": "", "id": "user89@example.com", "pw": "Demo@0089!!", "memo": ""}, {"cat": "총무업무", "name": "거래처 A 클라우드", "url": "", "id": "user90_id", "pw": "Demo@0090!!", "memo": ""}, {"cat": "총무업무", "name": "기프티콘 플랫폼", "url": "", "id": "user91@example.com", "pw": "Demo@0091!!", "memo": ""}, {"cat": "총무업무", "name": "장비관리 스프레드시트", "url": "", "id": "user92@example.com", "pw": "Demo@0092!!", "memo": ""}, {"cat": "총무업무", "name": "문서 협업 플랫폼", "url": "", "id": "user93@example.com", "pw": "Demo@0093!!", "memo": ""}, {"cat": "영업지원", "name": "대법원 전자소송", "url": "https://court-e.example.go.kr", "id": "", "pw": "", "memo": "미수금 강제집행 처리"}, {"cat": "영업지원", "name": "비대면바우처", "url": "https://startup.example.go.kr/", "id": "", "pw": "", "memo": ""}, {"cat": "영업지원", "name": "비대면바우처(공급실적)", "url": "https://voucher-supply.example.kr/", "id": "", "pw": "", "memo": ""}, {"cat": "영업지원", "name": "비대면바우처(정산)", "url": "https://voucher.example.kr/", "id": "", "pw": "", "memo": ""}, {"cat": "영업지원", "name": "페이투페이", "url": "https://pay-a.example.co.kr/", "id": "", "pw": "", "memo": ""}, {"cat": "영업지원", "name": "기업제로페이", "url": "https://pay-b.example.com/", "id": "", "pw": "", "memo": ""}, {"cat": "총무업무", "name": "명함제작 업체", "url": "https://print.example.co.kr/", "id": "user100_id", "pw": "Demo@0100!!", "memo": "명함 및 서류봉투 제작"}, {"cat": "총무업무", "name": "대한민국 법원 인터넷등기소", "url": "court.example.go.kr", "id": "user101_id", "pw": "Demo@0101!!", "memo": "인터넷 등기 발급"}, {"cat": "총무업무", "name": "화환 배송 업체", "url": "https://flower.example.kr", "id": "user102_id", "pw": "Demo@0102!!", "memo": "화환, 조화, 화분 배송"}, {"cat": "총무업무", "name": "근로자휴가지원사업", "url": "https://welfare-a.example.or.kr/", "id": "user103_id", "pw": "Demo@0103!!", "memo": "2024년 근로자휴가지원사업 신청"}, {"cat": "총무업무", "name": "복지플랫폼(기업관리자)", "url": "https://welfare-b.example.net", "id": "user104_id", "pw": "Demo@0104!!", "memo": ""}, {"cat": "총무업무", "name": "복지플랫폼(문종원4)", "url": "https://welfare-b.example.net", "id": "user105_id", "pw": "Demo@0105!!", "memo": ""}, {"cat": "총무업무", "name": "복지플랫폼(문종원5)", "url": "https://welfare-b.example.net", "id": "user106_id", "pw": "Demo@0106!!", "memo": ""}, {"cat": "총무업무", "name": "음료 구독 서비스(A지점)", "url": "https://beverage.example.com", "id": "user107@example.com", "pw": "Demo@0107!!", "memo": "캡슐커피 주문"}, {"cat": "총무업무", "name": "음료 구독 서비스(B지점)", "url": "https://beverage.example.com", "id": "user108@example.com", "pw": "Demo@0108!!", "memo": "캡슐커피 주문"}, {"cat": "총무업무", "name": "산업보건 교육기관", "url": "https://safety-edu.example.or.kr", "id": "user109@example.com", "pw": "Demo@0109!!", "memo": "산업안전보건 관리감독자 교육"}, {"cat": "총무업무", "name": "온라인 교육 플랫폼", "url": "", "id": "user110@example.com", "pw": "Demo@0110!!", "memo": ""}, {"cat": "총무업무", "name": "거래처 A 클라우드", "url": "", "id": "user111_id", "pw": "Demo@0111!!", "memo": ""}, {"cat": "총무업무", "name": "기프티콘 플랫폼", "url": "", "id": "user112@example.com", "pw": "Demo@0112!!", "memo": ""}, {"cat": "총무업무", "name": "장비관리 스프레드시트", "url": "", "id": "user113@example.com", "pw": "Demo@0113!!", "memo": ""}, {"cat": "총무업무", "name": "문서 협업 플랫폼", "url": "", "id": "user114@example.com", "pw": "Demo@0114!!", "memo": ""}];
+const CONTACTS  = [{"cat": "관공서", "name": "서울북부고용센터", "tel": "", "mgr": "", "email": "", "phone": "", "task": ""}, {"cat": "관공서", "name": "서울보증보험(종로지점)", "tel": "", "mgr": "", "email": "", "phone": "", "task": ""}, {"cat": "관공서", "name": "소프트웨어공제조합", "tel": "", "mgr": "", "email": "", "phone": "", "task": ""}, {"cat": "관공서", "name": "기술보증기금", "tel": "", "mgr": "", "email": "", "phone": "", "task": ""}, {"cat": "금융기관", "name": "기업은행", "tel": "", "mgr": "", "email": "", "phone": "", "task": ""}, {"cat": "금융기관", "name": "국민카드", "tel": "", "mgr": "", "email": "", "phone": "", "task": ""}, {"cat": "빌딩", "name": "주차관리사무소", "tel": "", "mgr": "", "email": "", "phone": "", "task": ""}, {"cat": "빌딩", "name": "운영팀", "tel": "", "mgr": "", "email": "", "phone": "", "task": ""}, {"cat": "빌딩", "name": "시설관리", "tel": "", "mgr": "", "email": "", "phone": "", "task": ""}, {"cat": "통신사", "name": "LG유플러스(영업점)", "tel": "", "mgr": "", "email": "", "phone": "", "task": ""}, {"cat": "통신사", "name": "LG유플러스", "tel": "02-000-0000", "mgr": "", "email": "", "phone": "", "task": ""}, {"cat": "거래처", "name": "세무사사무소", "tel": "", "mgr": "", "email": "", "phone": "", "task": "기장 및 세무대리"}, {"cat": "거래처", "name": "법무사", "tel": "", "mgr": "", "email": "", "phone": "", "task": "채권독촉 행정절차"}, {"cat": "거래처", "name": "애드모아", "tel": "", "mgr": "", "email": "", "phone": "", "task": "명함제작"}, {"cat": "거래처", "name": "채용플랫폼 A", "tel": "", "mgr": "", "email": "", "phone": "", "task": "채용공고 유료서비스"}, {"cat": "거래처", "name": "더존비즈온(설치)", "tel": "", "mgr": "", "email": "", "phone": "", "task": "더존 스마트A 설치"}, {"cat": "거래처", "name": "한국오에이렌탈", "tel": "", "mgr": "", "email": "", "phone": "", "task": "사무실 복합기 렌탈/토너주문"}, {"cat": "거래처", "name": "노무법인", "tel": "", "mgr": "", "email": "", "phone": "", "task": "인사노무 자문"}];
+const ANNUAL    = [{"month": "2월", "day": "", "content": "명절 선물 및 상여금 지급"}, {"month": "2월", "day": "", "content": "건강검진 대상자 공지"}, {"month": "2월", "day": "", "content": "연봉 기준표 갱신"}, {"month": "2월", "day": "28", "content": "연말정산 신고"}, {"month": "2월", "day": "28", "content": "지급명세서 제출(이자,배당,기타소득)"}, {"month": "3월", "day": "", "content": "인사평가 및 연봉재계약"}, {"month": "3월", "day": "10", "content": "지급명세서 제출(근로,퇴직,사업소득)"}, {"month": "3월", "day": "10", "content": "건강보험 보수총액 신고"}, {"month": "3월", "day": "15", "content": "고용ㆍ산재보험 보수총액 신고"}, {"month": "3월", "day": "31", "content": "전년도 결산분 법인세 신고ㆍ납부"}, {"month": "3월", "day": "10", "content": "기업 신용평가 갱신"}, {"month": "3월", "day": "10", "content": "중소기업 확인서 갱신 및 사업자 변경(결산반영)"}, {"month": "3월", "day": "25", "content": "1분기 부가가치세 신고ㆍ납부"}, {"month": "3월", "day": "30", "content": "전년도 결산분 법인지방소득세 납부"}, {"month": "5월", "day": "", "content": "기업인증 갱신(정기)"}, {"month": "5월", "day": "31", "content": "국민연금 보수총액 신고"}, {"month": "6월", "day": "", "content": "창립기념일 행사"}, {"month": "6월", "day": "", "content": "임원 중임 등기(정기)"}, {"month": "7월", "day": "", "content": "건강검진 대상자 공지"}, {"month": "7월", "day": "25", "content": "2분기 부가가치세 신고ㆍ납부"}, {"month": "7월", "day": "31", "content": "근로소득 간이지급명세서 제출"}, {"month": "7월", "day": "31", "content": "주민세(재산분) 납부"}, {"month": "7월", "day": "31", "content": "상반기 장애인 고용계획 실시상황 보고"}, {"month": "8월", "day": "", "content": "온라인팩스 서비스 갱신"}, {"month": "8월", "day": "31", "content": "주민세(법인균등분) 납부"}, {"month": "8월", "day": "31", "content": "법인세 중간예납"}, {"month": "9월", "day": "", "content": "명절 선물 및 상여금 지급"}, {"month": "10월", "day": "", "content": "금융 약정 갱신 신청"}, {"month": "10월", "day": "25", "content": "3분기 부가가치세 신고ㆍ납부"}, {"month": "11월", "day": "", "content": "인증서류 갱신(정기)"}, {"month": "12월", "day": "", "content": "건강검진 대상자 공지"}, {"month": "12월", "day": "31", "content": "종무식 및 송년회"}];
+
+const IDPW_CATS = [
+  {name:'회사정보',   emoji:'🏢', color:'#3C50C1'},
+  {name:'기본계정',   emoji:'🔑', color:'#441F7D'},
+  {name:'회사운영사이트', emoji:'🖥️', color:'#3AA9F6'},
+  {name:'4대보험',    emoji:'🛡️', color:'#2878c0'},
+  {name:'관공서',     emoji:'🏛️', color:'#6b7280'},
+  {name:'금융기관',   emoji:'🏦', color:'#287858'},
+  {name:'정부과제',   emoji:'📋', color:'#a07828'},
+  {name:'리조트',     emoji:'🏖️', color:'#22c55e'},
+  {name:'계약 및 세금계산서', emoji:'📄', color:'#f59e0b'},
+  {name:'인사업무',   emoji:'👥', color:'#6828a8'},
+  {name:'총무업무',   emoji:'🔧', color:'#b83038'},
+  {name:'영업지원',   emoji:'📊', color:'#0891b2'},
+];
+</script>
+
+<div class="layout">
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="brand">MOON <span class="brand-ver">v2</span></div>
+      <div class="brand-sub">HR Smart Dashboard</div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-section-label">메뉴</div>
+      <button class="nav-item active" onclick="switchTab('idpw',this)">
+        <span class="nav-dot" style="background:#3AA9F6;"></span> 계정/비밀번호
+      </button>
+      <button class="nav-item" onclick="switchTab('annual',this)">
+        <span class="nav-dot" style="background:#287858;"></span> 연간 업무일정
+      </button>
+      <button class="nav-item" onclick="switchTab('contacts',this)">
+        <span class="nav-dot" style="background:#a07828;"></span> 연락처
+      </button>
+      <button class="nav-item" onclick="switchTab('company',this)">
+        <span class="nav-dot" style="background:#6828a8;"></span> 회사 기본정보
+      </button>
+      <div class="nav-section-label">IDPW 카테고리</div>
+      <button class="nav-item" onclick="filterCat('',this)">
+        <span class="nav-dot" style="background:#fff;opacity:.5;"></span> 전체 보기
+      </button>
+      <div id="nav-cats"></div>
+    </nav>
+    <div class="sidebar-footer">
+      <div>© 2026 MOON HR팀</div>
+      <div style="margin-top:3px;">Moonjeah · HR Planner</div>
+    </div>
+  </aside>
+
+  <main class="main">
+    <div class="topbar">
+      <h1 id="page-title">계정 / 비밀번호 관리</h1>
+      <div class="topbar-right">
+        <span class="badge-v2">📦 엑셀 내장 데이터</span>
+        <span class="date-chip" id="today-date"></span>
+      </div>
+    </div>
+
+    <!-- 탭 바 -->
+    <div class="tab-bar">
+      <button class="tab-btn active" onclick="switchTab('idpw',null,'tab-idpw')">🔑 계정관리</button>
+      <button class="tab-btn" onclick="switchTab('annual',null,'tab-annual')">📅 연간일정</button>
+      <button class="tab-btn" onclick="switchTab('contacts',null,'tab-contacts')">📞 연락처</button>
+      <button class="tab-btn" onclick="switchTab('company',null,'tab-company')">🏢 회사정보</button>
+    </div>
+
+    <!-- ── 패널 1: IDPW ── -->
+    <div id="panel-idpw" class="tab-panel active">
+      <div class="search-wrap">
+        <span class="search-icon">🔍</span>
+        <input id="searchInput" type="text" placeholder="사이트명, 용도, 아이디 검색…" oninput="renderIdpw()"/>
+      </div>
+      <div id="idpw-sections"></div>
+    </div>
+
+    <!-- ── 패널 2: 연간일정 ── -->
+    <div id="panel-annual" class="tab-panel">
+      <div id="annual-content"></div>
+    </div>
+
+    <!-- ── 패널 3: 연락처 ── -->
+    <div id="panel-contacts" class="tab-panel">
+      <div id="contacts-content"></div>
+    </div>
+
+    <!-- ── 패널 4: 회사정보 ── -->
+    <div id="panel-company" class="tab-panel">
+      <div id="company-content"></div>
+    </div>
+  </main>
+</div>
+
+<script>
+// ── 초기화 ──────────────────────────────────────────────
+document.getElementById('today-date').textContent =
+  new Date().toLocaleDateString('ko-KR',{year:'numeric',month:'2-digit',day:'2-digit'});
+
+let activeCat = '';
+let activeTab = 'idpw';
+
+// 사이드바 카테고리 nav 생성
+const navCats = document.getElementById('nav-cats');
+IDPW_CATS.forEach(cat => {
+  const btn = document.createElement('button');
+  btn.className = 'nav-item';
+  btn.innerHTML = `<span class="nav-dot" style="background:${cat.color};"></span> ${cat.name}`;
+  btn.onclick = () => {
+    if(activeTab !== 'idpw') switchTab('idpw', null, 'tab-idpw');
+    filterCat(cat.name, btn);
+  };
+  navCats.appendChild(btn);
+});
+
+// ── 탭 전환 ─────────────────────────────────────────────
+function switchTab(tab, navEl, tabBtnId) {
+  activeTab = tab;
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('panel-'+tab).classList.add('active');
+  // topbar title
+  const titles = {idpw:'계정 / 비밀번호 관리',annual:'연간 업무일정',contacts:'연락처',company:'회사 기본정보'};
+  document.getElementById('page-title').textContent = titles[tab];
+  // tab buttons sync
+  document.querySelectorAll('.tab-btn').forEach((b,i) => {
+    const tabs = ['idpw','annual','contacts','company'];
+    b.classList.toggle('active', tabs[i]===tab);
+  });
+  // nav sidebar sync
+  if(navEl) {
+    document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+    navEl.classList.add('active');
+  }
+  // 최초 렌더
+  if(tab==='annual' && !document.getElementById('annual-content').innerHTML) renderAnnual();
+  if(tab==='contacts' && !document.getElementById('contacts-content').innerHTML) renderContacts();
+  if(tab==='company' && !document.getElementById('company-content').innerHTML) renderCompany();
+}
+
+// ── IDPW 카테고리 필터 ──────────────────────────────────
+function filterCat(catName, el) {
+  activeCat = catName;
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  if(el) el.classList.add('active');
+  renderIdpw();
+}
+
+// ── IDPW 렌더링 ─────────────────────────────────────────
+function renderIdpw() {
+  const q = (document.getElementById('searchInput').value||'').trim().toLowerCase();
+  const sections = document.getElementById('idpw-sections');
+  sections.innerHTML='';
+  const catsToShow = activeCat ? IDPW_CATS.filter(c=>c.name===activeCat) : IDPW_CATS;
+  let total=0;
+  catsToShow.forEach(cat => {
+    const items = IDPW_DATA.filter(r =>
+      r.cat===cat.name &&
+      (!q || [r.name,r.id,r.memo,r.url].some(v=>v.toLowerCase().includes(q)))
+    );
+    if(!items.length) return;
+    total+=items.length;
+    const sec=document.createElement('div'); sec.className='section';
+    sec.innerHTML=`
+      <div class="section-header">
+        <span class="cat-badge" style="background:${cat.color}">${cat.emoji} ${cat.name}</span>
+        <span class="count-chip">${items.length}개</span>
+      </div>
+      <div class="grid" id="grid-${cat.name.replace(/\s/g,'_')}"></div>`;
+    sections.appendChild(sec);
+    const grid=sec.querySelector(`[id="grid-${cat.name.replace(/\s/g,'_')}"]`);
+    items.forEach(row=>grid.appendChild(makeCard(row,cat)));
+  });
+  if(!total) sections.innerHTML=`<div class="empty-state"><div class="icon">🔍</div><p>검색 결과가 없어요</p></div>`;
+}
+
+function makeCard(row, cat) {
+  const card=document.createElement('div'); card.className='card';
+  // 컬러바
+  const bar=document.createElement('div');
+  bar.style.cssText=`position:absolute;top:0;left:0;width:3px;height:100%;background:${cat.color};border-radius:3px 0 0 3px;`;
+  card.appendChild(bar);
+  // 상단
+  const top=document.createElement('div'); top.className='card-top';
+  const iconMap={'회사정보':'🏢','기본계정':'🔑','회사운영사이트':'🖥️','4대보험':'🛡️','관공서':'🏛️','금융기관':'🏦','정부과제':'📋','리조트':'🏖️','계약 및 세금계산서':'📄','인사업무':'👥','총무업무':'🔧','영업지원':'📊'};
+  top.innerHTML=`<div class="card-icon" style="background:${cat.color}22;color:${cat.color}">${iconMap[cat.name]||'🔗'}</div><div class="card-name">${esc(row.name)}</div>`;
+  card.appendChild(top);
+  // 설명 (memo)
+  if(row.memo){const d=document.createElement('div');d.className='card-desc';d.textContent=row.memo;card.appendChild(d);}
+  // 메모박스
+  const memoLines=[];
+  if(row.id)  memoLines.push(`<span class="pw-label">ID: </span>${esc(row.id)}<button class="copy-btn" onclick="copyText('${row.id.replace(/'/g,"\'")}',this)">복사</button>`);
+  if(row.pw)  memoLines.push(`<span class="pw-label">PW: </span><span class="pw-val" onclick="togglePw(this,'${row.pw.replace(/'/g,"\'")}',event)">${esc(row.pw)}</span><button class="copy-btn" onclick="copyText('${row.pw.replace(/'/g,"\'")}',this)">복사</button>`);
+  if(memoLines.length){const m=document.createElement('div');m.className='card-memo';m.innerHTML=memoLines.join('<br>');card.appendChild(m);}
+  // URL 버튼
+  if(row.url && row.url.startsWith('http')){
+    const btn=document.createElement('a');btn.className='card-link-btn';
+    btn.href=row.url;btn.target='_blank';btn.rel='noopener noreferrer';
+    btn.textContent='바로가기 →'; card.appendChild(btn);
+  } else if(row.url && !row.id && !row.pw) {
+    const d2=document.createElement('div');d2.className='card-desc';d2.textContent=row.url;card.appendChild(d2);
+  }
+  card.addEventListener('mouseenter',()=>{card.style.boxShadow=`0 8px 30px ${cat.color}25`;});
+  card.addEventListener('mouseleave',()=>{card.style.boxShadow='';});
+  return card;
+}
+
+// ── 연간일정 렌더링 ──────────────────────────────────────
+function renderAnnual() {
+  const monthMap={};
+  ANNUAL.forEach(e=>{ if(!monthMap[e.month]) monthMap[e.month]=[]; monthMap[e.month].push(e); });
+  const all=document.getElementById('annual-content');
+  const grid=document.createElement('div'); grid.className='annual-grid';
+  const monthOrder=['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'];
+  const curMonth=new Date().getMonth()+1+'월';
+  monthOrder.forEach(m=>{
+    if(!monthMap[m]) return;
+    const evts=monthMap[m];
+    const mc=document.createElement('div'); mc.className='month-card';
+    const isThis=m===curMonth;
+    mc.innerHTML=`<div class="month-header" style="${isThis?'background:var(--ci-light-blue);':''}">
+      <span>${m} ${isThis?'<span style="font-size:0.65rem;opacity:0.8;">◀ 이번달</span>':''}</span>
+      <span class="evt-cnt">${evts.length}건</span>
+    </div>`;
+    evts.forEach(e=>{
+      const item=document.createElement('div'); item.className='event-item';
+      item.innerHTML=`<span class="event-day">${e.day?e.day+'일':''}</span><span class="event-content">${esc(e.content)}</span>`;
+      mc.appendChild(item);
+    });
+    grid.appendChild(mc);
+  });
+  all.appendChild(grid);
+}
+
+// ── 연락처 렌더링 ────────────────────────────────────────
+function renderContacts() {
+  const cont=document.getElementById('contacts-content');
+  const table=document.createElement('table'); table.className='contact-table';
+  table.innerHTML=`<thead><tr>
+    <th>분류</th><th>거래처명</th><th>사무실/연락처</th><th>담당자</th><th>담당업무</th>
+  </tr></thead>`;
+  const tbody=document.createElement('tbody');
+  let prevCat='';
+  CONTACTS.forEach(c=>{
+    if(c.cat!==prevCat){
+      const r=document.createElement('tr'); r.className='cat-row';
+      r.innerHTML=`<td colspan="5">▸ ${esc(c.cat)}</td>`;
+      tbody.appendChild(r); prevCat=c.cat;
+    }
+    const catEmoji={'관공서':'🏛️','금융기관':'🏦','빌딩':'🏢','통신사':'📡','거래처':'🤝'};
+    const r=document.createElement('tr');
+    r.innerHTML=`<td>${catEmoji[c.cat]||'📌'}</td><td><strong>${esc(c.name)}</strong></td>
+    <td style="font-family:'DM Mono',monospace;font-size:0.78rem;">${esc(c.tel)||'-'}</td>
+    <td>${esc(c.mgr)||'-'}</td><td style="color:var(--sub)">${esc(c.task)||'-'}</td>`;
+    tbody.appendChild(r);
+  });
+  table.appendChild(tbody);
+  cont.appendChild(table);
+}
+
+// ── 회사정보 렌더링 ──────────────────────────────────────
+function renderCompany() {
+  const companyInfo = IDPW_DATA.filter(r=>r.cat==='회사정보');
+  const basicAcct   = IDPW_DATA.filter(r=>r.cat==='기본계정');
+  const cont=document.getElementById('company-content');
+  cont.innerHTML=`<div class="info-grid">
+    <div class="info-card">
+      <div class="info-card-title">🏢 회사 기본정보</div>
+      ${companyInfo.map(r=>`<div class="info-row">
+        <span class="info-label">${esc(r.name)}</span>
+        <span class="info-value">${esc(r.url||r.id||'-')}</span>
+      </div>`).join('')}
+    </div>
+    <div class="info-card">
+      <div class="info-card-title">🔑 기본 계정 정보</div>
+      ${basicAcct.map(r=>`<div class="info-row">
+        <span class="info-label">${esc(r.name)}</span>
+        <span class="info-value" style="font-size:0.75rem;">${esc(r.url||r.id||'-')}</span>
+      </div>`).join('')}
+    </div>
+  </div>`;
+}
+
+// ── 유틸 ─────────────────────────────────────────────────
+function esc(str) {
+  return String(str||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function togglePw(el, pw, e) {
+  e.stopPropagation();
+  el.classList.toggle('revealed');
+}
+
+function copyText(txt, btn) {
+  navigator.clipboard.writeText(txt).then(()=>{
+    const orig=btn.textContent; btn.textContent='✓ 복사됨';
+    btn.style.background='var(--ok)'; btn.style.color='#fff'; btn.style.borderColor='transparent';
+    setTimeout(()=>{btn.textContent=orig;btn.style.background='';btn.style.color='';btn.style.borderColor='';},1500);
+  });
+}
+
+// ── 초기 렌더 ────────────────────────────────────────────
+renderIdpw();
+</script>
+</body>
+</html>

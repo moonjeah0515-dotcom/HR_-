@@ -1,0 +1,1485 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MOON HR · 스톡옵션 관리 대시보드</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+:root {
+  --bg-primary: #0f1623;
+  --bg-secondary: #161d2e;
+  --bg-card: #1a2235;
+  --bg-card-hover: #1f2a40;
+  --border: #2a3550;
+  --border-light: #344060;
+  --text-primary: #e8ecf4;
+  --text-secondary: #8b95a8;
+  --text-muted: #5a6478;
+  --accent-mint: #22d3ae;
+  --accent-mint-dim: rgba(34,211,174,0.15);
+  --accent-blue: #3b82f6;
+  --accent-blue-dim: rgba(59,130,246,0.15);
+  --accent-purple: #a78bfa;
+  --accent-purple-dim: rgba(167,139,250,0.15);
+  --accent-amber: #f59e0b;
+  --accent-amber-dim: rgba(245,158,11,0.15);
+  --accent-rose: #f43f5e;
+  --accent-rose-dim: rgba(244,63,94,0.15);
+  --accent-slate: #64748b;
+  --radius: 10px;
+  --shadow: 0 4px 24px rgba(0,0,0,0.3);
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+  font-family: 'Noto Sans KR', sans-serif;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  min-height: 100vh;
+  line-height: 1.6;
+}
+
+/* ── Header ── */
+.header {
+  background: var(--bg-secondary);
+  border-bottom: 1px solid var(--border);
+  padding: 16px 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+.header-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.header-brand .logo {
+  width: 36px; height: 36px;
+  background: linear-gradient(135deg, var(--accent-mint), var(--accent-blue));
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700; font-size: 14px; color: var(--bg-primary);
+}
+.header-brand h1 {
+  font-size: 16px; font-weight: 600; letter-spacing: -0.3px;
+}
+.header-brand h1 span { color: var(--accent-mint); }
+.header-meta {
+  display: flex; align-items: center; gap: 20px;
+  font-size: 12px; color: var(--text-secondary);
+}
+.header-meta .badge {
+  background: var(--accent-mint-dim);
+  color: var(--accent-mint);
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-weight: 500;
+  font-size: 11px;
+}
+
+/* ── Tabs ── */
+.tab-bar {
+  display: flex;
+  background: var(--bg-secondary);
+  border-bottom: 1px solid var(--border);
+  padding: 0 32px;
+  gap: 0;
+  overflow-x: auto;
+}
+.tab-btn {
+  background: none; border: none; color: var(--text-muted);
+  padding: 14px 20px;
+  font-size: 13px; font-weight: 500;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: all 0.2s;
+  white-space: nowrap;
+  font-family: inherit;
+}
+.tab-btn:hover { color: var(--text-secondary); }
+.tab-btn.active {
+  color: var(--accent-mint);
+  border-bottom-color: var(--accent-mint);
+}
+
+/* ── Content ── */
+.content { padding: 24px 32px; max-width: 1400px; margin: 0 auto; }
+
+.tab-panel { display: none; }
+.tab-panel.active { display: block; }
+
+/* ── Cards ── */
+.kpi-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+.kpi-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+  transition: border-color 0.2s;
+}
+.kpi-card:hover { border-color: var(--border-light); }
+.kpi-label {
+  font-size: 11px; color: var(--text-muted);
+  text-transform: uppercase; letter-spacing: 0.5px;
+  margin-bottom: 8px;
+}
+.kpi-value {
+  font-size: 28px; font-weight: 700;
+  font-family: 'JetBrains Mono', monospace;
+  line-height: 1.2;
+}
+.kpi-sub {
+  font-size: 12px; color: var(--text-secondary);
+  margin-top: 4px;
+}
+.kpi-value.mint { color: var(--accent-mint); }
+.kpi-value.blue { color: var(--accent-blue); }
+.kpi-value.purple { color: var(--accent-purple); }
+.kpi-value.amber { color: var(--accent-amber); }
+.kpi-value.rose { color: var(--accent-rose); }
+
+/* ── Section ── */
+.section {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px;
+  margin-bottom: 20px;
+}
+.section-title {
+  font-size: 14px; font-weight: 600;
+  margin-bottom: 16px;
+  display: flex; align-items: center; gap: 8px;
+}
+.section-title .dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+/* ── Chart containers ── */
+.chart-area {
+  width: 100%;
+  position: relative;
+}
+canvas { max-width: 100%; }
+
+/* ── Timeline ── */
+.timeline-track {
+  position: relative;
+  padding: 20px 0;
+}
+.timeline-line {
+  position: absolute;
+  top: 50%;
+  left: 0; right: 0;
+  height: 2px;
+  background: var(--border);
+}
+.timeline-items {
+  display: flex;
+  justify-content: space-between;
+  position: relative;
+  overflow-x: auto;
+  padding-bottom: 10px;
+  gap: 4px;
+}
+.timeline-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 80px;
+  cursor: pointer;
+  position: relative;
+}
+.timeline-dot {
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  background: var(--bg-card);
+  border: 2px solid var(--accent-mint);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 10px; font-weight: 700; color: var(--accent-mint);
+  z-index: 2;
+  transition: all 0.2s;
+  font-family: 'JetBrains Mono', monospace;
+}
+.timeline-item:hover .timeline-dot,
+.timeline-item.active .timeline-dot {
+  background: var(--accent-mint);
+  color: var(--bg-primary);
+  transform: scale(1.15);
+}
+.timeline-item.series-a .timeline-dot { border-color: var(--accent-blue); color: var(--accent-blue); }
+.timeline-item.series-a:hover .timeline-dot,
+.timeline-item.series-a.active .timeline-dot { background: var(--accent-blue); color: #fff; }
+.timeline-item.series-b .timeline-dot { border-color: var(--accent-purple); color: var(--accent-purple); }
+.timeline-item.series-b:hover .timeline-dot,
+.timeline-item.series-b.active .timeline-dot { background: var(--accent-purple); color: #fff; }
+.timeline-item.series-c .timeline-dot { border-color: var(--accent-amber); color: var(--accent-amber); }
+.timeline-item.series-c:hover .timeline-dot,
+.timeline-item.series-c.active .timeline-dot { background: var(--accent-amber); color: #fff; }
+
+.timeline-label {
+  font-size: 10px; color: var(--text-muted);
+  margin-top: 8px; text-align: center;
+}
+.timeline-label strong { display: block; color: var(--text-secondary); font-size: 11px; }
+
+/* ── Tables ── */
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+.data-table thead th {
+  text-align: left;
+  padding: 10px 12px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  background: var(--bg-card);
+}
+.data-table tbody td {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--border);
+  color: var(--text-secondary);
+  vertical-align: middle;
+}
+.data-table tbody tr:hover { background: var(--bg-card-hover); }
+.data-table tbody tr:last-child td { border-bottom: none; }
+.table-scroll { max-height: 400px; overflow-y: auto; }
+.mono { font-family: 'JetBrains Mono', monospace; font-size: 12px; }
+
+/* ── Status badges ── */
+.status {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 500;
+}
+.status-exercised { background: var(--accent-mint-dim); color: var(--accent-mint); }
+.status-vested { background: var(--accent-blue-dim); color: var(--accent-blue); }
+.status-vesting { background: var(--accent-purple-dim); color: var(--accent-purple); }
+.status-forfeited { background: var(--accent-rose-dim); color: var(--accent-rose); }
+.status-expired { background: rgba(100,116,139,0.15); color: var(--accent-slate); }
+
+/* ── Bar chart (CSS) ── */
+.bar-group { margin-bottom: 12px; }
+.bar-label {
+  font-size: 12px; color: var(--text-secondary);
+  margin-bottom: 4px;
+  display: flex; justify-content: space-between;
+}
+.bar-track {
+  height: 24px;
+  background: var(--bg-primary);
+  border-radius: 4px;
+  overflow: hidden;
+  display: flex;
+}
+.bar-fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.6s ease;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 10px; font-weight: 600; color: var(--bg-primary);
+  min-width: 0;
+}
+
+/* ── Donut legend ── */
+.donut-wrap {
+  display: flex;
+  align-items: center;
+  gap: 40px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.donut-canvas-wrap { position: relative; }
+.donut-center {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+}
+.donut-center .big { font-size: 24px; font-weight: 700; font-family: 'JetBrains Mono', monospace; }
+.donut-center .small { font-size: 11px; color: var(--text-muted); }
+.legend { display: flex; flex-direction: column; gap: 10px; }
+.legend-item {
+  display: flex; align-items: center; gap: 10px;
+  font-size: 13px;
+}
+.legend-dot {
+  width: 12px; height: 12px;
+  border-radius: 3px;
+  flex-shrink: 0;
+}
+.legend-label { color: var(--text-secondary); min-width: 80px; }
+.legend-val { font-family: 'JetBrains Mono', monospace; font-weight: 600; font-size: 13px; }
+.legend-pct { color: var(--text-muted); font-size: 12px; }
+
+/* ── Vesting Gantt ── */
+.gantt-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--border);
+}
+.gantt-row:last-child { border-bottom: none; }
+.gantt-name { width: 120px; font-size: 12px; color: var(--text-secondary); flex-shrink: 0; }
+.gantt-track-wrap { flex: 1; position: relative; height: 20px; background: var(--bg-primary); border-radius: 3px; overflow: hidden; }
+.gantt-bar {
+  position: absolute;
+  height: 100%;
+  border-radius: 3px;
+  opacity: 0.85;
+  top: 0;
+}
+.gantt-bar.cliff { background: var(--accent-purple); }
+.gantt-bar.vested { background: var(--accent-blue); }
+.gantt-bar.exercised { background: var(--accent-mint); }
+.gantt-bar.forfeited { background: var(--accent-rose); opacity: 0.4; }
+
+/* ── Filter row ── */
+.filter-row {
+  display: flex; gap: 12px; margin-bottom: 20px; flex-wrap: wrap; align-items: center;
+}
+.filter-row select, .filter-row input {
+  background: var(--bg-primary);
+  border: 1px solid var(--border);
+  color: var(--text-primary);
+  padding: 8px 14px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-family: inherit;
+  outline: none;
+}
+.filter-row select:focus, .filter-row input:focus {
+  border-color: var(--accent-mint);
+}
+
+/* ── Grid layout ── */
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.grid-3-7 { display: grid; grid-template-columns: 3fr 7fr; gap: 20px; }
+@media (max-width: 900px) {
+  .grid-2, .grid-3-7 { grid-template-columns: 1fr; }
+  .content { padding: 16px; }
+  .header { padding: 12px 16px; }
+  .tab-bar { padding: 0 16px; }
+  .kpi-row { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* ── Tooltip ── */
+.tooltip {
+  position: fixed;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-light);
+  border-radius: 8px;
+  padding: 12px 16px;
+  font-size: 12px;
+  color: var(--text-primary);
+  pointer-events: none;
+  z-index: 200;
+  box-shadow: var(--shadow);
+  max-width: 260px;
+  display: none;
+}
+.tooltip .tt-title { font-weight: 600; margin-bottom: 6px; }
+.tooltip .tt-row { display: flex; justify-content: space-between; gap: 16px; color: var(--text-secondary); }
+.tooltip .tt-row span:last-child { font-family: 'JetBrains Mono', monospace; color: var(--text-primary); }
+
+/* ── Gantt year markers ── */
+.gantt-years {
+  display: flex;
+  justify-content: space-between;
+  font-size: 10px;
+  color: var(--text-muted);
+  margin-bottom: 4px;
+  padding-left: 132px;
+}
+
+/* ── Series milestone ── */
+.milestone-badges { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+.milestone-badge {
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+}
+.ms-a { background: var(--accent-blue-dim); color: var(--accent-blue); }
+.ms-b { background: var(--accent-purple-dim); color: var(--accent-purple); }
+.ms-c { background: var(--accent-amber-dim); color: var(--accent-amber); }
+
+/* ── Heatmap ── */
+.heatmap-grid {
+  display: grid;
+  gap: 3px;
+}
+.heatmap-cell {
+  border-radius: 3px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 600;
+  min-height: 36px;
+  transition: transform 0.15s;
+  cursor: default;
+  font-family: 'JetBrains Mono', monospace;
+}
+.heatmap-cell:hover { transform: scale(1.05); }
+.heatmap-header {
+  font-size: 11px; color: var(--text-muted);
+  font-weight: 600;
+  display: flex; align-items: center; justify-content: center;
+}
+
+/* footer */
+.footer {
+  text-align: center;
+  padding: 32px;
+  font-size: 11px;
+  color: var(--text-muted);
+  border-top: 1px solid var(--border);
+  margin-top: 40px;
+}
+.footer a { color: var(--accent-mint); text-decoration: none; }
+</style>
+</head>
+<body>
+
+<div class="tooltip" id="tooltip"></div>
+
+<!-- Header -->
+<header class="header">
+  <div class="header-brand">
+    <div class="logo">M</div>
+    <h1>MOON HR · <span>Portfolio</span></h1>
+  </div>
+  <div class="header-meta">
+    <span class="badge">DEMO DATA</span>
+    <span>스톡옵션 관리 대시보드</span>
+  </div>
+</header>
+
+<!-- Tabs -->
+<nav class="tab-bar">
+  <button class="tab-btn active" data-tab="overview">회차별 부여 현황</button>
+  <button class="tab-btn" data-tab="vesting">베스팅 스케줄</button>
+  <button class="tab-btn" data-tab="exercise">행사·미행사·소멸</button>
+  <button class="tab-btn" data-tab="distribution">부서/직급별 분포</button>
+</nav>
+
+<!-- Content -->
+<main class="content">
+
+  <!-- ═══ TAB 1: 회차별 부여 현황 ═══ -->
+  <div class="tab-panel active" id="panel-overview">
+    <div class="kpi-row">
+      <div class="kpi-card">
+        <div class="kpi-label">총 부여 회차</div>
+        <div class="kpi-value mint" id="kpi-rounds">—</div>
+        <div class="kpi-sub">2019.03 ~ 2024.02</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">총 부여 인원</div>
+        <div class="kpi-value blue" id="kpi-people">—</div>
+        <div class="kpi-sub">중복 부여 포함</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">총 부여 주식수</div>
+        <div class="kpi-value purple" id="kpi-shares">—</div>
+        <div class="kpi-sub" id="kpi-shares-sub"></div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">현재 기업가치 기준 총 가치</div>
+        <div class="kpi-value amber" id="kpi-totalval">—</div>
+        <div class="kpi-sub">행사가 차감 전 (시가 기준)</div>
+      </div>
+    </div>
+
+    <div class="milestone-badges">
+      <span class="milestone-badge ms-a">Series A · 2019.01 · 100억</span>
+      <span class="milestone-badge ms-b">Series B · 2021.01 · 300억</span>
+      <span class="milestone-badge ms-c">Series C · 2023.01 · 800억</span>
+    </div>
+
+    <div class="section">
+      <div class="section-title"><span class="dot" style="background:var(--accent-mint)"></span>회차별 타임라인</div>
+      <div class="timeline-track">
+        <div class="timeline-line"></div>
+        <div class="timeline-items" id="timeline-items"></div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title"><span class="dot" style="background:var(--accent-blue)"></span>회차별 상세</div>
+      <div class="table-scroll">
+        <table class="data-table" id="round-table">
+          <thead>
+            <tr>
+              <th>회차</th>
+              <th>부여일</th>
+              <th>시리즈</th>
+              <th>부여 인원</th>
+              <th>부여 주식수</th>
+              <th>행사가격</th>
+              <th>Cliff 만료</th>
+              <th>행사기한</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <div class="section">
+        <div class="section-title"><span class="dot" style="background:var(--accent-purple)"></span>누적 부여 추이</div>
+        <div class="chart-area"><canvas id="chart-cumulative" height="260"></canvas></div>
+      </div>
+      <div class="section">
+        <div class="section-title"><span class="dot" style="background:var(--accent-amber)"></span>행사가격 추이</div>
+        <div class="chart-area"><canvas id="chart-price" height="260"></canvas></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ TAB 2: 베스팅 스케줄 ═══ -->
+  <div class="tab-panel" id="panel-vesting">
+    <div class="kpi-row">
+      <div class="kpi-card">
+        <div class="kpi-label">현재 베스팅 완료</div>
+        <div class="kpi-value mint" id="kpi-vest-done">—</div>
+        <div class="kpi-sub">Cliff 통과 + 재직 중</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">베스팅 진행 중</div>
+        <div class="kpi-value purple" id="kpi-vest-ing">—</div>
+        <div class="kpi-sub">Cliff 미도래</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">소멸 (퇴사)</div>
+        <div class="kpi-value rose" id="kpi-vest-forfeit">—</div>
+        <div class="kpi-sub">Cliff 전 퇴사</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">행사 완료</div>
+        <div class="kpi-value blue" id="kpi-vest-exercised">—</div>
+        <div class="kpi-sub">주식 전환 완료</div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title"><span class="dot" style="background:var(--accent-purple)"></span>베스팅 간트 차트 (샘플 20명)</div>
+      <div class="filter-row">
+        <select id="gantt-dept-filter">
+          <option value="all">전체 부서</option>
+        </select>
+        <select id="gantt-status-filter">
+          <option value="all">전체 상태</option>
+          <option value="exercised">행사완료</option>
+          <option value="vested">행사가능</option>
+          <option value="vesting">베스팅중</option>
+          <option value="forfeited">소멸</option>
+        </select>
+      </div>
+      <div class="gantt-years" id="gantt-years"></div>
+      <div id="gantt-container" style="max-height:500px;overflow-y:auto;"></div>
+    </div>
+
+    <div class="section">
+      <div class="section-title"><span class="dot" style="background:var(--accent-mint)"></span>연도별 베스팅 완료 예정 (주식수)</div>
+      <div class="chart-area"><canvas id="chart-vest-forecast" height="280"></canvas></div>
+    </div>
+  </div>
+
+  <!-- ═══ TAB 3: 행사·미행사·소멸 ═══ -->
+  <div class="tab-panel" id="panel-exercise">
+    <div class="kpi-row">
+      <div class="kpi-card">
+        <div class="kpi-label">행사 완료 주식수</div>
+        <div class="kpi-value mint" id="kpi-ex-done">—</div>
+        <div class="kpi-sub" id="kpi-ex-done-sub"></div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">행사 가능 (미행사)</div>
+        <div class="kpi-value blue" id="kpi-ex-able">—</div>
+        <div class="kpi-sub">Cliff 통과, 미행사</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">소멸 주식수</div>
+        <div class="kpi-value rose" id="kpi-ex-forfeit">—</div>
+        <div class="kpi-sub">퇴사·기한만료</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">잠재 행사 차익 (미행사분)</div>
+        <div class="kpi-value amber" id="kpi-ex-gain">—</div>
+        <div class="kpi-sub">현재 시가 - 행사가</div>
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <div class="section">
+        <div class="section-title"><span class="dot" style="background:var(--accent-mint)"></span>상태별 분포 (주식수)</div>
+        <div class="donut-wrap">
+          <div class="donut-canvas-wrap">
+            <canvas id="chart-donut" width="220" height="220"></canvas>
+            <div class="donut-center">
+              <div class="big" id="donut-total">—</div>
+              <div class="small">총 부여주</div>
+            </div>
+          </div>
+          <div class="legend" id="donut-legend"></div>
+        </div>
+      </div>
+      <div class="section">
+        <div class="section-title"><span class="dot" style="background:var(--accent-amber)"></span>회차별 행사율</div>
+        <div id="exercise-bars"></div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title"><span class="dot" style="background:var(--accent-blue)"></span>개인별 행사 내역 (행사 완료자)</div>
+      <div class="table-scroll">
+        <table class="data-table" id="exercise-table">
+          <thead>
+            <tr>
+              <th>이름</th>
+              <th>부서</th>
+              <th>직급</th>
+              <th>부여 회차</th>
+              <th>부여 주식수</th>
+              <th>행사 주식수</th>
+              <th>행사가격</th>
+              <th>행사일</th>
+              <th>행사차익</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ TAB 4: 부서/직급별 분포 ═══ -->
+  <div class="tab-panel" id="panel-distribution">
+    <div class="kpi-row">
+      <div class="kpi-card">
+        <div class="kpi-label">부여 대상 부서</div>
+        <div class="kpi-value mint" id="kpi-dist-dept">—</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">고유 수혜자 수</div>
+        <div class="kpi-value blue" id="kpi-dist-unique">—</div>
+        <div class="kpi-sub">중복 제거</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">1인당 평균 부여</div>
+        <div class="kpi-value purple" id="kpi-dist-avg">—</div>
+        <div class="kpi-sub">주식수 기준</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">최다 부여 부서</div>
+        <div class="kpi-value amber" id="kpi-dist-top">—</div>
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <div class="section">
+        <div class="section-title"><span class="dot" style="background:var(--accent-mint)"></span>부서별 부여 주식수</div>
+        <div id="dept-bars"></div>
+      </div>
+      <div class="section">
+        <div class="section-title"><span class="dot" style="background:var(--accent-purple)"></span>직급별 부여 주식수</div>
+        <div id="level-bars"></div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title"><span class="dot" style="background:var(--accent-amber)"></span>부서 × 직급 히트맵 (주식수)</div>
+      <div style="overflow-x:auto;">
+        <div id="heatmap"></div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title"><span class="dot" style="background:var(--accent-blue)"></span>부서별 1인당 평균 부여 주식수</div>
+      <div class="chart-area"><canvas id="chart-dept-avg" height="280"></canvas></div>
+    </div>
+  </div>
+
+</main>
+
+<footer class="footer">
+  <p>본 대시보드는 포트폴리오 목적의 데모 데이터로 구성되어 있습니다. 실제 기업·인물과 무관합니다.</p>
+  <p style="margin-top:6px;"><a href="#">MOON HR · Portfolio</a> · 데이터로 말하는 HR 담당자</p>
+</footer>
+
+<script>
+// ══════════════════════════════════════════
+// DATA LAYER
+// ══════════════════════════════════════════
+
+const DEPTS = ['개발','프로덕트','데이터/AI','영업','경영지원','디자인','마케팅'];
+const LEVELS = ['C-Level','VP/이사','팀장','시니어','주니어'];
+const CURRENT_SHARE_PRICE = 320000; // 현재 주당 시가 (800억 기준 추정)
+
+// 13 grant rounds
+const ROUNDS = [
+  {id:1, date:'2019-03-15', series:'A', people:8, shares:1200, price:50000},
+  {id:2, date:'2019-09-20', series:'A', people:6, shares:900,  price:50000},
+  {id:3, date:'2020-03-10', series:'A', people:10,shares:1400, price:75000},
+  {id:4, date:'2020-09-15', series:'A', people:7, shares:800,  price:75000},
+  {id:5, date:'2021-02-20', series:'B', people:5, shares:600,  price:120000},
+  {id:6, date:'2021-06-15', series:'B', people:8, shares:1000, price:120000},
+  {id:7, date:'2021-11-10', series:'B', people:6, shares:700,  price:150000},
+  {id:8, date:'2022-03-20', series:'B', people:9, shares:1100, price:150000},
+  {id:9, date:'2022-08-15', series:'B', people:7, shares:800,  price:180000},
+  {id:10,date:'2022-12-10', series:'C', people:5, shares:500,  price:200000},
+  {id:11,date:'2023-04-15', series:'C', people:8, shares:900,  price:250000},
+  {id:12,date:'2023-09-20', series:'C', people:4, shares:400,  price:250000},
+  {id:13,date:'2024-02-15', series:'C', people:6, shares:600,  price:280000},
+];
+
+// Seed-based pseudo-random
+let _seed = 42;
+function rand(){ _seed=((_seed*1103515245+12345)&0x7fffffff); return (_seed%10000)/10000; }
+function pick(arr){ return arr[Math.floor(rand()*arr.length)]; }
+function randInt(a,b){ return a+Math.floor(rand()*(b-a+1)); }
+
+// 익명 직원 ID 패턴 (포트폴리오 더미)
+function genName(){
+  return 'EMP-' + String(pid).padStart(3, '0');
+}
+
+// Generate individual grants
+const GRANTS = [];
+const nameCache = {};
+let pid = 0;
+
+ROUNDS.forEach(r => {
+  const sharesPerPerson = Math.round(r.shares / r.people);
+  const remainder = r.shares - sharesPerPerson * r.people;
+  for(let i=0; i<r.people; i++){
+    pid++;
+    const dept = pick(DEPTS);
+    // Level distribution weighted by round (early rounds have more senior)
+    let level;
+    const lv = rand();
+    if(r.id <= 3){ // early rounds, more senior
+      level = lv<0.1?'C-Level':lv<0.25?'VP/이사':lv<0.5?'팀장':lv<0.8?'시니어':'주니어';
+    } else if(r.id <= 8){
+      level = lv<0.03?'C-Level':lv<0.12?'VP/이사':lv<0.35?'팀장':lv<0.7?'시니어':'주니어';
+    } else {
+      level = lv<0.02?'C-Level':lv<0.08?'VP/이사':lv<0.25?'팀장':lv<0.65?'시니어':'주니어';
+    }
+    const shares = sharesPerPerson + (i===0? remainder : 0);
+    const grantDate = new Date(r.date);
+    const cliffDate = new Date(grantDate);
+    cliffDate.setFullYear(cliffDate.getFullYear()+2);
+    const expiryDate = new Date(cliffDate);
+    expiryDate.setFullYear(expiryDate.getFullYear()+3);
+    const now = new Date('2024-10-01');
+
+    // Determine status
+    let status, exerciseDate = null, exerciseShares = 0;
+    const rv = rand();
+    if(cliffDate > now){
+      // Cliff not yet reached
+      status = rv < 0.12 ? 'forfeited' : 'vesting'; // some left before cliff
+    } else if(expiryDate < now){
+      status = 'expired';
+    } else {
+      // Cliff passed
+      if(rv < 0.18) {
+        status = 'forfeited'; // left after cliff but didn't exercise
+      } else if(rv < 0.48) {
+        status = 'exercised';
+        exerciseShares = shares;
+        const exDays = randInt(30, Math.min(365*2, (now - cliffDate)/(1000*60*60*24)));
+        exerciseDate = new Date(cliffDate.getTime() + exDays*86400000);
+      } else {
+        status = 'vested'; // can exercise but hasn't
+      }
+    }
+
+    GRANTS.push({
+      id: pid,
+      name: genName(),
+      dept, level,
+      roundId: r.id,
+      grantDate: r.date,
+      shares,
+      price: r.price,
+      series: r.series,
+      cliffDate: fmt(cliffDate),
+      expiryDate: fmt(expiryDate),
+      status,
+      exerciseDate: exerciseDate ? fmt(exerciseDate) : null,
+      exerciseShares,
+    });
+  }
+});
+
+function fmt(d){ return d.toISOString().slice(0,10); }
+function fmtNum(n){ return n.toLocaleString('ko-KR'); }
+function fmtWon(n){
+  if(n >= 100000000) return (n/100000000).toFixed(1)+'억';
+  if(n >= 10000) return (n/10000).toFixed(0)+'만';
+  return fmtNum(n);
+}
+function fmtDate(s){ return s.replace(/-/g,'.'); }
+
+// ══════════════════════════════════════════
+// TAB SWITCHING
+// ══════════════════════════════════════════
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+    document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('panel-'+btn.dataset.tab).classList.add('active');
+  });
+});
+
+// ══════════════════════════════════════════
+// TAB 1: OVERVIEW
+// ══════════════════════════════════════════
+function renderOverview(){
+  const totalShares = GRANTS.reduce((s,g)=>s+g.shares,0);
+  const uniqueNames = new Set(GRANTS.map(g=>g.name)).size;
+  document.getElementById('kpi-rounds').textContent = ROUNDS.length+'회';
+  document.getElementById('kpi-people').textContent = GRANTS.length+'건';
+  document.getElementById('kpi-shares').textContent = fmtNum(totalShares)+'주';
+  document.getElementById('kpi-shares-sub').textContent = '고유 수혜자 약 '+uniqueNames+'명';
+  document.getElementById('kpi-totalval').textContent = fmtWon(totalShares * CURRENT_SHARE_PRICE)+'원';
+
+  // Timeline
+  const tl = document.getElementById('timeline-items');
+  tl.innerHTML = '';
+  ROUNDS.forEach(r=>{
+    const cls = r.series==='A'?'series-a':r.series==='B'?'series-b':'series-c';
+    const el = document.createElement('div');
+    el.className = 'timeline-item '+cls;
+    el.innerHTML = `<div class="timeline-dot">${r.id}</div>
+      <div class="timeline-label"><strong>${fmtDate(r.date).slice(0,7)}</strong>${r.people}명 · ${fmtNum(r.shares)}주</div>`;
+    tl.appendChild(el);
+  });
+
+  // Table
+  const tbody = document.querySelector('#round-table tbody');
+  tbody.innerHTML = ROUNDS.map(r=>`<tr>
+    <td><strong>${r.id}차</strong></td>
+    <td class="mono">${fmtDate(r.date)}</td>
+    <td><span class="status ${r.series==='A'?'status-vested':r.series==='B'?'status-vesting':'status-exercised'}">Series ${r.series}</span></td>
+    <td>${r.people}명</td>
+    <td class="mono">${fmtNum(r.shares)}주</td>
+    <td class="mono">${fmtNum(r.price)}원</td>
+    <td class="mono">${fmtDate(r.date.replace(/(\d{4})/,(m)=>''+(+m+2)))}</td>
+    <td class="mono">${fmtDate(r.date.replace(/(\d{4})/,(m)=>''+(+m+5)))}</td>
+  </tr>`).join('');
+
+  // Cumulative chart
+  renderCumulativeChart();
+  renderPriceChart();
+}
+
+function renderCumulativeChart(){
+  const canvas = document.getElementById('chart-cumulative');
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width = canvas.parentElement.clientWidth;
+  const H = canvas.height = 260;
+  const pad = {top:20,right:20,bottom:40,left:60};
+  const cw = W-pad.left-pad.right, ch = H-pad.top-pad.bottom;
+
+  let cum = 0;
+  const pts = ROUNDS.map(r=>{ cum+=r.shares; return {label:r.id+'차', val:cum, series:r.series}; });
+  const maxV = Math.ceil(cum/1000)*1000;
+
+  ctx.clearRect(0,0,W,H);
+
+  // Grid
+  ctx.strokeStyle = '#2a3550';
+  ctx.lineWidth = 0.5;
+  for(let i=0;i<=4;i++){
+    const y = pad.top + ch*(1-i/4);
+    ctx.beginPath(); ctx.moveTo(pad.left,y); ctx.lineTo(W-pad.right,y); ctx.stroke();
+    ctx.fillStyle = '#5a6478'; ctx.font = '11px JetBrains Mono';
+    ctx.textAlign = 'right';
+    ctx.fillText(fmtNum(Math.round(maxV*i/4)), pad.left-8, y+4);
+  }
+
+  // Area
+  ctx.beginPath();
+  pts.forEach((p,i)=>{
+    const x = pad.left + (i/(pts.length-1))*cw;
+    const y = pad.top + ch*(1-p.val/maxV);
+    if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+  });
+  const lastX = pad.left + cw;
+  ctx.lineTo(lastX, pad.top+ch);
+  ctx.lineTo(pad.left, pad.top+ch);
+  ctx.closePath();
+  const grad = ctx.createLinearGradient(0,pad.top,0,H);
+  grad.addColorStop(0,'rgba(34,211,174,0.3)');
+  grad.addColorStop(1,'rgba(34,211,174,0.02)');
+  ctx.fillStyle = grad;
+  ctx.fill();
+
+  // Line
+  ctx.beginPath();
+  pts.forEach((p,i)=>{
+    const x = pad.left + (i/(pts.length-1))*cw;
+    const y = pad.top + ch*(1-p.val/maxV);
+    if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+  });
+  ctx.strokeStyle = '#22d3ae';
+  ctx.lineWidth = 2.5;
+  ctx.stroke();
+
+  // Dots + labels
+  pts.forEach((p,i)=>{
+    const x = pad.left + (i/(pts.length-1))*cw;
+    const y = pad.top + ch*(1-p.val/maxV);
+    const color = p.series==='A'?'#3b82f6':p.series==='B'?'#a78bfa':'#f59e0b';
+    ctx.beginPath();
+    ctx.arc(x,y,4,0,Math.PI*2);
+    ctx.fillStyle = color;
+    ctx.fill();
+    ctx.fillStyle = '#5a6478'; ctx.font = '10px Noto Sans KR';
+    ctx.textAlign = 'center';
+    ctx.fillText(p.label, x, pad.top+ch+20);
+  });
+}
+
+function renderPriceChart(){
+  const canvas = document.getElementById('chart-price');
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width = canvas.parentElement.clientWidth;
+  const H = canvas.height = 260;
+  const pad = {top:20,right:20,bottom:40,left:70};
+  const cw = W-pad.left-pad.right, ch = H-pad.top-pad.bottom;
+
+  const prices = ROUNDS.map(r=>({label:r.id+'차', val:r.price, series:r.series}));
+  const maxP = 300000;
+
+  ctx.clearRect(0,0,W,H);
+
+  // Grid
+  ctx.strokeStyle = '#2a3550'; ctx.lineWidth = 0.5;
+  for(let i=0;i<=5;i++){
+    const y = pad.top + ch*(1-i/5);
+    ctx.beginPath(); ctx.moveTo(pad.left,y); ctx.lineTo(W-pad.right,y); ctx.stroke();
+    ctx.fillStyle = '#5a6478'; ctx.font = '11px JetBrains Mono';
+    ctx.textAlign = 'right';
+    ctx.fillText(fmtNum(Math.round(maxP*i/5))+'원', pad.left-8, y+4);
+  }
+
+  // Bars
+  const barW = Math.min(30, cw/prices.length*0.6);
+  prices.forEach((p,i)=>{
+    const x = pad.left + (i+0.5)/prices.length*cw - barW/2;
+    const barH = (p.val/maxP)*ch;
+    const y = pad.top + ch - barH;
+    const color = p.series==='A'?'#3b82f6':p.series==='B'?'#a78bfa':'#f59e0b';
+    ctx.fillStyle = color;
+    ctx.beginPath();
+    ctx.roundRect(x,y,barW,barH,3);
+    ctx.fill();
+
+    ctx.fillStyle = '#5a6478'; ctx.font = '10px Noto Sans KR';
+    ctx.textAlign = 'center';
+    ctx.fillText(p.label, x+barW/2, pad.top+ch+20);
+  });
+}
+
+// ══════════════════════════════════════════
+// TAB 2: VESTING
+// ══════════════════════════════════════════
+function renderVesting(){
+  const byStatus = {exercised:0,vested:0,vesting:0,forfeited:0,expired:0};
+  GRANTS.forEach(g=>{ byStatus[g.status] = (byStatus[g.status]||0)+1; });
+  document.getElementById('kpi-vest-done').textContent = byStatus.vested+'건';
+  document.getElementById('kpi-vest-ing').textContent = byStatus.vesting+'건';
+  document.getElementById('kpi-vest-forfeit').textContent = (byStatus.forfeited+(byStatus.expired||0))+'건';
+  document.getElementById('kpi-vest-exercised').textContent = byStatus.exercised+'건';
+
+  // Populate dept filter
+  const deptFilter = document.getElementById('gantt-dept-filter');
+  DEPTS.forEach(d=>{
+    const opt = document.createElement('option');
+    opt.value = d; opt.textContent = d;
+    deptFilter.appendChild(opt);
+  });
+
+  renderGantt();
+  renderVestForecast();
+
+  deptFilter.addEventListener('change', renderGantt);
+  document.getElementById('gantt-status-filter').addEventListener('change', renderGantt);
+}
+
+function renderGantt(){
+  const deptF = document.getElementById('gantt-dept-filter').value;
+  const statusF = document.getElementById('gantt-status-filter').value;
+
+  let filtered = GRANTS.filter(g=>{
+    if(deptF!=='all' && g.dept!==deptF) return false;
+    if(statusF!=='all' && g.status!==statusF) return false;
+    return true;
+  }).slice(0,25);
+
+  const minYear = 2019, maxYear = 2030;
+  const totalYears = maxYear - minYear;
+
+  // Year markers
+  const yearsDiv = document.getElementById('gantt-years');
+  yearsDiv.innerHTML = '';
+  for(let y=minYear; y<=maxYear; y++){
+    const span = document.createElement('span');
+    span.textContent = y;
+    yearsDiv.appendChild(span);
+  }
+
+  const container = document.getElementById('gantt-container');
+  container.innerHTML = '';
+
+  filtered.forEach(g=>{
+    const row = document.createElement('div');
+    row.className = 'gantt-row';
+
+    const nameDiv = document.createElement('div');
+    nameDiv.className = 'gantt-name';
+    nameDiv.textContent = g.name + ' (' + g.dept.slice(0,2) + ')';
+
+    const trackWrap = document.createElement('div');
+    trackWrap.className = 'gantt-track-wrap';
+
+    const grantD = new Date(g.grantDate);
+    const cliffD = new Date(g.cliffDate);
+    const expiryD = new Date(g.expiryDate);
+
+    const toPos = (d) => {
+      const yearFrac = (d.getFullYear()-minYear) + d.getMonth()/12;
+      return (yearFrac / totalYears) * 100;
+    };
+
+    // Cliff period bar
+    const cliffBar = document.createElement('div');
+    cliffBar.className = 'gantt-bar cliff';
+    cliffBar.style.left = toPos(grantD)+'%';
+    cliffBar.style.width = Math.max(1, toPos(cliffD)-toPos(grantD))+'%';
+
+    // Exercise window bar
+    if(g.status === 'exercised'){
+      const exBar = document.createElement('div');
+      exBar.className = 'gantt-bar exercised';
+      exBar.style.left = toPos(cliffD)+'%';
+      const exDate = g.exerciseDate ? new Date(g.exerciseDate) : expiryD;
+      exBar.style.width = Math.max(1, toPos(exDate)-toPos(cliffD))+'%';
+      trackWrap.appendChild(exBar);
+    } else if(g.status === 'vested'){
+      const vBar = document.createElement('div');
+      vBar.className = 'gantt-bar vested';
+      vBar.style.left = toPos(cliffD)+'%';
+      vBar.style.width = Math.max(1, toPos(expiryD)-toPos(cliffD))+'%';
+      trackWrap.appendChild(vBar);
+    } else if(g.status === 'forfeited'){
+      const fBar = document.createElement('div');
+      fBar.className = 'gantt-bar forfeited';
+      fBar.style.left = toPos(grantD)+'%';
+      fBar.style.width = Math.max(1, toPos(cliffD)-toPos(grantD))+'%';
+      trackWrap.appendChild(fBar);
+    }
+
+    trackWrap.appendChild(cliffBar);
+
+    // Status badge
+    const statusMap = {exercised:'행사완료',vested:'행사가능',vesting:'베스팅중',forfeited:'소멸',expired:'만료'};
+    const statusCls = {exercised:'status-exercised',vested:'status-vested',vesting:'status-vesting',forfeited:'status-forfeited',expired:'status-expired'};
+
+    row.appendChild(nameDiv);
+    row.appendChild(trackWrap);
+
+    const badge = document.createElement('span');
+    badge.className = 'status '+statusCls[g.status];
+    badge.textContent = statusMap[g.status];
+    badge.style.minWidth = '60px';
+    badge.style.textAlign = 'center';
+    badge.style.flexShrink = '0';
+    row.appendChild(badge);
+
+    container.appendChild(row);
+  });
+}
+
+function renderVestForecast(){
+  const canvas = document.getElementById('chart-vest-forecast');
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width = canvas.parentElement.clientWidth;
+  const H = canvas.height = 280;
+  const pad = {top:20,right:20,bottom:40,left:60};
+  const cw = W-pad.left-pad.right, ch = H-pad.top-pad.bottom;
+
+  // Aggregate vesting by year (cliff completion year)
+  const byYear = {};
+  GRANTS.forEach(g=>{
+    if(g.status==='forfeited'||g.status==='expired') return;
+    const y = g.cliffDate.slice(0,4);
+    byYear[y] = (byYear[y]||0) + g.shares;
+  });
+  const years = Object.keys(byYear).sort();
+  const vals = years.map(y=>byYear[y]);
+  const maxV = Math.ceil(Math.max(...vals)/500)*500;
+
+  ctx.clearRect(0,0,W,H);
+
+  // Grid
+  ctx.strokeStyle = '#2a3550'; ctx.lineWidth = 0.5;
+  for(let i=0;i<=4;i++){
+    const y = pad.top + ch*(1-i/4);
+    ctx.beginPath(); ctx.moveTo(pad.left,y); ctx.lineTo(W-pad.right,y); ctx.stroke();
+    ctx.fillStyle = '#5a6478'; ctx.font = '11px JetBrains Mono';
+    ctx.textAlign = 'right';
+    ctx.fillText(fmtNum(Math.round(maxV*i/4)), pad.left-8, y+4);
+  }
+
+  const barW = Math.min(40, cw/years.length*0.6);
+  years.forEach((yr,i)=>{
+    const x = pad.left + (i+0.5)/years.length*cw - barW/2;
+    const barH = (vals[i]/maxV)*ch;
+    const y = pad.top + ch - barH;
+
+    const grad = ctx.createLinearGradient(x,y,x,y+barH);
+    grad.addColorStop(0,'#a78bfa');
+    grad.addColorStop(1,'rgba(167,139,250,0.3)');
+    ctx.fillStyle = grad;
+    ctx.beginPath();
+    ctx.roundRect(x,y,barW,barH,3);
+    ctx.fill();
+
+    // Value on top
+    ctx.fillStyle = '#e8ecf4'; ctx.font = '11px JetBrains Mono';
+    ctx.textAlign = 'center';
+    ctx.fillText(fmtNum(vals[i]), x+barW/2, y-6);
+
+    // Year label
+    ctx.fillStyle = '#5a6478'; ctx.font = '11px Noto Sans KR';
+    ctx.fillText(yr+'년', x+barW/2, pad.top+ch+20);
+  });
+}
+
+// ══════════════════════════════════════════
+// TAB 3: EXERCISE
+// ══════════════════════════════════════════
+function renderExercise(){
+  const exercised = GRANTS.filter(g=>g.status==='exercised');
+  const vested = GRANTS.filter(g=>g.status==='vested');
+  const forfeited = GRANTS.filter(g=>g.status==='forfeited'||g.status==='expired');
+  const vesting = GRANTS.filter(g=>g.status==='vesting');
+
+  const exShares = exercised.reduce((s,g)=>s+g.exerciseShares,0);
+  const vestedShares = vested.reduce((s,g)=>s+g.shares,0);
+  const forfeitShares = forfeited.reduce((s,g)=>s+g.shares,0);
+  const vestingShares = vesting.reduce((s,g)=>s+g.shares,0);
+  const totalShares = GRANTS.reduce((s,g)=>s+g.shares,0);
+
+  document.getElementById('kpi-ex-done').textContent = fmtNum(exShares)+'주';
+  document.getElementById('kpi-ex-done-sub').textContent = exercised.length+'건 / '+((exShares/totalShares*100).toFixed(1))+'%';
+  document.getElementById('kpi-ex-able').textContent = fmtNum(vestedShares)+'주';
+  document.getElementById('kpi-ex-forfeit').textContent = fmtNum(forfeitShares)+'주';
+
+  const potentialGain = vested.reduce((s,g)=>s+(CURRENT_SHARE_PRICE - g.price)*g.shares,0);
+  document.getElementById('kpi-ex-gain').textContent = fmtWon(potentialGain)+'원';
+
+  // Donut
+  renderDonut(exShares, vestedShares, vestingShares, forfeitShares, totalShares);
+
+  // Exercise rate bars by round
+  renderExerciseBars();
+
+  // Exercise table
+  const tbody = document.querySelector('#exercise-table tbody');
+  tbody.innerHTML = exercised.map(g=>{
+    const gain = (CURRENT_SHARE_PRICE - g.price) * g.exerciseShares;
+    return `<tr>
+      <td><strong>${g.name}</strong></td>
+      <td>${g.dept}</td>
+      <td>${g.level}</td>
+      <td>${g.roundId}차</td>
+      <td class="mono">${fmtNum(g.shares)}주</td>
+      <td class="mono">${fmtNum(g.exerciseShares)}주</td>
+      <td class="mono">${fmtNum(g.price)}원</td>
+      <td class="mono">${fmtDate(g.exerciseDate)}</td>
+      <td class="mono" style="color:var(--accent-mint)">${fmtWon(gain)}원</td>
+    </tr>`;
+  }).join('');
+}
+
+function renderDonut(ex, vested, vesting, forfeit, total){
+  const canvas = document.getElementById('chart-donut');
+  const ctx = canvas.getContext('2d');
+  const size = 220;
+  canvas.width = size; canvas.height = size;
+  const cx = size/2, cy = size/2, r = 85, lw = 28;
+
+  const data = [
+    {val:ex, color:'#22d3ae', label:'행사완료'},
+    {val:vested, color:'#3b82f6', label:'행사가능'},
+    {val:vesting, color:'#a78bfa', label:'베스팅중'},
+    {val:forfeit, color:'#f43f5e', label:'소멸'},
+  ];
+
+  document.getElementById('donut-total').textContent = fmtNum(total);
+
+  let startAngle = -Math.PI/2;
+  data.forEach(d=>{
+    const angle = (d.val/total)*Math.PI*2;
+    ctx.beginPath();
+    ctx.arc(cx,cy,r,startAngle,startAngle+angle);
+    ctx.strokeStyle = d.color;
+    ctx.lineWidth = lw;
+    ctx.lineCap = 'round';
+    ctx.stroke();
+    startAngle += angle + 0.03;
+  });
+
+  // Legend
+  const legend = document.getElementById('donut-legend');
+  legend.innerHTML = data.map(d=>`
+    <div class="legend-item">
+      <div class="legend-dot" style="background:${d.color}"></div>
+      <span class="legend-label">${d.label}</span>
+      <span class="legend-val">${fmtNum(d.val)}주</span>
+      <span class="legend-pct">(${(d.val/total*100).toFixed(1)}%)</span>
+    </div>
+  `).join('');
+}
+
+function renderExerciseBars(){
+  const container = document.getElementById('exercise-bars');
+  container.innerHTML = '';
+
+  ROUNDS.forEach(r=>{
+    const roundGrants = GRANTS.filter(g=>g.roundId===r.id);
+    const totalS = roundGrants.reduce((s,g)=>s+g.shares,0);
+    const exS = roundGrants.filter(g=>g.status==='exercised').reduce((s,g)=>s+g.exerciseShares,0);
+    const vestedS = roundGrants.filter(g=>g.status==='vested').reduce((s,g)=>s+g.shares,0);
+    const vestingS = roundGrants.filter(g=>g.status==='vesting').reduce((s,g)=>s+g.shares,0);
+    const forfeitS = roundGrants.filter(g=>g.status==='forfeited'||g.status==='expired').reduce((s,g)=>s+g.shares,0);
+
+    const group = document.createElement('div');
+    group.className = 'bar-group';
+    group.innerHTML = `
+      <div class="bar-label"><span>${r.id}차 (${fmtDate(r.date).slice(0,7)})</span><span class="mono">${fmtNum(totalS)}주</span></div>
+      <div class="bar-track">
+        <div class="bar-fill" style="width:${exS/totalS*100}%;background:var(--accent-mint)">${exS>0?Math.round(exS/totalS*100)+'%':''}</div>
+        <div class="bar-fill" style="width:${vestedS/totalS*100}%;background:var(--accent-blue)"></div>
+        <div class="bar-fill" style="width:${vestingS/totalS*100}%;background:var(--accent-purple)"></div>
+        <div class="bar-fill" style="width:${forfeitS/totalS*100}%;background:var(--accent-rose);opacity:0.6"></div>
+      </div>
+    `;
+    container.appendChild(group);
+  });
+
+  // Mini legend
+  const leg = document.createElement('div');
+  leg.style.cssText = 'display:flex;gap:16px;margin-top:12px;font-size:11px;color:var(--text-muted);';
+  leg.innerHTML = `
+    <span><span style="display:inline-block;width:10px;height:10px;background:var(--accent-mint);border-radius:2px;margin-right:4px;vertical-align:middle;"></span>행사</span>
+    <span><span style="display:inline-block;width:10px;height:10px;background:var(--accent-blue);border-radius:2px;margin-right:4px;vertical-align:middle;"></span>행사가능</span>
+    <span><span style="display:inline-block;width:10px;height:10px;background:var(--accent-purple);border-radius:2px;margin-right:4px;vertical-align:middle;"></span>베스팅중</span>
+    <span><span style="display:inline-block;width:10px;height:10px;background:var(--accent-rose);border-radius:2px;margin-right:4px;vertical-align:middle;opacity:0.6;"></span>소멸</span>
+  `;
+  container.appendChild(leg);
+}
+
+// ══════════════════════════════════════════
+// TAB 4: DISTRIBUTION
+// ══════════════════════════════════════════
+function renderDistribution(){
+  // By dept
+  const byDept = {};
+  DEPTS.forEach(d=>byDept[d]={shares:0,count:0,names:new Set()});
+  GRANTS.forEach(g=>{
+    byDept[g.dept].shares += g.shares;
+    byDept[g.dept].count++;
+    byDept[g.dept].names.add(g.name);
+  });
+
+  // By level
+  const byLevel = {};
+  LEVELS.forEach(l=>byLevel[l]={shares:0,count:0});
+  GRANTS.forEach(g=>{
+    byLevel[g.level].shares += g.shares;
+    byLevel[g.level].count++;
+  });
+
+  const uniqueNames = new Set(GRANTS.map(g=>g.name)).size;
+  const totalShares = GRANTS.reduce((s,g)=>s+g.shares,0);
+  const topDept = Object.entries(byDept).sort((a,b)=>b[1].shares-a[1].shares)[0];
+
+  document.getElementById('kpi-dist-dept').textContent = DEPTS.length+'개';
+  document.getElementById('kpi-dist-unique').textContent = uniqueNames+'명';
+  document.getElementById('kpi-dist-avg').textContent = fmtNum(Math.round(totalShares/uniqueNames))+'주';
+  document.getElementById('kpi-dist-top').textContent = topDept[0];
+
+  // Dept bars
+  const maxDeptShares = Math.max(...Object.values(byDept).map(v=>v.shares));
+  const deptContainer = document.getElementById('dept-bars');
+  const deptColors = ['#22d3ae','#3b82f6','#a78bfa','#f59e0b','#f43f5e','#64748b','#06b6d4'];
+  deptContainer.innerHTML = Object.entries(byDept)
+    .sort((a,b)=>b[1].shares-a[1].shares)
+    .map((e,i)=>`
+      <div class="bar-group">
+        <div class="bar-label"><span>${e[0]}</span><span class="mono">${fmtNum(e[1].shares)}주 (${e[1].names.size}명)</span></div>
+        <div class="bar-track">
+          <div class="bar-fill" style="width:${e[1].shares/maxDeptShares*100}%;background:${deptColors[i%deptColors.length]}">${Math.round(e[1].shares/totalShares*100)}%</div>
+        </div>
+      </div>
+    `).join('');
+
+  // Level bars
+  const maxLevelShares = Math.max(...Object.values(byLevel).map(v=>v.shares));
+  const levelContainer = document.getElementById('level-bars');
+  const levelColors = ['#f59e0b','#a78bfa','#3b82f6','#22d3ae','#64748b'];
+  levelContainer.innerHTML = Object.entries(byLevel)
+    .sort((a,b)=>{ const ord = {'C-Level':0,'VP/이사':1,'팀장':2,'시니어':3,'주니어':4}; return ord[a[0]]-ord[b[0]]; })
+    .map((e,i)=>`
+      <div class="bar-group">
+        <div class="bar-label"><span>${e[0]}</span><span class="mono">${fmtNum(e[1].shares)}주 (${e[1].count}건)</span></div>
+        <div class="bar-track">
+          <div class="bar-fill" style="width:${e[1].shares/maxLevelShares*100}%;background:${levelColors[i%levelColors.length]}">${Math.round(e[1].shares/totalShares*100)}%</div>
+        </div>
+      </div>
+    `).join('');
+
+  // Heatmap
+  renderHeatmap(byDept, byLevel);
+
+  // Dept avg chart
+  renderDeptAvgChart(byDept);
+}
+
+function renderHeatmap(){
+  const cross = {};
+  let maxVal = 0;
+  DEPTS.forEach(d=>{ cross[d]={}; LEVELS.forEach(l=>cross[d][l]=0); });
+  GRANTS.forEach(g=>{ cross[g.dept][g.level]+=g.shares; });
+  DEPTS.forEach(d=>LEVELS.forEach(l=>{ if(cross[d][l]>maxVal) maxVal=cross[d][l]; }));
+
+  const container = document.getElementById('heatmap');
+  const cols = LEVELS.length + 1;
+  container.innerHTML = '';
+
+  const grid = document.createElement('div');
+  grid.className = 'heatmap-grid';
+  grid.style.gridTemplateColumns = '100px ' + LEVELS.map(()=>'1fr').join(' ');
+
+  // Header row
+  grid.innerHTML += '<div class="heatmap-header"></div>';
+  LEVELS.forEach(l=>{
+    grid.innerHTML += `<div class="heatmap-header">${l}</div>`;
+  });
+
+  DEPTS.forEach(d=>{
+    grid.innerHTML += `<div class="heatmap-header" style="text-align:left">${d}</div>`;
+    LEVELS.forEach(l=>{
+      const v = cross[d][l];
+      const intensity = maxVal > 0 ? v/maxVal : 0;
+      const bg = v === 0 ? 'var(--bg-primary)' : `rgba(34,211,174,${0.1 + intensity*0.7})`;
+      const textColor = intensity > 0.5 ? 'var(--bg-primary)' : 'var(--text-secondary)';
+      grid.innerHTML += `<div class="heatmap-cell" style="background:${bg};color:${textColor}">${v>0?fmtNum(v):'-'}</div>`;
+    });
+  });
+
+  container.appendChild(grid);
+}
+
+function renderDeptAvgChart(byDept){
+  const canvas = document.getElementById('chart-dept-avg');
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width = canvas.parentElement.clientWidth;
+  const H = canvas.height = 280;
+  const pad = {top:20,right:20,bottom:60,left:60};
+  const cw = W-pad.left-pad.right, ch = H-pad.top-pad.bottom;
+
+  const entries = Object.entries(byDept)
+    .map(([d,v])=>({dept:d, avg: v.names.size>0 ? Math.round(v.shares/v.names.size) : 0}))
+    .sort((a,b)=>b.avg-a.avg);
+  const maxV = Math.ceil(Math.max(...entries.map(e=>e.avg))/50)*50;
+
+  ctx.clearRect(0,0,W,H);
+
+  ctx.strokeStyle = '#2a3550'; ctx.lineWidth = 0.5;
+  for(let i=0;i<=4;i++){
+    const y = pad.top + ch*(1-i/4);
+    ctx.beginPath(); ctx.moveTo(pad.left,y); ctx.lineTo(W-pad.right,y); ctx.stroke();
+    ctx.fillStyle = '#5a6478'; ctx.font = '11px JetBrains Mono';
+    ctx.textAlign = 'right';
+    ctx.fillText(fmtNum(Math.round(maxV*i/4))+'주', pad.left-8, y+4);
+  }
+
+  const barW = Math.min(50, cw/entries.length*0.6);
+  const colors = ['#22d3ae','#3b82f6','#a78bfa','#f59e0b','#f43f5e','#64748b','#06b6d4'];
+  entries.forEach((e,i)=>{
+    const x = pad.left + (i+0.5)/entries.length*cw - barW/2;
+    const barH = (e.avg/maxV)*ch;
+    const y = pad.top + ch - barH;
+    ctx.fillStyle = colors[i%colors.length];
+    ctx.beginPath();
+    ctx.roundRect(x,y,barW,barH,3);
+    ctx.fill();
+
+    ctx.fillStyle = '#e8ecf4'; ctx.font = '11px JetBrains Mono';
+    ctx.textAlign = 'center';
+    ctx.fillText(fmtNum(e.avg), x+barW/2, y-6);
+
+    ctx.save();
+    ctx.translate(x+barW/2, pad.top+ch+14);
+    ctx.rotate(-Math.PI/6);
+    ctx.fillStyle = '#5a6478'; ctx.font = '11px Noto Sans KR';
+    ctx.textAlign = 'right';
+    ctx.fillText(e.dept, 0, 0);
+    ctx.restore();
+  });
+}
+
+// ══════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════
+window.addEventListener('DOMContentLoaded', ()=>{
+  renderOverview();
+  renderVesting();
+  renderExercise();
+  renderDistribution();
+});
+
+window.addEventListener('resize', ()=>{
+  renderCumulativeChart();
+  renderPriceChart();
+  renderVestForecast();
+  renderDeptAvgChart((() => {
+    const bd = {};
+    DEPTS.forEach(d=>bd[d]={shares:0,count:0,names:new Set()});
+    GRANTS.forEach(g=>{ bd[g.dept].shares+=g.shares; bd[g.dept].count++; bd[g.dept].names.add(g.name); });
+    return bd;
+  })());
+});
+</script>
+</body>
+</html>

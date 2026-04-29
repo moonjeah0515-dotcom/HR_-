@@ -245,6 +245,67 @@ body{
    WORK ITEMS
 ═══════════════════════════════════════════ */
 .work-list{display:flex;flex-direction:column;gap:0}
+
+/* ═══ WHY I BUILD ═══ */
+.why-build{
+  margin:0 0 56px;padding:38px 40px 42px;
+  background:linear-gradient(180deg,#fafaf7 0%,#f5f4ee 100%);
+  border:1px solid var(--rule);border-left:3px solid var(--accent);
+  position:relative;
+}
+.why-label{
+  font-family:var(--mono);font-size:.62rem;font-weight:600;
+  letter-spacing:2.5px;text-transform:uppercase;color:var(--accent);
+  margin-bottom:22px;
+}
+.why-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:36px;
+}
+.why-h{
+  font-family:var(--serif);font-size:.95rem;font-weight:700;
+  color:var(--ink);letter-spacing:-.2px;margin-bottom:12px;
+  padding-bottom:10px;border-bottom:1px solid var(--rule);
+}
+.why-p{
+  font-size:.83rem;line-height:1.85;color:var(--ink2);
+  text-wrap:pretty;
+}
+.why-p strong{color:var(--ink);font-weight:600;background:linear-gradient(180deg,transparent 60%,#fff5e6 60%);padding:0 1px}
+@media(max-width:900px){
+  .why-build{padding:28px 24px 32px}
+  .why-grid{grid-template-columns:1fr;gap:28px}
+}
+.cat-divider{
+  display:grid;
+  grid-template-columns:200px auto 1fr;
+  align-items:center;
+  gap:16px;
+  padding:48px 0 14px;
+  border-bottom:1px solid var(--rule);
+  margin-bottom:0;
+}
+.cat-divider:first-child{padding-top:8px}
+.cat-num{
+  font-family:var(--mono);font-size:.66rem;font-weight:700;
+  color:var(--accent);letter-spacing:1.5px;
+  display:inline-block;width:24px;height:24px;line-height:24px;text-align:center;
+  border:1.5px solid var(--accent);border-radius:50%;
+  margin-left:0;
+}
+.cat-ko{
+  font-family:var(--serif);font-size:1.05rem;font-weight:700;
+  color:var(--ink);letter-spacing:-.2px;white-space:nowrap;
+}
+.cat-en{
+  font-family:var(--mono);font-size:.62rem;font-weight:500;
+  color:var(--ink3);letter-spacing:1.2px;text-transform:uppercase;
+  padding-left:10px;border-left:1px solid var(--rule);margin-left:2px;
+}
+.cat-line{display:none}
+@media(max-width:760px){
+  .cat-divider{grid-template-columns:auto 1fr;padding:36px 0 12px}
+  .cat-en{font-size:.58rem;padding-left:8px}
+}
 .work-item{
   display:grid;
   grid-template-columns:200px 1fr auto;
@@ -361,16 +422,12 @@ body{
   color:var(--ink4);font-size:.7rem;
 }
 .exp-bullets li strong{color:var(--accent);font-weight:700}
-
-/* current company highlight row */
 .exp-row.current{
   background:var(--accent-pale);
   margin:0 -52px;padding:32px 52px;
   border-left:3px solid var(--accent);
 }
 .exp-row.current .exp-role{color:var(--accent-dark)}
-
-/* gap row */
 .exp-row.gap{
   background:var(--off);
   margin:0 -52px;padding:16px 52px;
@@ -478,10 +535,15 @@ body{
 .hero{animation:fadeUp .7s ease both}
 .cover-inner{animation:fadeUp .6s ease .1s both}
 .work-item{opacity:0;animation:fadeUp .5s ease forwards}
-.work-item:nth-child(1){animation-delay:.06s}
-.work-item:nth-child(2){animation-delay:.14s}
-.work-item:nth-child(3){animation-delay:.22s}
-.work-item:nth-child(4){animation-delay:.30s}
+.work-item:nth-of-type(1){animation-delay:.06s}
+.work-item:nth-of-type(2){animation-delay:.12s}
+.work-item:nth-of-type(3){animation-delay:.18s}
+.work-item:nth-of-type(4){animation-delay:.24s}
+.work-item:nth-of-type(5){animation-delay:.30s}
+.work-item:nth-of-type(6){animation-delay:.36s}
+.work-item:nth-of-type(7){animation-delay:.42s}
+.work-item:nth-of-type(8){animation-delay:.48s}
+.work-item:nth-of-type(9){animation-delay:.54s}
 
 /* ═══════════════════════════════════════════
    RESPONSIVE
@@ -558,9 +620,9 @@ body{
       <div class="stat-badge">Scale-up 100% ↑</div>
     </div>
     <div class="stat-item">
-      <div class="stat-num">3<span>종</span></div>
-      <div class="stat-desc">직접 구현한 HR 자동화 툴<br>대시보드·채용DB·연봉테이블</div>
-      <div class="stat-badge">3개월 내 구축</div>
+      <div class="stat-num">7<span>종</span></div>
+      <div class="stat-desc">직접 구현한 HR 자동화 툴<br>BI·ATS·급여엔진·성과·퇴직·계약서</div>
+      <div class="stat-badge">SaaS 모듈 설계</div>
     </div>
     <div class="stat-item">
       <div class="stat-num">100+<span>건</span></div>
@@ -621,9 +683,46 @@ body{
     <div class="section-no">01 — Works</div>
     <div class="section-title">실무에서 직접 만든 것들</div>
   </div>
+
+  <!-- WHY I BUILD: 왜 직접 만들었나 -->
+  <div class="why-build">
+    <div class="why-label">Why I Build</div>
+    <div class="why-grid">
+      <div class="why-col">
+        <div class="why-h">왜 직접 만들었나</div>
+        <p class="why-p">
+          여러 HR SaaS 플랫폼을 실무에서 사용해봤습니다.
+          기능별로 도구는 많지만, <strong>실제 운영 흐름에 맞는 단일한 그림</strong>은 없었습니다.
+          더 큰 문제는 — 인력은 퇴사하면 남지 않는다는 것.
+          <strong>경험과 노하우를 도구로 남기지 않으면 매번 다시 시작</strong>해야 했습니다.
+        </p>
+      </div>
+      <div class="why-col">
+        <div class="why-h">그래서 무엇이 달라졌나</div>
+        <p class="why-p">
+          기존 업무 경험을 바탕으로 채용·보상·성과·퇴직까지
+          <strong>HR 라이프사이클 전 영역의 산출물을 직접 재구성</strong>했습니다.
+          매번 수기로 만들던 자료가 자동화되었고,
+          <strong>임원 보고와 의사결정에 데이터로 즉답</strong>할 수 있는 환경이 만들어졌습니다.
+        </p>
+      </div>
+      <div class="why-col">
+        <div class="why-h">왜 이게 무기인가</div>
+        <p class="why-p">
+          HR을 아는 사람이 도구를 만들 때, 도구는 운영을 바꿉니다.
+          이 산출물들은 <strong>제 커리어와 함께 이동하는 자산</strong>이고,
+          어느 조직에 가든 <strong>HR 운영을 빠르게 정상화할 수 있는 무기</strong>라고 생각합니다.
+        </p>
+      </div>
+    </div>
+  </div>
+
   <div class="work-list">
 
-    <!-- No.01 채용 대시보드 -->
+    <!-- ━━━ 채용 ━━━ -->
+    <div class="cat-divider"><span class="cat-num">A</span><span class="cat-ko">채용</span><span class="cat-en">Talent Acquisition</span><span class="cat-line"></span></div>
+
+    <!-- No.01 채용 현황 대시보드 -->
     <a class="work-item" href="채용대시보드_portfolio.html">
       <div class="work-meta">
         <div class="work-num">No.01</div>
@@ -660,10 +759,50 @@ body{
       </div>
     </a>
 
-    <!-- No.02 연봉 BI -->
-    <a class="work-item" href="연봉조정BI_MOON_portfolio.html">
+    <!-- No.02 채용 파이프라인 ATS -->
+    <a class="work-item" href="채용파이프라인_ATS_portfolio.html">
       <div class="work-meta">
         <div class="work-num">No.02</div>
+        <div class="work-type">HR SaaS<br>채용 운영</div>
+      </div>
+      <div class="work-body">
+        <div class="work-problem">지원자 20명이 어느 단계에 있는지 물어보면 엑셀 열어서 5분 걸렸습니다.</div>
+        <div class="work-title">채용 파이프라인 ATS</div>
+        <div class="work-desc">접수→서류→1차→2차→오퍼→입사 6단계 칸반 보드. 채널별 전환율·퍼널 분석·D+day 지연 알림까지 단일 HTML로 구현. 채용 대시보드(No.01)의 분석 데이터를 운영 도구로 전환.</div>
+        <div class="work-impact">
+          <div class="wi">
+            <div class="wi-num">6단계</div>
+            <div class="wi-label">칸반 파이프라인</div>
+          </div>
+          <div class="wi">
+            <div class="wi-num">6채널</div>
+            <div class="wi-label">전환율 자동 집계</div>
+          </div>
+          <div class="wi">
+            <div class="wi-num">D+day</div>
+            <div class="wi-label">지연 건 자동 감지</div>
+          </div>
+        </div>
+        <div class="work-tags">
+          <span class="wtag">ATS 파이프라인</span>
+          <span class="wtag">퍼널 분석</span>
+          <span class="wtag">칸반 보드</span>
+          <span class="wtag">채널 ROI</span>
+        </div>
+      </div>
+      <div class="work-right">
+        <div class="work-arrow">→</div>
+        <div class="work-year">2026</div>
+      </div>
+    </a>
+
+    <!-- ━━━ 보상 · 급여 ━━━ -->
+    <div class="cat-divider"><span class="cat-num">B</span><span class="cat-ko">보상 · 급여</span><span class="cat-en">Compensation · Payroll</span><span class="cat-line"></span></div>
+
+    <!-- No.03 연봉 조정 대시보드 -->
+    <a class="work-item" href="연봉조정BI_MOON_portfolio.html">
+      <div class="work-meta">
+        <div class="work-num">No.03</div>
         <div class="work-type">BI Dashboard<br>보상 기획</div>
       </div>
       <div class="work-body">
@@ -697,31 +836,35 @@ body{
       </div>
     </a>
 
-    <!-- No.03 성과평가 -->
-    <a class="work-item" href="성과평가_미팅자료_portfolio.html">
+    <!-- No.04 근로계약서 자동생성기 -->
+    <a class="work-item" href="근로계약서_자동생성기_portfolio.html">
       <div class="work-meta">
-        <div class="work-num">No.03</div>
-        <div class="work-type">Policy Doc<br>성과 기획</div>
+        <div class="work-num">No.04</div>
+        <div class="work-type">HR SaaS<br>급여 자동화</div>
       </div>
       <div class="work-body">
-        <div class="work-problem">"원래 그렇게 해왔어요"가 평가 기준인 조직에서 중장기 기준을 기획했습니다.</div>
-        <div class="work-title">성과평가 운영기준 로드맵</div>
-        <div class="work-desc">3개년 중장기 연봉조정 로드맵. 등급 배분 기준, 직급별 인상기준치, 승진 축하금 정책까지 — 구두로만 운영되던 HR 정책을 기획 & 문서화했습니다.</div>
+        <div class="work-problem">매년 80명분 근로계약서를 수작업으로 만드는 데 이틀이 걸렸습니다.</div>
+        <div class="work-title">근로계약서 자동생성기</div>
+        <div class="work-desc">총 연봉금액 입력 → 기본급·연장수당·비과세·명절상여 자동 역산. A4 근로계약서 실시간 미리보기 + 일괄 PDF 출력. 연봉 조정 대시보드(No.03)와 연동 가능한 구조로 설계.</div>
         <div class="work-impact">
           <div class="wi">
-            <div class="wi-num">3개년</div>
-            <div class="wi-label">중장기 로드맵 최초 수립</div>
+            <div class="wi-num">10명+</div>
+            <div class="wi-label">일괄 계약서 생성</div>
           </div>
           <div class="wi">
-            <div class="wi-num">구두 → 문서</div>
-            <div class="wi-label">관행을 체계로 전환</div>
+            <div class="wi-num">역산 자동</div>
+            <div class="wi-label">기본급·수당·상여</div>
+          </div>
+          <div class="wi">
+            <div class="wi-num">BI 연동</div>
+            <div class="wi-label">연봉조정 대시보드</div>
           </div>
         </div>
         <div class="work-tags">
-          <span class="wtag">성과평가 설계</span>
-          <span class="wtag">HR 정책 기획</span>
-          <span class="wtag">등급 배분</span>
-          <span class="wtag">리더 미팅 자료</span>
+          <span class="wtag">급여 역산 엔진</span>
+          <span class="wtag">PDF 생성</span>
+          <span class="wtag">포괄임금제</span>
+          <span class="wtag">BI Linkable</span>
         </div>
       </div>
       <div class="work-right">
@@ -730,10 +873,167 @@ body{
       </div>
     </a>
 
-    <!-- No.04 HR 스마트 포털 -->
-    <a class="work-item" href="AROM_HR_Dashboard_v2_portfolio.html">
+    <!-- No.05 스톡옵션 관리 대시보드 -->
+    <a class="work-item" href="스톡옵션대시보드_portfolio.html">
       <div class="work-meta">
-        <div class="work-num">No.04</div>
+        <div class="work-num">No.05</div>
+        <div class="work-type">BI Dashboard<br>장기 인센티브</div>
+      </div>
+      <div class="work-body">
+        <div class="work-problem">스톡옵션은 부여하는 순간보다, 시간이 지난 뒤 누가 얼마를 가지고 있는지 추적이 더 어렵습니다.</div>
+        <div class="work-title">스톡옵션 관리 대시보드</div>
+        <div class="work-desc">라운드별 부여 이력, 베스팅 진행률, 행사·소멸·만료 상태 추적, 부여가 vs 현재 시가 차익까지. 개인·부서·직급별 필터링과 라운드별 시뮬레이션을 단일 대시보드로 통합.</div>
+        <div class="work-impact">
+          <div class="wi">
+            <div class="wi-num">5단계</div>
+            <div class="wi-label">베스팅·행사 상태</div>
+          </div>
+          <div class="wi">
+            <div class="wi-num">라운드별</div>
+            <div class="wi-label">부여 이력 추적</div>
+          </div>
+          <div class="wi">
+            <div class="wi-num">시가 연동</div>
+            <div class="wi-label">차익 자동 계산</div>
+          </div>
+        </div>
+        <div class="work-tags">
+          <span class="wtag">스톡옵션</span>
+          <span class="wtag">베스팅 추적</span>
+          <span class="wtag">장기 인센티브</span>
+          <span class="wtag">보상 BI</span>
+        </div>
+      </div>
+      <div class="work-right">
+        <div class="work-arrow">→</div>
+        <div class="work-year">2026</div>
+      </div>
+    </a>
+
+    <!-- No.06 근태·급여 엔진 -->
+    <a class="work-item" href="근태급여엔진_portfolio.html">
+      <div class="work-meta">
+        <div class="work-num">No.06</div>
+        <div class="work-type">HR SaaS<br>근태·급여</div>
+      </div>
+      <div class="work-body">
+        <div class="work-problem">매월 급여일이면 엑셀에 근태 데이터 옮기고 수당 계산하는 데만 하루가 걸렸습니다.</div>
+        <div class="work-title">근태·급여 엔진</div>
+        <div class="work-desc">표준·탄력·선택적·자율출근 4종 근무제 대응. 근태 현황에서 버튼 하나로 급여 자동 정산 — 포괄임금 연장수당, 야간·휴일 추가수당, 4대보험 공제까지 10초 내 완료.</div>
+        <div class="work-impact">
+          <div class="wi">
+            <div class="wi-num">4종</div>
+            <div class="wi-label">근무제 대응</div>
+          </div>
+          <div class="wi">
+            <div class="wi-num">10초</div>
+            <div class="wi-label">급여 자동 정산</div>
+          </div>
+          <div class="wi">
+            <div class="wi-num">4대보험</div>
+            <div class="wi-label">공제 자동 계산</div>
+          </div>
+        </div>
+        <div class="work-tags">
+          <span class="wtag">근태 관리</span>
+          <span class="wtag">급여 자동화</span>
+          <span class="wtag">포괄임금제</span>
+          <span class="wtag">4대보험 공제</span>
+        </div>
+      </div>
+      <div class="work-right">
+        <div class="work-arrow">→</div>
+        <div class="work-year">2026</div>
+      </div>
+    </a>
+
+    <!-- ━━━ 성과 ━━━ -->
+    <div class="cat-divider"><span class="cat-num">C</span><span class="cat-ko">성과</span><span class="cat-en">Performance Management</span><span class="cat-line"></span></div>
+
+    <!-- No.07 성과관리 시스템 -->
+    <a class="work-item" href="성과관리시스템_portfolio.html">
+      <div class="work-meta">
+        <div class="work-num">No.07</div>
+        <div class="work-type">HR SaaS<br>성과 기획</div>
+      </div>
+      <div class="work-body">
+        <div class="work-problem">"원래 그렇게 해왔어요"가 평가 기준인 조직에서, FTE 기반 성과관리 체계를 직접 설계했습니다.</div>
+        <div class="work-title">성과관리 시스템 (FTE 기반)</div>
+        <div class="work-desc">HC vs FTE 비교 대시보드, KPI(60%)+역량(40%) 평가 시트, S~D 5등급 강제배분 자동화, 등급별 인상률 시뮬레이션까지. 연봉 조정 BI(No.03)·근로계약서(No.04)와 연동 가능한 구조.</div>
+        <div class="work-impact">
+          <div class="wi">
+            <div class="wi-num">FTE 기반</div>
+            <div class="wi-label">HC vs 실질공수 비교</div>
+          </div>
+          <div class="wi">
+            <div class="wi-num">5등급</div>
+            <div class="wi-label">강제배분 자동화</div>
+          </div>
+          <div class="wi">
+            <div class="wi-num">BI 연동</div>
+            <div class="wi-label">연봉·계약서 자동 연결</div>
+          </div>
+        </div>
+        <div class="work-tags">
+          <span class="wtag">FTE 분석</span>
+          <span class="wtag">KPI + 역량 평가</span>
+          <span class="wtag">등급 배분</span>
+          <span class="wtag">연봉 시뮬레이션</span>
+        </div>
+      </div>
+      <div class="work-right">
+        <div class="work-arrow">→</div>
+        <div class="work-year">2026</div>
+      </div>
+    </a>
+
+    <!-- ━━━ 퇴직 ━━━ -->
+    <div class="cat-divider"><span class="cat-num">D</span><span class="cat-ko">퇴직</span><span class="cat-en">Offboarding</span><span class="cat-line"></span></div>
+
+    <!-- No.08 퇴직 처리 시스템 -->
+    <a class="work-item" href="퇴직처리시스템_portfolio.html">
+      <div class="work-meta">
+        <div class="work-num">No.08</div>
+        <div class="work-type">HR SaaS<br>퇴직 처리</div>
+      </div>
+      <div class="work-body">
+        <div class="work-problem">퇴직금 계산을 엑셀로 하다가 평균임금 기준을 잘못 잡아 재계산한 적이 있습니다.</div>
+        <div class="work-title">퇴직 처리 시스템</div>
+        <div class="work-desc">평균임금 기반 퇴직금 자동 산정, 잔여연차 수당 정산, DC/DB 퇴직연금 확인, 4대보험 상실 신고부터 자산 반납까지 20항목 체크리스트를 단일 도구로 통합.</div>
+        <div class="work-impact">
+          <div class="wi">
+            <div class="wi-num">자동 산정</div>
+            <div class="wi-label">퇴직금 + 연차수당</div>
+          </div>
+          <div class="wi">
+            <div class="wi-num">20항목</div>
+            <div class="wi-label">퇴직 체크리스트</div>
+          </div>
+          <div class="wi">
+            <div class="wi-num">DC/DB</div>
+            <div class="wi-label">퇴직연금 확인</div>
+          </div>
+        </div>
+        <div class="work-tags">
+          <span class="wtag">퇴직금 산정</span>
+          <span class="wtag">연차 정산</span>
+          <span class="wtag">4대보험 상실</span>
+          <span class="wtag">오프보딩</span>
+        </div>
+      </div>
+      <div class="work-right">
+        <div class="work-arrow">→</div>
+        <div class="work-year">2026</div>
+      </div>
+    </a>
+
+    <!-- ━━━ HR 인프라 ━━━ -->
+    <div class="cat-divider"><span class="cat-num">E</span><span class="cat-ko">HR 인프라</span><span class="cat-en">HR Operations</span><span class="cat-line"></span></div>
+
+    <!-- No.09 HR 스마트 대시보드 -->
+    <a class="work-item" href="MOON_HR_Portal_portfolio.html">
+      <div class="work-meta">
+        <div class="work-num">No.09</div>
         <div class="work-type">Smart Portal<br>HR 운영</div>
       </div>
       <div class="work-body">
@@ -787,7 +1087,7 @@ body{
       <div class="exp-right">
         <div class="exp-role">IT 솔루션 기업 (회사명 비공개) · 인사기획팀 대리 <span class="company-badge">IT · 80인 · 1인 HR</span></div>
         <ul class="exp-bullets">
-          <li><strong>HR 데이터 인프라 0→3종</strong> 구축 — 3개월 내 HR Smart Dashboard·채용 DB(7탭)·연봉테이블 자동화 직접 설계·개발</li>
+          <li><strong>HR 데이터 인프라 0→7종</strong> 구축 — 채용 대시보드·ATS·연봉 BI·계약서 자동생성기·근태급여 엔진·성과관리·퇴직처리 시스템 직접 설계·개발</li>
           <li><strong>80명</strong> 전 임직원 연봉 데이터 Google Sheets 구조화 — 직군별 구간·명절상여·연장수당 자동산출 로직 포함</li>
           <li>HR 시스템 <strong>8종 단일 포털 통합</strong> (HiWorks·Wehago·MS Admin·HancomDocs 등) Netlify 배포 완료, 접근 단계 80% 단축</li>
           <li>채용 <strong>5채널</strong> 유입별 전환율 추적 구조 구현, 자동화 트리거 <strong>4포인트</strong> 설계</li>

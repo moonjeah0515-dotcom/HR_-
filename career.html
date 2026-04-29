@@ -169,21 +169,47 @@ body{font-family:var(--sans);background:var(--white);color:var(--ink);font-size:
 .gap-right{font-size:.8rem;color:var(--ink3);line-height:1.7}
 .gap-right strong{color:var(--ink2);font-weight:600}
 
-/* SKILL SUMMARY */
+/* SKILL SUMMARY — 본문 형태 (PDF/인쇄 친화적) */
 .skill-section{
   max-width:880px;margin:0 auto;padding:44px 52px 80px;
   border-top:2px solid var(--ink);
 }
 .skill-title{
-  font-family:var(--serif);font-size:1rem;font-weight:700;font-style:italic;
-  margin-bottom:24px;color:var(--ink);
+  font-family:var(--sans);font-size:1.05rem;font-weight:700;
+  margin-bottom:6px;color:var(--ink);letter-spacing:-.01em;
 }
-.skill-grid{display:grid;grid-template-columns:130px 1fr;gap:0}
-.skill-row>*{padding:12px 0;border-bottom:1px solid var(--rule2)}
-.skill-cat{font-family:var(--mono);font-size:.67rem;font-weight:500;letter-spacing:1.2px;text-transform:uppercase;color:var(--ink4);padding-right:16px}
-.skill-vals{display:flex;flex-wrap:wrap;gap:6px;align-items:center;padding-left:28px;border-left:1px solid var(--rule)}
-.sk{font-size:.72rem;font-weight:500;color:var(--ink2);padding:3px 10px;border:1px solid var(--rule);border-radius:2px}
-.sk.hi{color:var(--accent);border-color:rgba(26,47,255,.25);background:var(--accent-pale);font-weight:700}
+.skill-sub{
+  font-size:.72rem;color:var(--ink4);margin-bottom:24px;
+  font-family:var(--mono);letter-spacing:.5px;
+}
+.skill-list{
+  display:grid;grid-template-columns:130px 1fr;
+  gap:0;
+}
+.skill-list>*{
+  padding:14px 0;
+  border-bottom:1px solid var(--rule2);
+  align-self:start;
+}
+.skill-list>*:last-child,
+.skill-list>*:nth-last-child(2){border-bottom:none}
+.skill-cat{
+  font-family:var(--mono);font-size:.67rem;font-weight:600;
+  letter-spacing:1.2px;text-transform:uppercase;color:var(--accent);
+  padding-right:16px;padding-top:16px;
+}
+.skill-vals{
+  font-size:.82rem;line-height:1.85;color:var(--ink2);
+  padding-left:24px;border-left:1px solid var(--rule);
+  letter-spacing:-.005em;
+  word-break:keep-all;
+}
+.skill-vals .lead{
+  color:var(--ink);font-weight:600;
+}
+.skill-vals .sep{
+  color:var(--ink4);margin:0 6px;font-weight:400;
+}
 
 /* FOOTER */
 .footer{
@@ -207,8 +233,10 @@ body{font-family:var(--sans);background:var(--white);color:var(--ink);font-size:
 @media(max-width:700px){
   .nav{padding:0 20px}
   .header-block,.career,.skill-section,.footer{padding-left:20px;padding-right:20px}
-  .project,.gap-block,.skill-grid{grid-template-columns:1fr}
+  .project,.gap-block,.skill-list{grid-template-columns:1fr}
   .skill-vals{padding-left:0;border-left:none}
+  .skill-cat{padding-top:0;padding-bottom:4px}
+  .skill-list>*{border-bottom:1px solid var(--rule2)}
   .co-header{grid-template-columns:1fr;gap:4px}
 }
 </style>
@@ -538,62 +566,34 @@ body{font-family:var(--sans);background:var(--white);color:var(--ink);font-size:
 <!-- SKILL SUMMARY -->
 <div class="skill-section">
   <div class="skill-title">보유 역량 요약</div>
-  <div class="skill-grid">
-    <div class="skill-row">
-      <div class="skill-cat">채용 기획</div>
-      <div class="skill-vals">
-        <span class="sk hi">채용 스케일업</span>
-        <span class="sk hi">C레벨 채용</span>
-        <span class="sk hi">채용 프로세스 설계</span>
-        <span class="sk hi">ATS 운영</span>
-        <span class="sk hi">대규모 인력 운영</span>
-        <span class="sk hi">리드타임 최적화</span>
-      </div>
+  <div class="skill-sub">CORE COMPETENCIES · 8 YEARS</div>
+  <div class="skill-list">
+
+    <div class="skill-cat">채용 기획</div>
+    <div class="skill-vals">
+      <span class="lead">채용 스케일업</span><span class="sep">·</span>C레벨 채용<span class="sep">·</span>채용 프로세스 설계<span class="sep">·</span>ATS 운영<span class="sep">·</span>대규모 인력 운영(B2G/B2B)<span class="sep">·</span>리드타임 최적화
     </div>
-    <div class="skill-row">
-      <div class="skill-cat">HR 기획</div>
-      <div class="skill-vals">
-        <span class="sk hi">보상 설계</span>
-        <span class="sk hi">성과평가 기획</span>
-        <span class="sk hi">인사기획</span>
-        <span class="sk hi">조직 개편</span>
-        <span class="sk hi">온보딩 설계</span>
-        <span class="sk">취업규칙 제개정</span>
-      </div>
+
+    <div class="skill-cat">HR 기획</div>
+    <div class="skill-vals">
+      <span class="lead">보상 설계</span><span class="sep">·</span><span class="lead">성과평가 기획</span><span class="sep">·</span>인사기획<span class="sep">·</span>조직 개편<span class="sep">·</span>온보딩 설계<span class="sep">·</span>취업규칙 제·개정
     </div>
-    <div class="skill-row">
-      <div class="skill-cat">법무·M&A</div>
-      <div class="skill-vals">
-        <span class="sk hi">유상증자(상법)</span>
-        <span class="sk hi">소규모 M&A</span>
-        <span class="sk hi">민사소송 대응</span>
-        <span class="sk hi">벤처기업법</span>
-        <span class="sk hi">IPO 연계</span>
-        <span class="sk hi">비정규직보호법</span>
-      </div>
+
+    <div class="skill-cat">법무 · M&A</div>
+    <div class="skill-vals">
+      <span class="lead">유상증자(상법)</span><span class="sep">·</span>소규모 M&A<span class="sep">·</span>민사소송 대응<span class="sep">·</span>벤처기업법<span class="sep">·</span>IPO 연계 실무<span class="sep">·</span>비정규직보호법
     </div>
-    <div class="skill-row">
-      <div class="skill-cat">HR 운영</div>
-      <div class="skill-vals">
-        <span class="sk ">급여 처리</span>
-        <span class="sk ">4대보험</span>
-        <span class="sk">퇴직연금(DC)</span>
-        <span class="sk">연말정산</span>
-        <span class="sk hi">자산관리</span>
-        <span class="sk hi">노사협의회</span>
-      </div>
+
+    <div class="skill-cat">HR 운영</div>
+    <div class="skill-vals">
+      급여 처리<span class="sep">·</span>4대보험<span class="sep">·</span>퇴직연금(DC)<span class="sep">·</span>연말정산<span class="sep">·</span><span class="lead">자산관리</span><span class="sep">·</span><span class="lead">노사협의회 운영</span>
     </div>
-    <div class="skill-row">
-      <div class="skill-cat">자동화·개발</div>
-      <div class="skill-vals">
-        <span class="sk hi">Excel VBA</span>
-        <span class="sk hi">Google Apps Script</span>
-        <span class="sk hi">Chart.js</span>
-        <span class="sk hi">HTML/CSS/JS</span>
-        <span class="sk hi">BI 대시보드</span>
-        <span class="sk hi">Netlify 배포</span>
-      </div>
+
+    <div class="skill-cat">자동화 · 개발</div>
+    <div class="skill-vals">
+      <span class="lead">Excel VBA</span><span class="sep">·</span><span class="lead">Google Apps Script</span><span class="sep">·</span>Chart.js<span class="sep">·</span>HTML / CSS / JavaScript<span class="sep">·</span>BI 대시보드 설계<span class="sep">·</span>Netlify 배포
     </div>
+
   </div>
 </div>
 

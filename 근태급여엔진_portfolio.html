@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>근태·급여 엔진 — HR SaaS Module</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#f2f3f7;--s1:#fff;--s2:#f6f7fb;--s3:#ecedf4;
+  --b1:#dde0ec;--b2:#c8cce0;
+  --ink:#1a1d2e;--ink2:#4a5070;--ink3:#7a809a;--ink4:#b0b4c8;
+  --accent:#1a2fff;--accent-pale:#eef0ff;
+  --ok:#22805a;--ok-bg:#e8f5ee;
+  --warn:#a07828;--warn-bg:#fef8ec;
+  --danger:#c03040;--danger-bg:#fceef0;
+  --purple:#6840b8;--purple-bg:#f0ecf8;
+  --teal:#1880a0;--teal-bg:#e8f4f8;
+  --mono:'DM Mono',monospace;--sans:'Noto Sans KR',sans-serif;
+  --r:8px;
+}
+body{font-family:var(--sans);background:var(--bg);color:var(--ink);font-size:13px;min-height:100vh}
+
+/* ── HEADER ── */
+.hd{background:#1e2140;padding:0 28px;display:flex;align-items:center;height:44px;gap:16px;position:sticky;top:0;z-index:100}
+.logo{font-size:14px;font-weight:700;color:#fff}.logo em{color:#6ea8ff;font-style:normal}
+.hd-sep{width:1px;height:16px;background:rgba(255,255,255,.12)}
+.hd-title{font-size:11px;color:rgba(255,255,255,.45)}
+.hd-right{margin-left:auto;display:flex;gap:8px}
+.hd-badge{font-size:9px;padding:3px 10px;border-radius:20px;background:rgba(255,255,255,.07);color:rgba(255,255,255,.5)}
+
+/* ── TABS ── */
+.tabs{display:flex;gap:0;padding:0 28px;background:var(--s1);border-bottom:1px solid var(--b1)}
+.tab{padding:10px 20px;font-size:11px;font-weight:500;color:var(--ink3);cursor:pointer;border-bottom:2px solid transparent;transition:all .12s}
+.tab:hover{color:var(--ink)}.tab.active{color:var(--accent);border-bottom-color:var(--accent)}
+
+/* ── TOOLBAR ── */
+.toolbar{display:flex;align-items:center;gap:10px;padding:10px 28px;background:var(--s1);border-bottom:1px solid var(--b1)}
+.toolbar select,.toolbar input[type=month]{padding:6px 10px;border:1px solid var(--b1);border-radius:6px;font-size:12px;font-family:var(--sans);background:var(--s2);color:var(--ink)}
+.toolbar label{font-size:11px;color:var(--ink3);font-weight:500}
+.toolbar-right{margin-left:auto;display:flex;gap:6px}
+.btn{padding:6px 14px;border:none;border-radius:6px;font-size:11px;font-weight:600;font-family:var(--sans);cursor:pointer;transition:all .12s}
+.btn-primary{background:var(--accent);color:#fff}.btn-primary:hover{background:#0f1bcc}
+.btn-ghost{background:none;border:1px solid var(--b1);color:var(--ink3)}.btn-ghost:hover{border-color:var(--accent);color:var(--accent)}
+.btn-ok{background:var(--ok);color:#fff}.btn-ok:hover{background:#1a6a48}
+
+/* ── CONTENT ── */
+.content{padding:16px 28px}
+.view{display:none}.view.active{display:block}
+
+/* ── KPI STRIP ── */
+.kpi-strip{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;margin-bottom:16px}
+.kpi{background:var(--s1);border:1px solid var(--b1);border-radius:var(--r);padding:14px 16px}
+.kpi-label{font-size:10px;color:var(--ink4);font-weight:500;letter-spacing:.4px;text-transform:uppercase;margin-bottom:3px}
+.kpi-val{font-family:var(--mono);font-size:22px;font-weight:500;color:var(--ink)}
+.kpi-val span{font-size:11px;color:var(--ink3);font-weight:400}
+.kpi-sub{font-size:10px;color:var(--ink4);margin-top:2px}
+.kpi.alert .kpi-val{color:var(--danger)}
+
+/* ── ATTENDANCE TABLE ── */
+.tbl-wrap{background:var(--s1);border:1px solid var(--b1);border-radius:var(--r);overflow:hidden}
+.tbl-title{padding:12px 16px;font-size:12px;font-weight:700;border-bottom:1px solid var(--b1);display:flex;align-items:center;gap:8px}
+.tbl-title::before{content:'';width:3px;height:14px;background:var(--accent);border-radius:2px}
+table{width:100%;border-collapse:collapse;font-size:12px}
+th{text-align:left;font-size:10px;font-weight:600;color:var(--ink4);letter-spacing:.4px;text-transform:uppercase;padding:8px 12px;border-bottom:2px solid var(--b1);position:sticky;top:0;background:var(--s1)}
+td{padding:8px 12px;border-bottom:1px solid var(--s3);color:var(--ink2)}
+tr:hover td{background:var(--accent-pale)}
+.mono{font-family:var(--mono);color:var(--ink)}
+.tag{display:inline-block;font-size:9px;font-weight:600;padding:2px 7px;border-radius:3px}
+.tag-ok{background:var(--ok-bg);color:var(--ok)}
+.tag-warn{background:var(--warn-bg);color:var(--warn)}
+.tag-danger{background:var(--danger-bg);color:var(--danger)}
+.tag-info{background:var(--accent-pale);color:var(--accent)}
+.tag-purple{background:var(--purple-bg);color:var(--purple)}
+.tag-teal{background:var(--teal-bg);color:var(--teal)}
+
+/* ── WORK TYPE BADGES ── */
+.wt-badge{font-size:10px;font-weight:500;padding:3px 8px;border-radius:4px;display:inline-flex;align-items:center;gap:4px}
+.wt-standard{background:#e8eaf2;color:var(--ink2)}
+.wt-flex{background:var(--teal-bg);color:var(--teal)}
+.wt-selective{background:var(--purple-bg);color:var(--purple)}
+.wt-free{background:var(--ok-bg);color:var(--ok)}
+
+/* ── PAYROLL TABLE ── */
+.pay-highlight{background:var(--accent-pale)!important}
+.pay-total td{font-weight:700;border-top:2px solid var(--b1);background:var(--s2)}
+
+/* ── SETTINGS PANEL ── */
+.settings-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px}
+.setting-card{background:var(--s1);border:1px solid var(--b1);border-radius:var(--r);padding:16px}
+.setting-card h3{font-size:12px;font-weight:700;margin-bottom:12px;display:flex;align-items:center;gap:6px}
+.setting-card h3::before{content:'';width:3px;height:12px;border-radius:2px}
+.fg{margin-bottom:10px}
+.fg label{display:block;font-size:11px;font-weight:500;color:var(--ink2);margin-bottom:3px}
+.fg input,.fg select{width:100%;padding:6px 10px;border:1px solid var(--b1);border-radius:6px;font-size:12px;font-family:var(--sans);background:var(--s2);color:var(--ink)}
+.fg input:focus,.fg select:focus{outline:none;border-color:var(--accent);background:#fff}
+.fg .help{font-size:10px;color:var(--ink4);margin-top:2px}
+.frow{display:flex;gap:8px}.frow .fg{flex:1}
+
+/* ── SUMMARY BOX ── */
+.summary{background:var(--s1);border:1px solid var(--b1);border-radius:var(--r);padding:16px;margin-top:16px}
+.summary-title{font-size:12px;font-weight:700;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.summary-title::before{content:'';width:3px;height:14px;background:var(--ok);border-radius:2px}
+.summary-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px}
+.summary-item{background:var(--s2);border-radius:6px;padding:10px 12px}
+.summary-item .sl{font-size:10px;color:var(--ink4)}
+.summary-item .sv{font-family:var(--mono);font-size:16px;font-weight:500;color:var(--ink)}
+.summary-item.total{background:var(--accent-pale);border:1px solid rgba(26,47,255,.12)}
+.summary-item.total .sv{color:var(--accent)}
+
+@media print{.hd,.tabs,.toolbar{display:none!important}.content{padding:10px}}
+</style>
+</head>
+<body>
+
+<div class="hd">
+  <div class="logo">HR <em>SaaS</em></div>
+  <div class="hd-sep"></div>
+  <div class="hd-title">근태·급여 엔진</div>
+  <div class="hd-right">
+    <div class="hd-badge">M2 · 근태+급여</div>
+    <div class="hd-badge">Portfolio Demo</div>
+  </div>
+</div>
+
+<div class="tabs">
+  <div class="tab active" onclick="switchView('attendance')">근태 현황</div>
+  <div class="tab" onclick="switchView('payroll')">급여 정산</div>
+  <div class="tab" onclick="switchView('settings')">근무제 설정</div>
+</div>
+
+<div class="toolbar">
+  <label>기준월</label>
+  <input type="month" id="baseMonth" value="2026-03" onchange="generate()">
+  <label style="margin-left:12px">근무제</label>
+  <select id="workTypeFilter" onchange="generate()">
+    <option value="all">전체</option>
+    <option value="standard">표준 근무</option>
+    <option value="flex">탄력 근무</option>
+    <option value="selective">선택적 근무</option>
+    <option value="free">자율 출근</option>
+  </select>
+  <div class="toolbar-right">
+    <button class="btn btn-ghost" onclick="generate()">새로고침</button>
+    <button class="btn btn-ok" onclick="runPayroll()">급여 정산 실행</button>
+  </div>
+</div>
+
+<div class="content">
+  <!-- 근태 현황 -->
+  <div class="view active" id="v-attendance">
+    <div class="kpi-strip" id="attKpi"></div>
+    <div class="tbl-wrap">
+      <div class="tbl-title">월간 근태 현황</div>
+      <div style="overflow-x:auto"><table id="attTable"><thead></thead><tbody></tbody></table></div>
+    </div>
+  </div>
+
+  <!-- 급여 정산 -->
+  <div class="view" id="v-payroll">
+    <div class="kpi-strip" id="payKpi"></div>
+    <div class="tbl-wrap">
+      <div class="tbl-title">급여 명세 (자동 정산)</div>
+      <div style="overflow-x:auto"><table id="payTable"><thead></thead><tbody></tbody></table></div>
+    </div>
+    <div class="summary" id="paySummary"></div>
+  </div>
+
+  <!-- 근무제 설정 -->
+  <div class="view" id="v-settings">
+    <div class="settings-grid">
+      <div class="setting-card">
+        <h3 style="--c:var(--ink2)">표준 근무제</h3>
+        <div class="frow">
+          <div class="fg"><label>시업</label><input type="time" value="09:30" id="stdStart"></div>
+          <div class="fg"><label>종업</label><input type="time" value="18:30" id="stdEnd"></div>
+        </div>
+        <div class="frow">
+          <div class="fg"><label>소정근로(주)</label><input type="number" value="40" id="stdWeekH"></div>
+          <div class="fg"><label>소정근로(월/h)</label><input type="number" value="209" id="stdMonthH"></div>
+        </div>
+        <div class="fg"><label>휴게시간</label><input value="12:00~13:00, 18:30~19:30" readonly></div>
+        <div class="fg help">근로기준법 제50조 기준, 1일 8시간 주 40시간</div>
+      </div>
+      <div class="setting-card">
+        <h3 style="--c:var(--teal)">탄력적 근로시간제</h3>
+        <div class="fg"><label>정산 단위</label><select><option>2주</option><option selected>3개월</option><option>6개월</option></select></div>
+        <div class="frow">
+          <div class="fg"><label>주당 최소</label><input type="number" value="32"></div>
+          <div class="fg"><label>주당 최대</label><input type="number" value="48"></div>
+        </div>
+        <div class="fg help">근로기준법 제51조, 정산기간 평균 주 40시간 이내</div>
+      </div>
+      <div class="setting-card">
+        <h3 style="--c:var(--purple)">선택적 근로시간제</h3>
+        <div class="frow">
+          <div class="fg"><label>코어타임 시작</label><input type="time" value="10:00"></div>
+          <div class="fg"><label>코어타임 종료</label><input type="time" value="16:00"></div>
+        </div>
+        <div class="frow">
+          <div class="fg"><label>최소 출근</label><input type="time" value="07:00"></div>
+          <div class="fg"><label>최대 퇴근</label><input type="time" value="22:00"></div>
+        </div>
+        <div class="fg help">근로기준법 제52조, 1개월 이내 정산, 코어타임 의무</div>
+      </div>
+      <div class="setting-card">
+        <h3 style="--c:var(--ok)">자율 출근제</h3>
+        <div class="fg"><label>일일 의무시간</label><input type="number" value="8"></div>
+        <div class="fg"><label>최소 코어타임</label><input value="없음 (자율)" readonly></div>
+        <div class="fg help">출퇴근 시간 자유, 일 8시간 근무 기준</div>
+      </div>
+      <div class="setting-card">
+        <h3 style="--c:var(--accent)">포괄임금 설정</h3>
+        <div class="frow">
+          <div class="fg"><label>포괄 연장(월/h)</label><input type="number" value="21.65" step="0.01" id="setOtH"></div>
+          <div class="fg"><label>OT 배수</label><input type="number" value="1.5" step="0.1" id="setOtRate"></div>
+        </div>
+        <div class="frow">
+          <div class="fg"><label>비과세(식대)</label><input type="number" value="200000" id="setTaxFree"></div>
+          <div class="fg"><label>명절상여 배수</label><input type="number" value="0.2" step="0.01" id="setBonusRate"></div>
+        </div>
+        <div class="fg help">연장수당 = {(기본급+비과세)÷209h} × 21.65h × 1.5배</div>
+      </div>
+      <div class="setting-card">
+        <h3 style="--c:var(--warn)">4대보험 요율 (2026)</h3>
+        <div class="frow">
+          <div class="fg"><label>국민연금 (근로자)</label><input type="number" value="4.5" step="0.1" id="rateNP">%</div>
+          <div class="fg"><label>건강보험 (근로자)</label><input type="number" value="3.545" step="0.001" id="rateHI">%</div>
+        </div>
+        <div class="frow">
+          <div class="fg"><label>장기요양 (건보의)</label><input type="number" value="12.95" step="0.01" id="rateLTC">%</div>
+          <div class="fg"><label>고용보험 (근로자)</label><input type="number" value="0.9" step="0.1" id="rateEI">%</div>
+        </div>
+        <div class="fg help">소득세·지방소득세는 간이세액표 기준 별도 적용</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const NAMES=['직원A','직원B','직원C','직원D','직원E','직원F','직원G','직원H','직원I','직원J',
+  '직원K','직원L','직원M','직원N','직원O','직원P','직원Q','직원R','직원S','직원T'];
+const DEPTS=['개발1팀','개발2팀','기획팀','인프라팀','경영지원'];
+const WORK_TYPES=[
+  {id:'standard',label:'표준 근무',cls:'wt-standard'},
+  {id:'flex',label:'탄력 근무',cls:'wt-flex'},
+  {id:'selective',label:'선택적 근무',cls:'wt-selective'},
+  {id:'free',label:'자율 출근',cls:'wt-free'}
+];
+const WT_WEIGHTS=[8,4,5,3];
+
+const fmt=n=>n!=null?Math.round(n).toLocaleString('ko-KR'):'—';
+const won=n=>fmt(n)+'원';
+
+let employees=[];
+let payrollRun=false;
+
+function generate(){
+  const filter=document.getElementById('workTypeFilter').value;
+  employees=NAMES.map((name,i)=>{
+    const wtIdx=weightedRandom(WT_WEIGHTS);
+    const wt=WORK_TYPES[wtIdx];
+    const dept=DEPTS[i%DEPTS.length];
+    const base=2600000+Math.floor(Math.random()*2800000);
+    const salary=Math.round(base/1000)*1000;
+
+    // 근태 생성
+    const workdays=22;
+    const actualWork=workdays-Math.floor(Math.random()*3);
+    const late=Math.floor(Math.random()*4);
+    const earlyLeave=Math.floor(Math.random()*2);
+    const annualUsed=Math.floor(Math.random()*3);
+    const ot=Math.round((Math.random()*25+5)*10)/10;
+    const nightOt=Math.round(Math.random()*8*10)/10;
+    const holidayOt=Math.round(Math.random()*8*10)/10;
+
+    // 시간
+    let startH=9,startM=30;
+    if(wt.id==='flex'){startH=8+Math.floor(Math.random()*3);startM=Math.floor(Math.random()*4)*15;}
+    if(wt.id==='selective'){startH=7+Math.floor(Math.random()*4);startM=Math.floor(Math.random()*4)*15;}
+    if(wt.id==='free'){startH=8+Math.floor(Math.random()*4);startM=Math.floor(Math.random()*4)*15;}
+    const avgStart=`${String(startH).padStart(2,'0')}:${String(startM).padStart(2,'0')}`;
+
+    return {
+      id:i+1,name,dept,workType:wt,salary,
+      workdays,actualWork,late,earlyLeave,annualUsed,
+      ot,nightOt,holidayOt,avgStart,
+      totalHours:actualWork*8+ot+nightOt+holidayOt
+    };
+  });
+
+  if(filter!=='all') employees=employees.filter(e=>e.workType.id===filter);
+  payrollRun=false;
+  renderAttendance();
+}
+
+function weightedRandom(w){const t=w.reduce((a,b)=>a+b,0);let r=Math.random()*t;for(let i=0;i<w.length;i++){r-=w[i];if(r<=0)return i;}return w.length-1;}
+
+function renderAttendance(){
+  const total=employees.length;
+  const avgLate=(employees.reduce((s,e)=>s+e.late,0)/total).toFixed(1);
+  const totalOt=employees.reduce((s,e)=>s+e.ot+e.nightOt+e.holidayOt,0).toFixed(1);
+  const avgAnnual=(employees.reduce((s,e)=>s+e.annualUsed,0)/total).toFixed(1);
+  const alerts=employees.filter(e=>e.late>=3).length;
+
+  document.getElementById('attKpi').innerHTML=`
+    <div class="kpi"><div class="kpi-label">대상 인원</div><div class="kpi-val">${total}<span>명</span></div></div>
+    <div class="kpi"><div class="kpi-label">평균 지각</div><div class="kpi-val">${avgLate}<span>회/인</span></div></div>
+    <div class="kpi"><div class="kpi-label">총 초과근무</div><div class="kpi-val">${totalOt}<span>h</span></div></div>
+    <div class="kpi"><div class="kpi-label">평균 연차 사용</div><div class="kpi-val">${avgAnnual}<span>일</span></div></div>
+    <div class="kpi ${alerts?'alert':''}"><div class="kpi-label">근태 경고</div><div class="kpi-val">${alerts}<span>명</span></div><div class="kpi-sub">지각 3회 이상</div></div>
+  `;
+
+  const thead=document.querySelector('#attTable thead');
+  const tbody=document.querySelector('#attTable tbody');
+  thead.innerHTML=`<tr><th>이름</th><th>부서</th><th>근무제</th><th>평균출근</th><th>출근일</th><th>지각</th><th>조퇴</th><th>연차</th><th>연장(h)</th><th>야간(h)</th><th>휴일(h)</th><th>총 근로(h)</th><th>상태</th></tr>`;
+  tbody.innerHTML=employees.map(e=>{
+    let status='정상',tagCls='tag-ok';
+    if(e.late>=3){status='경고';tagCls='tag-danger';}
+    else if(e.late>=2||e.ot>30){status='주의';tagCls='tag-warn';}
+    return `<tr>
+      <td style="font-weight:600">${e.name}</td>
+      <td>${e.dept}</td>
+      <td><span class="wt-badge ${e.workType.cls}">${e.workType.label}</span></td>
+      <td class="mono">${e.avgStart}</td>
+      <td class="mono">${e.actualWork}/${e.workdays}</td>
+      <td class="mono" style="${e.late>=3?'color:var(--danger);font-weight:700':''}">${e.late}</td>
+      <td class="mono">${e.earlyLeave}</td>
+      <td class="mono">${e.annualUsed}</td>
+      <td class="mono">${e.ot}</td>
+      <td class="mono">${e.nightOt}</td>
+      <td class="mono">${e.holidayOt}</td>
+      <td class="mono" style="font-weight:600">${e.totalHours.toFixed(1)}</td>
+      <td><span class="tag ${tagCls}">${status}</span></td>
+    </tr>`;
+  }).join('');
+}
+
+/* ═══ PAYROLL ═══ */
+function runPayroll(){
+  payrollRun=true;
+  switchView('payroll');
+  renderPayroll();
+}
+
+function renderPayroll(){
+  if(!payrollRun){
+    document.getElementById('payKpi').innerHTML='';
+    document.getElementById('payTable').querySelector('thead').innerHTML='';
+    document.getElementById('payTable').querySelector('tbody').innerHTML='<tr><td colspan="12" style="text-align:center;padding:40px;color:var(--ink3)">상단의 "급여 정산 실행" 버튼을 클릭하세요</td></tr>';
+    document.getElementById('paySummary').innerHTML='';
+    return;
+  }
+
+  const taxFree=+document.getElementById('setTaxFree').value||200000;
+  const otH=+document.getElementById('setOtH').value||21.65;
+  const otRate=+document.getElementById('setOtRate').value||1.5;
+  const stdH=+document.getElementById('stdMonthH').value||209;
+  const rNP=(+document.getElementById('rateNP').value||4.5)/100;
+  const rHI=(+document.getElementById('rateHI').value||3.545)/100;
+  const rLTC=(+document.getElementById('rateLTC').value||12.95)/100;
+  const rEI=(+document.getElementById('rateEI').value||0.9)/100;
+
+  const payData=employees.map(e=>{
+    const basePay=e.salary;
+    // 포괄임금 기준 연장수당은 이미 기본급에 포함 — 추가 OT만 계산
+    const hourlyRate=Math.round(basePay/stdH);
+    const extraOt=Math.max(0,e.ot-otH);
+    const extraOtPay=Math.round(hourlyRate*extraOt*otRate);
+    const nightPay=Math.round(hourlyRate*e.nightOt*2.0);
+    const holidayPay=Math.round(hourlyRate*e.holidayOt*1.5);
+    const grossPay=basePay+taxFree+extraOtPay+nightPay+holidayPay;
+
+    // 4대보험 (과세 대상만)
+    const taxable=grossPay-taxFree;
+    const np=Math.round(taxable*rNP);
+    const hi=Math.round(taxable*rHI);
+    const ltc=Math.round(hi*rLTC);
+    const ei=Math.round(taxable*rEI);
+    const totalDeduct=np+hi+ltc+ei;
+    const netPay=grossPay-totalDeduct;
+
+    return {...e,basePay,taxFree,extraOt,extraOtPay,nightPay,holidayPay,grossPay,np,hi,ltc,ei,totalDeduct,netPay,hourlyRate};
+  });
+
+  // KPI
+  const totalGross=payData.reduce((s,p)=>s+p.grossPay,0);
+  const totalNet=payData.reduce((s,p)=>s+p.netPay,0);
+  const totalDeduct=payData.reduce((s,p)=>s+p.totalDeduct,0);
+  const avgGross=Math.round(totalGross/payData.length);
+
+  document.getElementById('payKpi').innerHTML=`
+    <div class="kpi"><div class="kpi-label">정산 인원</div><div class="kpi-val">${payData.length}<span>명</span></div></div>
+    <div class="kpi"><div class="kpi-label">총 지급액</div><div class="kpi-val">${fmt(totalGross)}<span>원</span></div></div>
+    <div class="kpi"><div class="kpi-label">총 공제액</div><div class="kpi-val">${fmt(totalDeduct)}<span>원</span></div></div>
+    <div class="kpi"><div class="kpi-label">총 실수령</div><div class="kpi-val" style="color:var(--accent)">${fmt(totalNet)}<span>원</span></div></div>
+    <div class="kpi"><div class="kpi-label">1인 평균</div><div class="kpi-val">${fmt(avgGross)}<span>원</span></div></div>
+  `;
+
+  const thead=document.querySelector('#payTable thead');
+  const tbody=document.querySelector('#payTable tbody');
+  thead.innerHTML=`<tr><th>이름</th><th>부서</th><th>기본급</th><th>식대</th><th>추가OT</th><th>야간</th><th>휴일</th><th>지급계</th><th>국민연금</th><th>건강+장기</th><th>고용</th><th>공제계</th><th>실수령</th></tr>`;
+  tbody.innerHTML=payData.map(p=>`<tr>
+    <td style="font-weight:600">${p.name}</td>
+    <td>${p.dept}</td>
+    <td class="mono">${fmt(p.basePay)}</td>
+    <td class="mono">${fmt(p.taxFree)}</td>
+    <td class="mono" style="${p.extraOtPay?'color:var(--warn);font-weight:600':''}">${p.extraOtPay?fmt(p.extraOtPay):'—'}</td>
+    <td class="mono">${p.nightPay?fmt(p.nightPay):'—'}</td>
+    <td class="mono">${p.holidayPay?fmt(p.holidayPay):'—'}</td>
+    <td class="mono" style="font-weight:700">${fmt(p.grossPay)}</td>
+    <td class="mono">${fmt(p.np)}</td>
+    <td class="mono">${fmt(p.hi+p.ltc)}</td>
+    <td class="mono">${fmt(p.ei)}</td>
+    <td class="mono" style="color:var(--danger)">${fmt(p.totalDeduct)}</td>
+    <td class="mono" style="font-weight:700;color:var(--accent)">${fmt(p.netPay)}</td>
+  </tr>`).join('') + `<tr class="pay-total">
+    <td colspan="2">합계 (${payData.length}명)</td>
+    <td class="mono">${fmt(payData.reduce((s,p)=>s+p.basePay,0))}</td>
+    <td class="mono">${fmt(payData.reduce((s,p)=>s+p.taxFree,0))}</td>
+    <td class="mono">${fmt(payData.reduce((s,p)=>s+p.extraOtPay,0))}</td>
+    <td class="mono">${fmt(payData.reduce((s,p)=>s+p.nightPay,0))}</td>
+    <td class="mono">${fmt(payData.reduce((s,p)=>s+p.holidayPay,0))}</td>
+    <td class="mono">${fmt(totalGross)}</td>
+    <td class="mono">${fmt(payData.reduce((s,p)=>s+p.np,0))}</td>
+    <td class="mono">${fmt(payData.reduce((s,p)=>s+p.hi+p.ltc,0))}</td>
+    <td class="mono">${fmt(payData.reduce((s,p)=>s+p.ei,0))}</td>
+    <td class="mono">${fmt(totalDeduct)}</td>
+    <td class="mono" style="color:var(--accent)">${fmt(totalNet)}</td>
+  </tr>`;
+
+  // Summary
+  document.getElementById('paySummary').innerHTML=`
+    <div class="summary-title">정산 요약</div>
+    <div class="summary-grid">
+      <div class="summary-item"><div class="sl">기본급 합계</div><div class="sv">${fmt(payData.reduce((s,p)=>s+p.basePay,0))}</div></div>
+      <div class="summary-item"><div class="sl">비과세(식대)</div><div class="sv">${fmt(payData.reduce((s,p)=>s+p.taxFree,0))}</div></div>
+      <div class="summary-item"><div class="sl">추가 OT 수당</div><div class="sv">${fmt(payData.reduce((s,p)=>s+p.extraOtPay,0))}</div></div>
+      <div class="summary-item"><div class="sl">야간·휴일 수당</div><div class="sv">${fmt(payData.reduce((s,p)=>s+p.nightPay+p.holidayPay,0))}</div></div>
+      <div class="summary-item"><div class="sl">4대보험(근로자)</div><div class="sv">${fmt(totalDeduct)}</div></div>
+      <div class="summary-item total"><div class="sl">실수령액 합계</div><div class="sv">${fmt(totalNet)}</div></div>
+    </div>
+  `;
+}
+
+/* ═══ VIEW ═══ */
+function switchView(v){
+  document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('active',i===(['attendance','payroll','settings'].indexOf(v))));
+  document.querySelectorAll('.view').forEach(el=>el.classList.remove('active'));
+  document.getElementById('v-'+v).classList.add('active');
+  if(v==='payroll') renderPayroll();
+}
+
+generate();
+</script>
+</body>
+</html>

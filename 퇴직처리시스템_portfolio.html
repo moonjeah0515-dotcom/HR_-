@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>퇴직 처리 시스템 — HR SaaS Module</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#f2f3f7;--s1:#fff;--s2:#f6f7fb;--s3:#ecedf4;
+  --b1:#dde0ec;--b2:#c8cce0;
+  --ink:#1a1d2e;--ink2:#4a5070;--ink3:#7a809a;--ink4:#b0b4c8;
+  --accent:#1a2fff;--accent-pale:#eef0ff;
+  --ok:#22805a;--ok-bg:#e8f5ee;
+  --warn:#a07828;--warn-bg:#fef8ec;
+  --danger:#c03040;--danger-bg:#fceef0;
+  --purple:#6840b8;--purple-bg:#f0ecf8;
+  --teal:#1880a0;--teal-bg:#e8f4f8;
+  --mono:'DM Mono',monospace;--sans:'Noto Sans KR',sans-serif;
+  --r:8px;
+}
+body{font-family:var(--sans);background:var(--bg);color:var(--ink);font-size:13px;min-height:100vh}
+.hd{background:#1e2140;padding:0 28px;display:flex;align-items:center;height:44px;gap:16px;position:sticky;top:0;z-index:100}
+.logo{font-size:14px;font-weight:700;color:#fff}.logo em{color:#6ea8ff;font-style:normal}
+.hd-sep{width:1px;height:16px;background:rgba(255,255,255,.12)}
+.hd-title{font-size:11px;color:rgba(255,255,255,.45)}
+.hd-right{margin-left:auto;display:flex;gap:8px}
+.hd-badge{font-size:9px;padding:3px 10px;border-radius:20px;background:rgba(255,255,255,.07);color:rgba(255,255,255,.5)}
+.tabs{display:flex;gap:0;padding:0 28px;background:var(--s1);border-bottom:1px solid var(--b1)}
+.tab{padding:10px 20px;font-size:11px;font-weight:500;color:var(--ink3);cursor:pointer;border-bottom:2px solid transparent;transition:all .12s}
+.tab:hover{color:var(--ink)}.tab.active{color:var(--accent);border-bottom-color:var(--accent)}
+
+.content{padding:16px 28px}
+.view{display:none}.view.active{display:block}
+
+/* LAYOUT */
+.split{display:grid;grid-template-columns:360px 1fr;gap:16px;align-items:start}
+.panel{background:var(--s1);border:1px solid var(--b1);border-radius:var(--r);padding:16px}
+.panel-title{font-size:12px;font-weight:700;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.panel-title::before{content:'';width:3px;height:14px;background:var(--accent);border-radius:2px}
+.fg{margin-bottom:10px}
+.fg label{display:block;font-size:11px;font-weight:500;color:var(--ink2);margin-bottom:3px}
+.fg input,.fg select{width:100%;padding:7px 10px;border:1px solid var(--b1);border-radius:6px;font-size:13px;font-family:var(--sans);background:var(--s2);color:var(--ink)}
+.fg input:focus,.fg select:focus{outline:none;border-color:var(--accent);background:#fff}
+.fg .help{font-size:10px;color:var(--ink4);margin-top:2px}
+.frow{display:flex;gap:8px}.frow .fg{flex:1}
+.divider{height:1px;background:var(--b1);margin:14px 0}
+.btn{padding:7px 14px;border:none;border-radius:6px;font-size:12px;font-weight:600;font-family:var(--sans);cursor:pointer;transition:all .12s;width:100%}
+.btn-primary{background:var(--accent);color:#fff}.btn-primary:hover{background:#0f1bcc}
+.btn-ghost{background:none;border:1px solid var(--b1);color:var(--ink3);margin-top:6px}.btn-ghost:hover{border-color:var(--accent);color:var(--accent)}
+
+/* RESULT CARDS */
+.result-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin-bottom:16px}
+.rc{background:var(--s1);border:1px solid var(--b1);border-radius:var(--r);padding:14px 16px}
+.rc-label{font-size:10px;color:var(--ink4);font-weight:500;letter-spacing:.4px;text-transform:uppercase;margin-bottom:3px}
+.rc-val{font-family:var(--mono);font-size:20px;font-weight:500;color:var(--ink)}
+.rc-val span{font-size:11px;color:var(--ink3);font-weight:400}
+.rc-sub{font-size:10px;color:var(--ink4);margin-top:2px}
+.rc.highlight{border-color:var(--accent);background:var(--accent-pale)}
+.rc.highlight .rc-val{color:var(--accent)}
+.rc.warn{border-color:var(--warn);background:var(--warn-bg)}
+.rc.warn .rc-val{color:var(--warn)}
+
+/* BREAKDOWN TABLE */
+.tbl-wrap{background:var(--s1);border:1px solid var(--b1);border-radius:var(--r);overflow:hidden;margin-bottom:16px}
+.tbl-title{padding:12px 16px;font-size:12px;font-weight:700;border-bottom:1px solid var(--b1);display:flex;align-items:center;gap:8px}
+.tbl-title::before{content:'';width:3px;height:14px;background:var(--accent);border-radius:2px}
+table{width:100%;border-collapse:collapse;font-size:12px}
+th{text-align:left;font-size:10px;font-weight:600;color:var(--ink4);letter-spacing:.4px;text-transform:uppercase;padding:8px 14px;border-bottom:2px solid var(--b1)}
+td{padding:10px 14px;border-bottom:1px solid var(--s3);color:var(--ink2)}
+.mono{font-family:var(--mono);color:var(--ink)}
+.total-row td{font-weight:700;border-top:2px solid var(--b1);background:var(--s2)}
+.tag{display:inline-block;font-size:9px;font-weight:600;padding:2px 7px;border-radius:3px}
+.tag-ok{background:var(--ok-bg);color:var(--ok)}
+.tag-warn{background:var(--warn-bg);color:var(--warn)}
+.tag-danger{background:var(--danger-bg);color:var(--danger)}
+
+/* CHECKLIST */
+.checklist{display:flex;flex-direction:column;gap:0}
+.cl-group-title{font-size:11px;font-weight:700;color:var(--ink);padding:10px 0 6px;border-bottom:1px solid var(--b1);margin-top:8px;display:flex;align-items:center;gap:6px}
+.cl-group-title::before{content:'';width:8px;height:8px;border-radius:2px}
+.cl-item{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--s3);cursor:pointer}
+.cl-item:hover{background:var(--accent-pale);margin:0 -8px;padding:8px 8px}
+.cl-check{width:20px;height:20px;border:2px solid var(--b2);border-radius:4px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:12px;transition:all .15s}
+.cl-item.done .cl-check{background:var(--ok);border-color:var(--ok);color:#fff}
+.cl-text{font-size:12px;color:var(--ink2);flex:1}
+.cl-item.done .cl-text{text-decoration:line-through;color:var(--ink4)}
+.cl-due{font-size:10px;color:var(--ink4);font-family:var(--mono)}
+.cl-progress{display:flex;align-items:center;gap:8px;margin:14px 0}
+.cl-bar-outer{flex:1;height:6px;background:var(--s3);border-radius:3px;overflow:hidden}
+.cl-bar-inner{height:100%;background:var(--ok);border-radius:3px;transition:width .3s}
+.cl-pct{font-family:var(--mono);font-size:12px;font-weight:500;color:var(--ink)}
+
+/* PENSION */
+.pension-card{display:flex;gap:12px;padding:12px;background:var(--s2);border-radius:var(--r);margin-bottom:10px;align-items:center}
+.pension-icon{width:40px;height:40px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.pension-info{flex:1}
+.pension-type{font-size:12px;font-weight:600;color:var(--ink)}
+.pension-desc{font-size:11px;color:var(--ink3)}
+.pension-amount{font-family:var(--mono);font-size:14px;font-weight:500;color:var(--accent)}
+
+/* WATERMARK */
+.watermark{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) rotate(-30deg);font-size:48px;font-weight:700;color:rgba(26,47,255,.04);letter-spacing:6px;pointer-events:none;white-space:nowrap;z-index:0}
+
+@media print{.hd,.tabs{display:none!important}.content{padding:10px}.watermark{display:none}}
+@media(max-width:800px){.split{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<div class="watermark">PORTFOLIO SAMPLE</div>
+
+<div class="hd">
+  <div class="logo">HR <em>SaaS</em></div><div class="hd-sep"></div>
+  <div class="hd-title">퇴직 처리 시스템</div>
+  <div class="hd-right"><div class="hd-badge">M5 · 퇴직 처리</div><div class="hd-badge">Portfolio Demo</div></div>
+</div>
+
+<div class="tabs">
+  <div class="tab active" onclick="switchView('calc')">퇴직금 산정</div>
+  <div class="tab" onclick="switchView('checklist')">퇴직 체크리스트</div>
+  <div class="tab" onclick="switchView('history')">퇴직 이력</div>
+</div>
+
+<div class="content">
+  <!-- 퇴직금 산정 -->
+  <div class="view active" id="v-calc">
+    <div class="split">
+      <div>
+        <div class="panel">
+          <div class="panel-title">퇴직자 정보</div>
+          <div class="fg"><label>직원명</label><input id="retName" value="직원 A" oninput="calc()"></div>
+          <div class="frow">
+            <div class="fg"><label>입사일</label><input type="date" id="retJoin" value="2022-03-01" onchange="calc()"></div>
+            <div class="fg"><label>퇴직일</label><input type="date" id="retLeave" value="2026-04-30" onchange="calc()"></div>
+          </div>
+          <div class="fg"><label>퇴직 사유</label>
+            <select id="retReason" onchange="calc()">
+              <option>자발적 퇴직 (자기 사유)</option>
+              <option>권고사직</option>
+              <option>계약 만료</option>
+              <option>정년 퇴직</option>
+              <option>해고</option>
+            </select>
+          </div>
+          <div class="divider"></div>
+          <div class="panel-title">급여 정보 (최근 3개월 평균)</div>
+          <div class="frow">
+            <div class="fg"><label>기본급</label><input type="number" id="retBase" value="3200000" oninput="calc()"></div>
+            <div class="fg"><label>고정수당 합계</label><input type="number" id="retAllow" value="580000" oninput="calc()"></div>
+          </div>
+          <div class="frow">
+            <div class="fg"><label>비과세(식대)</label><input type="number" id="retTaxFree" value="200000" oninput="calc()"></div>
+            <div class="fg"><label>상여금(연간/12)</label><input type="number" id="retBonus" value="120000" oninput="calc()">
+              <div class="help">연간 상여금 ÷ 12</div>
+            </div>
+          </div>
+          <div class="divider"></div>
+          <div class="panel-title">연차 정보</div>
+          <div class="frow">
+            <div class="fg"><label>발생 연차</label><input type="number" id="retAnnualTotal" value="15" oninput="calc()"></div>
+            <div class="fg"><label>사용 연차</label><input type="number" id="retAnnualUsed" value="8" oninput="calc()"></div>
+          </div>
+          <div class="divider"></div>
+          <div class="panel-title">퇴직연금</div>
+          <div class="frow">
+            <div class="fg"><label>가입 유형</label>
+              <select id="retPension" onchange="calc()">
+                <option value="dc">DC (확정기여형)</option>
+                <option value="db">DB (확정급여형)</option>
+                <option value="none">미가입</option>
+              </select>
+            </div>
+            <div class="fg"><label>적립금 (DC)</label><input type="number" id="retPensionAmt" value="12800000" oninput="calc()"></div>
+          </div>
+          <div class="divider"></div>
+          <button class="btn btn-primary" onclick="calc()">퇴직금 산정</button>
+          <button class="btn btn-ghost" onclick="loadDemo()">데모 데이터</button>
+        </div>
+      </div>
+
+      <div id="calcResult">
+        <div style="padding:40px;text-align:center;color:var(--ink3)">좌측 정보를 입력하면 자동으로 산정됩니다.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 체크리스트 -->
+  <div class="view" id="v-checklist">
+    <div class="split">
+      <div class="panel">
+        <div class="panel-title">퇴직 진행 현황</div>
+        <div class="cl-progress">
+          <div class="cl-bar-outer"><div class="cl-bar-inner" id="clBar" style="width:0%"></div></div>
+          <div class="cl-pct" id="clPct">0%</div>
+        </div>
+        <div class="checklist" id="checklistArea"></div>
+      </div>
+      <div>
+        <div class="panel">
+          <div class="panel-title">퇴직 처리 타임라인</div>
+          <div id="timelineArea"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 퇴직 이력 -->
+  <div class="view" id="v-history">
+    <div class="tbl-wrap">
+      <div class="tbl-title">퇴직자 이력 관리</div>
+      <table id="historyTable"><thead></thead><tbody></tbody></table>
+    </div>
+  </div>
+</div>
+
+<script>
+const fmt=n=>Math.round(n).toLocaleString('ko-KR');
+const $=id=>document.getElementById(id);
+
+/* ═══ 퇴직금 산정 ═══ */
+function calc(){
+  const join=new Date($('retJoin').value);
+  const leave=new Date($('retLeave').value);
+  if(isNaN(join)||isNaN(leave)||leave<=join){$('calcResult').innerHTML='<div style="padding:40px;text-align:center;color:var(--danger)">입사일/퇴직일을 확인하세요.</div>';return;}
+
+  const diffMs=leave-join;
+  const totalDays=Math.floor(diffMs/86400000);
+  const years=totalDays/365.25;
+  const months=Math.floor(years*12);
+  const yStr=Math.floor(years)+'년 '+Math.round((years%1)*12)+'개월';
+
+  const base=+$('retBase').value||0;
+  const allow=+$('retAllow').value||0;
+  const taxFree=+$('retTaxFree').value||0;
+  const bonus=+$('retBonus').value||0;
+
+  // 평균임금 = (3개월 임금 총액) ÷ (3개월 총일수 = 약 91일)
+  const monthly=base+allow+taxFree+bonus;
+  const avg3m=monthly*3;
+  const avgDaily=Math.round(avg3m/91);
+
+  // 퇴직금 = 평균임금 1일분 × 30일 × (재직일수/365)
+  const severance=Math.round(avgDaily*30*(totalDays/365));
+
+  // 1년 미만 체크
+  const under1y=totalDays<365;
+
+  // 연차 수당
+  const annualTotal=+$('retAnnualTotal').value||0;
+  const annualUsed=+$('retAnnualUsed').value||0;
+  const annualLeft=Math.max(0,annualTotal-annualUsed);
+  // 연차수당 = 1일 통상임금 × 잔여일수
+  const dailyOrdinary=Math.round((base+allow)/209*8);
+  const annualPay=dailyOrdinary*annualLeft;
+
+  // 퇴직연금
+  const pensionType=$('retPension').value;
+  const pensionAmt=+$('retPensionAmt').value||0;
+
+  const totalPayout=severance+annualPay;
+
+  $('calcResult').innerHTML=`
+    <div class="result-grid">
+      <div class="rc"><div class="rc-label">직원명</div><div class="rc-val">${$('retName').value}</div></div>
+      <div class="rc"><div class="rc-label">재직 기간</div><div class="rc-val">${yStr}</div><div class="rc-sub">${fmt(totalDays)}일</div></div>
+      <div class="rc"><div class="rc-label">퇴직 사유</div><div class="rc-val" style="font-size:14px">${$('retReason').value}</div></div>
+      <div class="rc"><div class="rc-label">평균임금(1일)</div><div class="rc-val">${fmt(avgDaily)}<span>원</span></div><div class="rc-sub">3개월 임금총액 ÷ 91일</div></div>
+      <div class="rc ${under1y?'warn':''}"><div class="rc-label">퇴직금</div><div class="rc-val">${under1y?'해당없음':fmt(severance)+'<span>원</span>'}</div><div class="rc-sub">${under1y?'1년 미만 근무':'평균임금×30일×(재직일수/365)'}</div></div>
+      <div class="rc"><div class="rc-label">잔여연차 수당</div><div class="rc-val">${fmt(annualPay)}<span>원</span></div><div class="rc-sub">${annualLeft}일 × ${fmt(dailyOrdinary)}원</div></div>
+      <div class="rc highlight"><div class="rc-label">총 지급액</div><div class="rc-val">${fmt(totalPayout)}<span>원</span></div></div>
+    </div>
+
+    <div class="tbl-wrap">
+      <div class="tbl-title">퇴직금 산정 상세</div>
+      <table>
+        <tr><th>항목</th><th>산식</th><th style="text-align:right">금액</th></tr>
+        <tr><td>기본급 (월)</td><td></td><td class="mono" style="text-align:right">${fmt(base)}</td></tr>
+        <tr><td>고정수당 (월)</td><td></td><td class="mono" style="text-align:right">${fmt(allow)}</td></tr>
+        <tr><td>비과세 식대 (월)</td><td></td><td class="mono" style="text-align:right">${fmt(taxFree)}</td></tr>
+        <tr><td>상여금 (월할)</td><td>연간 상여 ÷ 12</td><td class="mono" style="text-align:right">${fmt(bonus)}</td></tr>
+        <tr><td style="font-weight:600">월 임금 합계</td><td></td><td class="mono" style="text-align:right;font-weight:700">${fmt(monthly)}</td></tr>
+        <tr><td>3개월 임금 총액</td><td>월 임금 × 3</td><td class="mono" style="text-align:right">${fmt(avg3m)}</td></tr>
+        <tr><td>평균임금 (1일)</td><td>3개월 총액 ÷ 91일</td><td class="mono" style="text-align:right;font-weight:600">${fmt(avgDaily)}</td></tr>
+        <tr><td>재직일수</td><td>${$('retJoin').value} ~ ${$('retLeave').value}</td><td class="mono" style="text-align:right">${fmt(totalDays)}일</td></tr>
+        <tr class="total-row"><td>퇴직금</td><td>${fmt(avgDaily)} × 30 × (${fmt(totalDays)}/365)</td><td class="mono" style="text-align:right;color:var(--accent)">${under1y?'해당없음':fmt(severance)+'원'}</td></tr>
+      </table>
+    </div>
+
+    <div class="tbl-wrap">
+      <div class="tbl-title">연차 수당 정산</div>
+      <table>
+        <tr><th>항목</th><th style="text-align:right">값</th></tr>
+        <tr><td>발생 연차</td><td class="mono" style="text-align:right">${annualTotal}일</td></tr>
+        <tr><td>사용 연차</td><td class="mono" style="text-align:right">${annualUsed}일</td></tr>
+        <tr><td>잔여 연차</td><td class="mono" style="text-align:right;font-weight:600;color:${annualLeft?'var(--warn)':'var(--ok)'}">${annualLeft}일</td></tr>
+        <tr><td>1일 통상임금</td><td class="mono" style="text-align:right">${fmt(dailyOrdinary)}원</td></tr>
+        <tr class="total-row"><td>연차 수당</td><td class="mono" style="text-align:right;color:var(--accent)">${fmt(annualPay)}원</td></tr>
+      </table>
+    </div>
+
+    <div class="pension-card">
+      <div class="pension-icon" style="background:${pensionType==='dc'?'var(--accent-pale)':pensionType==='db'?'var(--purple-bg)':'var(--danger-bg)'}">
+        ${pensionType==='dc'?'DC':pensionType==='db'?'DB':'⚠'}
+      </div>
+      <div class="pension-info">
+        <div class="pension-type">${pensionType==='dc'?'확정기여형 (DC)':pensionType==='db'?'확정급여형 (DB)':'퇴직연금 미가입'}</div>
+        <div class="pension-desc">${pensionType==='dc'?'적립금 기준 지급 — 운용 수익 포함':pensionType==='db'?'퇴직 시 급여 기준 산정 — 회사 부담':'근로기준법상 퇴직금 직접 지급'}</div>
+      </div>
+      ${pensionType!=='none'?`<div class="pension-amount">${fmt(pensionAmt)}원</div>`:''}
+    </div>
+
+    <div style="padding:10px 14px;background:var(--accent-pale);border-radius:6px;font-size:11px;color:var(--accent);display:flex;align-items:center;gap:8px;margin-top:12px">
+      <span style="font-size:14px">🔗</span> 급여 데이터는 근태·급여 엔진(No.05)에서 자동 연동. 퇴직 확정 시 연봉 BI(No.03) 인원에서 자동 제외.
+    </div>
+  `;
+}
+
+/* ═══ 체크리스트 ═══ */
+const CHECKLIST=[
+  {group:'퇴직 1개월 전',color:'var(--purple)',items:[
+    {text:'퇴직 의사 접수 및 승인',due:'D-30'},
+    {text:'후임자 지정 및 인수인계 계획 수립',due:'D-30'},
+    {text:'퇴직연금 가입 여부 확인',due:'D-30'},
+  ]},
+  {group:'퇴직 2주 전',color:'var(--teal)',items:[
+    {text:'업무 인수인계서 작성 및 제출',due:'D-14'},
+    {text:'잔여 연차 사용 또는 수당 정산 확인',due:'D-14'},
+    {text:'경업금지/비밀유지 서약서 확인',due:'D-14'},
+  ]},
+  {group:'퇴직일',color:'var(--accent)',items:[
+    {text:'사원증·출입카드·보안토큰 반납',due:'D-day'},
+    {text:'법인카드·경비카드 반납 및 정산',due:'D-day'},
+    {text:'노트북·모니터 등 IT 자산 반납',due:'D-day'},
+    {text:'그룹웨어·메일·VPN 계정 비활성화',due:'D-day'},
+    {text:'최종 급여 및 퇴직금 지급일 안내',due:'D-day'},
+  ]},
+  {group:'퇴직 후 처리',color:'var(--warn)',items:[
+    {text:'4대보험 상실 신고 (퇴직일 다음달 15일까지)',due:'D+15'},
+    {text:'퇴직금 지급 (14일 이내)',due:'D+14'},
+    {text:'원천징수영수증 발급',due:'D+14'},
+    {text:'퇴직연금 IRP 이전 안내',due:'D+30'},
+    {text:'경력증명서 발급 요청 대비',due:'상시'},
+  ]},
+];
+
+let checkState={};
+function renderChecklist(){
+  const area=$('checklistArea');
+  let totalItems=0,doneItems=0;
+
+  area.innerHTML=CHECKLIST.map(g=>{
+    let html=`<div class="cl-group-title" style="--c:${g.color}"><span style="background:${g.color}"></span>${g.group}</div>`;
+    g.items.forEach((item,i)=>{
+      const key=g.group+'-'+i;
+      const done=checkState[key]||false;
+      totalItems++;if(done)doneItems++;
+      html+=`<div class="cl-item ${done?'done':''}" onclick="toggleCheck('${key}')">
+        <div class="cl-check">${done?'✓':''}</div>
+        <div class="cl-text">${item.text}</div>
+        <div class="cl-due">${item.due}</div>
+      </div>`;
+    });
+    return html;
+  }).join('');
+
+  const pct=totalItems?Math.round(doneItems/totalItems*100):0;
+  $('clBar').style.width=pct+'%';
+  $('clPct').textContent=pct+'%';
+
+  // Timeline
+  $('timelineArea').innerHTML=CHECKLIST.map(g=>`
+    <div style="margin-bottom:16px">
+      <div style="font-size:11px;font-weight:700;color:${g.color};margin-bottom:6px;display:flex;align-items:center;gap:6px">
+        <span style="width:8px;height:8px;border-radius:50%;background:${g.color}"></span>${g.group}
+      </div>
+      ${g.items.map((item,i)=>{
+        const key=g.group+'-'+i;
+        const done=checkState[key]||false;
+        return `<div style="padding:4px 0 4px 20px;font-size:12px;color:${done?'var(--ok)':'var(--ink2)'}">
+          ${done?'✓':'○'} ${item.text} <span style="font-family:var(--mono);font-size:10px;color:var(--ink4);margin-left:4px">${item.due}</span>
+        </div>`;
+      }).join('')}
+    </div>
+  `).join('');
+}
+
+function toggleCheck(key){
+  checkState[key]=!checkState[key];
+  renderChecklist();
+}
+
+/* ═══ 퇴직 이력 ═══ */
+function renderHistory(){
+  const demoHistory=[
+    {name:'직원P',dept:'개발1팀',join:'2021-06-01',leave:'2026-02-28',reason:'자발적 퇴직',severance:9820000,pension:'DC'},
+    {name:'직원Q',dept:'기획팀',join:'2023-01-15',leave:'2025-12-31',reason:'계약 만료',severance:6540000,pension:'DC'},
+    {name:'직원R',dept:'인프라팀',join:'2024-03-01',leave:'2026-01-15',reason:'권고사직',severance:4210000,pension:'미가입'},
+    {name:'직원S',dept:'경영지원',join:'2022-09-01',leave:'2025-08-31',reason:'자발적 퇴직',severance:7890000,pension:'DB'},
+    {name:'직원T',dept:'개발2팀',join:'2025-01-01',leave:'2025-11-30',reason:'계약 만료',severance:0,pension:'미가입'},
+  ];
+
+  const thead=$('historyTable').querySelector('thead');
+  const tbody=$('historyTable').querySelector('tbody');
+  thead.innerHTML='<tr><th>이름</th><th>부서</th><th>입사일</th><th>퇴직일</th><th>재직기간</th><th>사유</th><th>퇴직금</th><th>퇴직연금</th><th>상태</th></tr>';
+  tbody.innerHTML=demoHistory.map(h=>{
+    const days=Math.floor((new Date(h.leave)-new Date(h.join))/86400000);
+    const yrs=Math.floor(days/365);
+    const mos=Math.round((days%365)/30);
+    return `<tr>
+      <td style="font-weight:600">${h.name}</td>
+      <td>${h.dept}</td>
+      <td class="mono">${h.join}</td>
+      <td class="mono">${h.leave}</td>
+      <td class="mono">${yrs}년 ${mos}개월</td>
+      <td>${h.reason}</td>
+      <td class="mono" style="font-weight:600">${h.severance?fmt(h.severance)+'원':'—'}</td>
+      <td><span class="tag ${h.pension==='DC'?'tag-ok':h.pension==='DB'?'tag-warn':'tag-danger'}">${h.pension}</span></td>
+      <td><span class="tag tag-ok">완료</span></td>
+    </tr>`;
+  }).join('');
+}
+
+function loadDemo(){
+  $('retName').value='직원 A';
+  $('retJoin').value='2022-03-01';
+  $('retLeave').value='2026-04-30';
+  $('retBase').value=3200000;
+  $('retAllow').value=580000;
+  $('retTaxFree').value=200000;
+  $('retBonus').value=120000;
+  $('retAnnualTotal').value=15;
+  $('retAnnualUsed').value=8;
+  $('retPension').value='dc';
+  $('retPensionAmt').value=12800000;
+  calc();
+}
+
+function switchView(v){
+  const views=['calc','checklist','history'];
+  document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('active',i===views.indexOf(v)));
+  document.querySelectorAll('.view').forEach(el=>el.classList.remove('active'));
+  document.getElementById('v-'+v).classList.add('active');
+  if(v==='checklist')renderChecklist();
+  if(v==='history')renderHistory();
+}
+
+calc();
+</script>
+</body>
+</html>

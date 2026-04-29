@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>채용 파이프라인 ATS — HR SaaS Module</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#f2f3f7;--s1:#fff;--s2:#f6f7fb;--s3:#ecedf4;
+  --b1:#dde0ec;--b2:#c8cce0;
+  --ink:#1a1d2e;--ink2:#4a5070;--ink3:#7a809a;--ink4:#b0b4c8;
+  --accent:#1a2fff;--accent-pale:#eef0ff;--accent-dark:#0f1bcc;
+  --ok:#22805a;--ok-bg:#e8f5ee;
+  --warn:#a07828;--warn-bg:#fef8ec;
+  --danger:#c03040;--danger-bg:#fceef0;
+  --purple:#6840b8;--purple-bg:#f0ecf8;
+  --teal:#1880a0;--teal-bg:#e8f4f8;
+  --mono:'DM Mono',monospace;--sans:'Noto Sans KR',sans-serif;--serif:'Libre Baskerville',serif;
+  --r:8px;
+}
+html{scroll-behavior:smooth}
+body{font-family:var(--sans);background:var(--bg);color:var(--ink);font-size:13px;min-height:100vh;overflow-x:hidden}
+
+/* ── HEADER ── */
+.hd{background:#1e2140;padding:0 28px;display:flex;align-items:center;height:44px;gap:16px;position:sticky;top:0;z-index:100}
+.logo{font-size:14px;font-weight:700;color:#fff;letter-spacing:-.3px}
+.logo em{color:#6ea8ff;font-style:normal}
+.hd-sep{width:1px;height:16px;background:rgba(255,255,255,.12)}
+.hd-title{font-size:11px;color:rgba(255,255,255,.45)}
+.hd-right{margin-left:auto;display:flex;gap:8px}
+.hd-badge{font-size:9px;padding:3px 10px;border-radius:20px;background:rgba(255,255,255,.07);color:rgba(255,255,255,.5);font-weight:500;letter-spacing:.3px}
+
+/* ── TABS ── */
+.tabs{display:flex;gap:0;padding:0 28px;background:var(--s1);border-bottom:1px solid var(--b1)}
+.tab{padding:10px 20px;font-size:11px;font-weight:500;color:var(--ink3);cursor:pointer;border-bottom:2px solid transparent;transition:all .12s}
+.tab:hover{color:var(--ink)}
+.tab.active{color:var(--accent);border-bottom-color:var(--accent)}
+.tab .tab-count{font-family:var(--mono);font-size:10px;background:var(--s2);padding:1px 6px;border-radius:10px;margin-left:5px;color:var(--ink4)}
+.tab.active .tab-count{background:var(--accent-pale);color:var(--accent)}
+
+/* ── TOOLBAR ── */
+.toolbar{display:flex;align-items:center;gap:10px;padding:12px 28px;background:var(--s1);border-bottom:1px solid var(--b1)}
+.search-box{display:flex;align-items:center;gap:6px;background:var(--s2);border:1px solid var(--b1);border-radius:6px;padding:0 10px;flex:0 0 240px}
+.search-box input{border:none;background:none;padding:7px 0;font-size:12px;font-family:var(--sans);color:var(--ink);width:100%;outline:none}
+.search-box .ico{color:var(--ink4);font-size:13px}
+.filter-group{display:flex;gap:6px;margin-left:8px}
+.filter-btn{padding:5px 12px;border:1px solid var(--b1);border-radius:5px;font-size:11px;font-family:var(--sans);color:var(--ink3);background:var(--s1);cursor:pointer;transition:all .12s;font-weight:500}
+.filter-btn:hover{border-color:var(--accent);color:var(--accent)}
+.filter-btn.active{background:var(--accent-pale);border-color:var(--accent);color:var(--accent)}
+.toolbar-right{margin-left:auto;display:flex;gap:6px;align-items:center}
+.btn{padding:6px 14px;border:none;border-radius:6px;font-size:11px;font-weight:600;font-family:var(--sans);cursor:pointer;transition:all .12s}
+.btn-primary{background:var(--accent);color:#fff}
+.btn-primary:hover{background:var(--accent-dark)}
+.btn-ghost{background:none;border:1px solid var(--b1);color:var(--ink3)}
+.btn-ghost:hover{border-color:var(--accent);color:var(--accent)}
+
+/* ══════════════════════════════════════════
+   KANBAN VIEW
+══════════════════════════════════════════ */
+.kanban{display:flex;gap:12px;padding:16px 28px;overflow-x:auto;min-height:calc(100vh - 140px);align-items:flex-start}
+.kanban-col{flex:0 0 260px;background:var(--s2);border-radius:var(--r);display:flex;flex-direction:column;max-height:calc(100vh - 160px)}
+.col-header{padding:12px 14px 8px;display:flex;align-items:center;gap:8px;position:sticky;top:0;background:var(--s2);border-radius:var(--r) var(--r) 0 0;z-index:1}
+.col-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.col-title{font-size:11px;font-weight:700;color:var(--ink);letter-spacing:.3px}
+.col-count{font-family:var(--mono);font-size:10px;color:var(--ink4);margin-left:auto}
+.col-body{padding:4px 8px 8px;overflow-y:auto;flex:1;display:flex;flex-direction:column;gap:6px}
+
+/* CANDIDATE CARD */
+.card{background:var(--s1);border:1px solid var(--b1);border-radius:6px;padding:10px 12px;cursor:pointer;transition:all .15s;position:relative}
+.card:hover{border-color:var(--accent);box-shadow:0 2px 8px rgba(26,47,255,.06)}
+.card-name{font-size:12px;font-weight:600;color:var(--ink);margin-bottom:3px}
+.card-position{font-size:11px;color:var(--ink3);margin-bottom:6px}
+.card-meta{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.card-tag{font-size:9px;font-weight:600;padding:2px 6px;border-radius:3px;letter-spacing:.2px}
+.card-tag.ch{background:var(--accent-pale);color:var(--accent)}
+.card-tag.dept{background:var(--s2);color:var(--ink3);border:1px solid var(--b1)}
+.card-tag.urgent{background:var(--danger-bg);color:var(--danger)}
+.card-tag.dday{background:var(--warn-bg);color:var(--warn);font-family:var(--mono)}
+.card-actions{display:flex;gap:4px;margin-top:8px}
+.card-btn{font-size:10px;padding:3px 8px;border:1px solid var(--b1);border-radius:4px;background:none;color:var(--ink3);cursor:pointer;font-family:var(--sans);transition:all .1s}
+.card-btn:hover{border-color:var(--accent);color:var(--accent)}
+.card-btn.pass{border-color:var(--ok);color:var(--ok)}
+.card-btn.pass:hover{background:var(--ok-bg)}
+.card-btn.fail{border-color:var(--danger);color:var(--danger)}
+.card-btn.fail:hover{background:var(--danger-bg)}
+
+/* ══════════════════════════════════════════
+   ANALYTICS VIEW
+══════════════════════════════════════════ */
+.analytics{display:none;padding:24px 28px}
+.ana-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-bottom:24px}
+.ana-card{background:var(--s1);border:1px solid var(--b1);border-radius:var(--r);padding:16px}
+.ana-label{font-size:10px;color:var(--ink4);font-weight:500;letter-spacing:.5px;text-transform:uppercase;margin-bottom:4px}
+.ana-value{font-family:var(--mono);font-size:24px;font-weight:500;color:var(--ink)}
+.ana-value span{font-size:12px;color:var(--ink3);font-weight:400}
+.ana-sub{font-size:11px;color:var(--ink3);margin-top:2px}
+
+/* FUNNEL */
+.funnel-section{background:var(--s1);border:1px solid var(--b1);border-radius:var(--r);padding:20px;margin-bottom:20px}
+.funnel-title{font-size:12px;font-weight:700;color:var(--ink);margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.funnel-title::before{content:'';width:3px;height:14px;background:var(--accent);border-radius:2px}
+.funnel{display:flex;flex-direction:column;gap:6px}
+.funnel-row{display:flex;align-items:center;gap:12px}
+.funnel-label{width:80px;font-size:11px;font-weight:500;color:var(--ink2);text-align:right;flex-shrink:0}
+.funnel-bar-wrap{flex:1;height:28px;background:var(--s2);border-radius:4px;overflow:hidden;position:relative}
+.funnel-bar{height:100%;border-radius:4px;transition:width .6s ease;display:flex;align-items:center;padding-left:10px}
+.funnel-bar-num{font-family:var(--mono);font-size:11px;font-weight:500;color:#fff;white-space:nowrap}
+.funnel-rate{width:50px;font-family:var(--mono);font-size:11px;color:var(--ink3);text-align:right;flex-shrink:0}
+
+/* CHANNEL TABLE */
+.ch-table{width:100%;border-collapse:collapse;font-size:12px}
+.ch-table th{text-align:left;font-size:10px;font-weight:600;color:var(--ink4);letter-spacing:.5px;text-transform:uppercase;padding:8px 12px;border-bottom:2px solid var(--b1)}
+.ch-table td{padding:10px 12px;border-bottom:1px solid var(--b1);color:var(--ink2)}
+.ch-table tr:hover td{background:var(--accent-pale)}
+.ch-table .mono{font-family:var(--mono);color:var(--ink)}
+.ch-table .rate{font-family:var(--mono);font-weight:500}
+.ch-table .rate.good{color:var(--ok)}
+.ch-table .rate.mid{color:var(--warn)}
+.ch-table .rate.low{color:var(--danger)}
+.ch-dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px}
+
+/* ══════════════════════════════════════════
+   DETAIL MODAL
+══════════════════════════════════════════ */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:200;justify-content:flex-end}
+.modal-overlay.show{display:flex}
+.modal{width:420px;background:var(--s1);height:100vh;overflow-y:auto;box-shadow:-4px 0 24px rgba(0,0,0,.08);padding:24px;animation:slideIn .2s ease}
+@keyframes slideIn{from{transform:translateX(100%)}to{transform:translateX(0)}}
+.modal-close{position:absolute;top:16px;right:16px;width:28px;height:28px;border:none;background:var(--s2);border-radius:50%;cursor:pointer;font-size:14px;color:var(--ink3);display:flex;align-items:center;justify-content:center}
+.modal-close:hover{background:var(--b1)}
+.modal-name{font-size:18px;font-weight:700;color:var(--ink);margin-bottom:2px}
+.modal-position{font-size:13px;color:var(--ink3);margin-bottom:16px}
+.modal-section{margin-bottom:16px}
+.modal-section-title{font-size:10px;font-weight:600;color:var(--ink4);letter-spacing:.8px;text-transform:uppercase;margin-bottom:8px}
+.modal-info{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.modal-info-item{background:var(--s2);border-radius:6px;padding:8px 10px}
+.modal-info-label{font-size:10px;color:var(--ink4);margin-bottom:1px}
+.modal-info-value{font-size:12px;font-weight:500;color:var(--ink)}
+.modal-timeline{display:flex;flex-direction:column;gap:0}
+.tl-item{display:flex;gap:10px;padding:8px 0;border-bottom:1px solid var(--s3)}
+.tl-dot{width:8px;height:8px;border-radius:50%;margin-top:4px;flex-shrink:0}
+.tl-content{flex:1}
+.tl-action{font-size:12px;font-weight:500;color:var(--ink)}
+.tl-date{font-size:10px;color:var(--ink4);font-family:var(--mono)}
+.modal-actions{display:flex;gap:6px;margin-top:20px}
+.modal .btn{flex:1}
+
+/* ══════════════════════════════════════════
+   PRINT
+══════════════════════════════════════════ */
+@media print{.hd,.tabs,.toolbar,.modal-overlay{display:none!important}.kanban{flex-wrap:wrap}.kanban-col{flex:0 0 48%}}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="hd">
+  <div class="logo">HR <em>SaaS</em></div>
+  <div class="hd-sep"></div>
+  <div class="hd-title">채용 파이프라인 ATS</div>
+  <div class="hd-right">
+    <div class="hd-badge">M1 · 채용+온보딩</div>
+    <div class="hd-badge">Portfolio Demo</div>
+  </div>
+</div>
+
+<!-- TABS -->
+<div class="tabs">
+  <div class="tab active" onclick="switchView('kanban')">파이프라인 <span class="tab-count" id="totalCount">0</span></div>
+  <div class="tab" onclick="switchView('analytics')">채널 분석</div>
+</div>
+
+<!-- TOOLBAR -->
+<div class="toolbar">
+  <div class="search-box">
+    <span class="ico">🔍</span>
+    <input type="text" id="searchInput" placeholder="이름·포지션·채널 검색" oninput="filterCards()">
+  </div>
+  <div class="filter-group" id="deptFilters"></div>
+  <div class="toolbar-right">
+    <button class="btn btn-ghost" onclick="loadDemoData()">데모 데이터 로드</button>
+    <button class="btn btn-primary" onclick="addCandidate()">+ 지원자 추가</button>
+  </div>
+</div>
+
+<!-- KANBAN VIEW -->
+<div class="kanban" id="kanbanView"></div>
+
+<!-- ANALYTICS VIEW -->
+<div class="analytics" id="analyticsView"></div>
+
+<!-- DETAIL MODAL -->
+<div class="modal-overlay" id="modalOverlay" onclick="if(event.target===this)closeModal()">
+  <div class="modal" id="modalContent"></div>
+</div>
+
+<script>
+/* ═══ DATA ═══ */
+const STAGES = [
+  {id:'apply',   label:'접수',     color:'var(--ink4)',   bg:'var(--s2)'},
+  {id:'screen',  label:'서류심사',  color:'var(--teal)',   bg:'var(--teal-bg)'},
+  {id:'int1',    label:'1차 면접',  color:'var(--accent)', bg:'var(--accent-pale)'},
+  {id:'int2',    label:'2차 면접',  color:'var(--purple)', bg:'var(--purple-bg)'},
+  {id:'offer',   label:'오퍼',     color:'var(--warn)',   bg:'var(--warn-bg)'},
+  {id:'hired',   label:'입사 확정', color:'var(--ok)',     bg:'var(--ok-bg)'},
+];
+
+const CHANNELS = ['사람인','잡코리아','원티드','링크드인','헤드헌팅','내부추천'];
+const CH_COLORS = ['#ff6b35','#4a90d9','#258bf5','#0077b5','#8b5cf6','#22805a'];
+const DEPTS = ['개발1팀','개발2팀','기획팀','인프라팀','경영지원'];
+const POSITIONS = [
+  '백엔드 개발자','프론트엔드 개발자','풀스택 개발자','DevOps 엔지니어',
+  'PM/PO','서비스 기획자','UI/UX 디자이너','데이터 엔지니어',
+  '인프라 운영','경영지원 매니저','QA 엔지니어','클라우드 아키텍트'
+];
+
+let candidates = [];
+let activeFilters = {dept: null, search: ''};
+
+/* ═══ DEMO DATA ═══ */
+function loadDemoData(){
+  const NAMES = ['지원자A','지원자B','지원자C','지원자D','지원자E','지원자F',
+    '지원자G','지원자H','지원자I','지원자J','지원자K','지원자L',
+    '지원자M','지원자N','지원자O','지원자P','지원자Q','지원자R','지원자S','지원자T'];
+
+  const stageWeights = [5,4,4,3,2,2]; // 접수 쪽에 더 많이
+
+  candidates = NAMES.map((name, i) => {
+    const stageIdx = weightedRandom(stageWeights);
+    const chIdx = Math.floor(Math.random()*CHANNELS.length);
+    const deptIdx = Math.floor(Math.random()*DEPTS.length);
+    const posIdx = Math.floor(Math.random()*POSITIONS.length);
+    const applyDate = new Date(2026, 2 + Math.floor(Math.random()*2), 1 + Math.floor(Math.random()*25));
+    const daysAgo = Math.floor((Date.now() - applyDate) / 86400000);
+
+    const timeline = [];
+    for(let s = 0; s <= stageIdx; s++){
+      const d = new Date(applyDate);
+      d.setDate(d.getDate() + s * (2 + Math.floor(Math.random()*5)));
+      timeline.push({stage: STAGES[s].id, date: fmtDate(d), label: STAGES[s].label});
+    }
+
+    return {
+      id: i+1, name, position: POSITIONS[posIdx], dept: DEPTS[deptIdx],
+      channel: CHANNELS[chIdx], channelIdx: chIdx,
+      stage: STAGES[stageIdx].id, stageIdx,
+      applyDate: fmtDate(applyDate), daysAgo,
+      phone: `010-${rnd4()}-${rnd4()}`,
+      email: `applicant${String.fromCharCode(97+i)}@email.com`,
+      salary: (2800 + Math.floor(Math.random()*3200)) + '만원',
+      timeline,
+      note: ''
+    };
+  });
+
+  renderAll();
+}
+
+function weightedRandom(weights){
+  const total = weights.reduce((a,b)=>a+b,0);
+  let r = Math.random()*total;
+  for(let i=0;i<weights.length;i++){r-=weights[i];if(r<=0)return i;}
+  return weights.length-1;
+}
+function rnd4(){return String(1000+Math.floor(Math.random()*9000));}
+function fmtDate(d){return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;}
+
+/* ═══ RENDER ═══ */
+function renderAll(){
+  renderKanban();
+  renderFilters();
+  renderAnalytics();
+  document.getElementById('totalCount').textContent = candidates.length;
+}
+
+function renderKanban(){
+  const kanban = document.getElementById('kanbanView');
+  const filtered = getFiltered();
+
+  kanban.innerHTML = STAGES.map(stage => {
+    const cards = filtered.filter(c => c.stage === stage.id);
+    return `<div class="kanban-col">
+      <div class="col-header">
+        <div class="col-dot" style="background:${stage.color}"></div>
+        <div class="col-title">${stage.label}</div>
+        <div class="col-count">${cards.length}</div>
+      </div>
+      <div class="col-body">${cards.map(c => renderCard(c, stage)).join('')}</div>
+    </div>`;
+  }).join('');
+}
+
+function renderCard(c, stage){
+  const isUrgent = c.daysAgo > 14 && c.stageIdx < 3;
+  const nextStage = c.stageIdx < STAGES.length - 1 ? STAGES[c.stageIdx + 1] : null;
+
+  return `<div class="card" onclick="openModal(${c.id})">
+    <div class="card-name">${c.name}</div>
+    <div class="card-position">${c.position}</div>
+    <div class="card-meta">
+      <span class="card-tag ch" style="background:${CH_COLORS[c.channelIdx]}15;color:${CH_COLORS[c.channelIdx]}">${c.channel}</span>
+      <span class="card-tag dept">${c.dept}</span>
+      ${isUrgent ? '<span class="card-tag urgent">지연</span>' : ''}
+      <span class="card-tag dday">D+${c.daysAgo}</span>
+    </div>
+    <div class="card-actions">
+      ${nextStage ? `<button class="card-btn pass" onclick="event.stopPropagation();moveStage(${c.id},'next')">→ ${nextStage.label}</button>` : ''}
+      ${c.stageIdx < 5 ? `<button class="card-btn fail" onclick="event.stopPropagation();dropCandidate(${c.id})">탈락</button>` : ''}
+    </div>
+  </div>`;
+}
+
+function renderFilters(){
+  const depts = [...new Set(candidates.map(c=>c.dept))];
+  document.getElementById('deptFilters').innerHTML =
+    `<button class="filter-btn ${!activeFilters.dept?'active':''}" onclick="setDeptFilter(null)">전체</button>` +
+    depts.map(d => `<button class="filter-btn ${activeFilters.dept===d?'active':''}" onclick="setDeptFilter('${d}')">${d}</button>`).join('');
+}
+
+/* ═══ ANALYTICS ═══ */
+function renderAnalytics(){
+  const el = document.getElementById('analyticsView');
+  if(!candidates.length){el.innerHTML='<p style="color:var(--ink3);padding:40px;text-align:center">데모 데이터를 먼저 로드해주세요.</p>';return;}
+
+  const total = candidates.length;
+  const hired = candidates.filter(c=>c.stage==='hired').length;
+  const avgDays = Math.round(candidates.reduce((s,c)=>s+c.daysAgo,0)/total);
+  const inProcess = candidates.filter(c=>!['hired'].includes(c.stage)).length;
+  const delayed = candidates.filter(c=>c.daysAgo>14 && c.stageIdx<3).length;
+
+  // Funnel
+  const funnelData = STAGES.map(s => ({...s, count: candidates.filter(c=>c.stageIdx >= STAGES.indexOf(s)).length}));
+  const funnelColors = ['#7a809a','#1880a0','#1a2fff','#6840b8','#a07828','#22805a'];
+
+  // Channel stats
+  const chStats = CHANNELS.map((ch, i) => {
+    const all = candidates.filter(c=>c.channelIdx===i);
+    const h = all.filter(c=>c.stage==='hired').length;
+    const int = all.filter(c=>c.stageIdx>=2).length;
+    return {name:ch, color:CH_COLORS[i], total:all.length, interview:int, hired:h,
+      intRate: all.length ? Math.round(int/all.length*100) : 0,
+      hireRate: all.length ? Math.round(h/all.length*100) : 0};
+  }).filter(c=>c.total>0);
+
+  el.innerHTML = `
+    <div class="ana-grid">
+      <div class="ana-card"><div class="ana-label">전체 지원자</div><div class="ana-value">${total}<span>명</span></div></div>
+      <div class="ana-card"><div class="ana-label">진행 중</div><div class="ana-value">${inProcess}<span>명</span></div></div>
+      <div class="ana-card"><div class="ana-label">입사 확정</div><div class="ana-value" style="color:var(--ok)">${hired}<span>명</span></div></div>
+      <div class="ana-card"><div class="ana-label">평균 소요일</div><div class="ana-value">${avgDays}<span>일</span></div></div>
+      <div class="ana-card"><div class="ana-label">지연 건수</div><div class="ana-value" style="color:${delayed?'var(--danger)':'var(--ok)'}">${delayed}<span>건</span></div>${delayed?'<div class="ana-sub">D+14 초과 서류~면접 단계</div>':''}</div>
+    </div>
+
+    <div class="funnel-section">
+      <div class="funnel-title">채용 퍼널 전환율</div>
+      <div class="funnel">
+        ${funnelData.map((f,i) => {
+          const pct = Math.round(f.count / total * 100);
+          return `<div class="funnel-row">
+            <div class="funnel-label">${f.label}</div>
+            <div class="funnel-bar-wrap">
+              <div class="funnel-bar" style="width:${pct}%;background:${funnelColors[i]}">
+                <span class="funnel-bar-num">${f.count}명</span>
+              </div>
+            </div>
+            <div class="funnel-rate">${pct}%</div>
+          </div>`;
+        }).join('')}
+      </div>
+    </div>
+
+    <div class="funnel-section">
+      <div class="funnel-title">채널별 성과</div>
+      <table class="ch-table">
+        <tr><th>채널</th><th>지원</th><th>면접 진출</th><th>면접 전환율</th><th>입사</th><th>최종 전환율</th></tr>
+        ${chStats.map(ch => `<tr>
+          <td><span class="ch-dot" style="background:${ch.color}"></span>${ch.name}</td>
+          <td class="mono">${ch.total}</td>
+          <td class="mono">${ch.interview}</td>
+          <td class="rate ${ch.intRate>=50?'good':ch.intRate>=30?'mid':'low'}">${ch.intRate}%</td>
+          <td class="mono">${ch.hired}</td>
+          <td class="rate ${ch.hireRate>=20?'good':ch.hireRate>=10?'mid':'low'}">${ch.hireRate}%</td>
+        </tr>`).join('')}
+      </table>
+    </div>
+  `;
+}
+
+/* ═══ ACTIONS ═══ */
+function moveStage(id, dir){
+  const c = candidates.find(x=>x.id===id);
+  if(!c) return;
+  if(dir==='next' && c.stageIdx < STAGES.length-1){
+    c.stageIdx++;
+    c.stage = STAGES[c.stageIdx].id;
+    c.timeline.push({stage:c.stage, date:fmtDate(new Date()), label:STAGES[c.stageIdx].label});
+  }
+  renderAll();
+}
+
+function dropCandidate(id){
+  candidates = candidates.filter(c=>c.id!==id);
+  renderAll();
+}
+
+function addCandidate(){
+  const id = candidates.length ? Math.max(...candidates.map(c=>c.id))+1 : 1;
+  const chIdx = Math.floor(Math.random()*CHANNELS.length);
+  const c = {
+    id, name:`신규 지원자`, position:'포지션 미정', dept:DEPTS[0],
+    channel:CHANNELS[chIdx], channelIdx:chIdx,
+    stage:'apply', stageIdx:0,
+    applyDate:fmtDate(new Date()), daysAgo:0,
+    phone:'010-0000-0000', email:'new@email.com',
+    salary:'협의', timeline:[{stage:'apply',date:fmtDate(new Date()),label:'접수'}], note:''
+  };
+  candidates.unshift(c);
+  renderAll();
+  openModal(c.id);
+}
+
+/* ═══ FILTER ═══ */
+function setDeptFilter(dept){
+  activeFilters.dept = dept;
+  renderAll();
+}
+function filterCards(){
+  activeFilters.search = document.getElementById('searchInput').value.toLowerCase();
+  renderKanban();
+}
+function getFiltered(){
+  return candidates.filter(c => {
+    if(activeFilters.dept && c.dept !== activeFilters.dept) return false;
+    if(activeFilters.search){
+      const q = activeFilters.search;
+      if(!c.name.toLowerCase().includes(q) && !c.position.toLowerCase().includes(q) && !c.channel.toLowerCase().includes(q)) return false;
+    }
+    return true;
+  });
+}
+
+/* ═══ MODAL ═══ */
+function openModal(id){
+  const c = candidates.find(x=>x.id===id);
+  if(!c) return;
+  const stage = STAGES[c.stageIdx];
+  const nextStage = c.stageIdx < STAGES.length-1 ? STAGES[c.stageIdx+1] : null;
+
+  document.getElementById('modalContent').innerHTML = `
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
+      <span class="card-tag" style="background:${stage.bg};color:${stage.color};font-size:10px;font-weight:600">${stage.label}</span>
+      <span class="card-tag dday" style="font-size:10px">D+${c.daysAgo}</span>
+    </div>
+    <div class="modal-name">${c.name}</div>
+    <div class="modal-position">${c.position} · ${c.dept}</div>
+
+    <div class="modal-section">
+      <div class="modal-section-title">지원 정보</div>
+      <div class="modal-info">
+        <div class="modal-info-item"><div class="modal-info-label">채널</div><div class="modal-info-value">${c.channel}</div></div>
+        <div class="modal-info-item"><div class="modal-info-label">지원일</div><div class="modal-info-value" style="font-family:var(--mono)">${c.applyDate}</div></div>
+        <div class="modal-info-item"><div class="modal-info-label">연락처</div><div class="modal-info-value">${c.phone}</div></div>
+        <div class="modal-info-item"><div class="modal-info-label">이메일</div><div class="modal-info-value" style="font-size:11px">${c.email}</div></div>
+        <div class="modal-info-item"><div class="modal-info-label">희망 연봉</div><div class="modal-info-value">${c.salary}</div></div>
+        <div class="modal-info-item"><div class="modal-info-label">소요일</div><div class="modal-info-value" style="font-family:var(--mono)">${c.daysAgo}일</div></div>
+      </div>
+    </div>
+
+    <div class="modal-section">
+      <div class="modal-section-title">전형 이력</div>
+      <div class="modal-timeline">
+        ${c.timeline.map(t => {
+          const s = STAGES.find(x=>x.id===t.stage);
+          return `<div class="tl-item">
+            <div class="tl-dot" style="background:${s?s.color:'var(--ink4)'}"></div>
+            <div class="tl-content">
+              <div class="tl-action">${t.label}</div>
+              <div class="tl-date">${t.date}</div>
+            </div>
+          </div>`;
+        }).join('')}
+      </div>
+    </div>
+
+    <div class="modal-actions">
+      ${nextStage ? `<button class="btn btn-primary" onclick="moveStage(${c.id},'next');openModal(${c.id})">→ ${nextStage.label} 전환</button>` : '<button class="btn btn-primary" disabled>최종 단계</button>'}
+      <button class="btn btn-ghost" style="border-color:var(--danger);color:var(--danger)" onclick="dropCandidate(${c.id});closeModal()">탈락 처리</button>
+    </div>
+  `;
+  document.getElementById('modalOverlay').classList.add('show');
+}
+function closeModal(){document.getElementById('modalOverlay').classList.remove('show');}
+
+/* ═══ VIEW SWITCH ═══ */
+function switchView(view){
+  document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('active',i===(view==='kanban'?0:1)));
+  document.getElementById('kanbanView').style.display = view==='kanban'?'flex':'none';
+  document.getElementById('analyticsView').style.display = view==='analytics'?'block':'none';
+  if(view==='analytics') renderAnalytics();
+}
+
+/* ═══ INIT ═══ */
+loadDemoData();
+</script>
+</body>
+</html>
