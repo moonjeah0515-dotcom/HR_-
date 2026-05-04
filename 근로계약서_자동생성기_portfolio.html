@@ -3,536 +3,1043 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>근로계약서 자동생성기 — HR AI Tool Module</title>
+<title>근로계약서 자동생성기 v2.0 · MOON HR Portfolio</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=Noto+Serif+KR:wght@400;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --bg:#f2f3f8;--s1:#fff;--s2:#f5f6fa;--s3:#ecedf4;
+  --bg:#f0f1f6;--s1:#fff;--s2:#f7f8fc;--s3:#ecedf4;
   --b1:#dde0ec;--b2:#c8cce0;
-  --royal:#3C50C1;--indigo:#2a2d4a;--ci:#3AA9F6;
-  --ok:#287858;--ok-bg:rgba(40,120,88,.07);
-  --warn:#a07828;--warn-bg:rgba(160,120,40,.07);
-  --danger:#b83038;
+  --royal:#3C50C1;--royal2:#2a3aa0;--indigo:#1e2240;--ci:#3AA9F6;
+  --ok:#22c55e;--ok-bg:rgba(34,197,94,.08);
+  --warn:#f59e0b;--warn-bg:rgba(245,158,11,.08);
+  --danger:#ef4444;--danger-bg:rgba(239,68,68,.08);
+  --purple:#a855f7;
   --t1:#1a1d2e;--t2:#4a5070;--t3:#7a809a;--t4:#b8bcd0;
   --mono:'DM Mono',monospace;--sans:'Noto Sans KR',sans-serif;--serif:'Noto Serif KR',serif;
   --r:8px;--rl:12px;
 }
-html{scroll-behavior:smooth}
-body{font-family:var(--sans);background:var(--bg);color:var(--t1);font-size:13px;min-height:100vh}
+body{font-family:var(--sans);background:var(--bg);color:var(--t1);font-size:13px;overflow:hidden;height:100vh}
+button{font-family:var(--sans);cursor:pointer;border:none;outline:none}
+input,select,textarea{font-family:var(--sans);background:var(--s2);border:1px solid var(--b1);color:var(--t1);border-radius:var(--r);padding:7px 10px;font-size:12px;outline:none;transition:border .15s}
+input:focus,select:focus,textarea:focus{border-color:var(--royal)}
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--b2);border-radius:9px}
 
-/* ── HEADER ── */
-.hd{background:var(--indigo);padding:10px 28px;display:flex;align-items:center;gap:16px;position:sticky;top:0;z-index:100}
-.logo{font-size:15px;font-weight:700;color:#fff;letter-spacing:-.3px}
-.logo em{color:var(--ci);font-style:normal}
-.hd-sep{width:1px;height:18px;background:rgba(255,255,255,.15)}
-.hd-title{font-size:12px;color:rgba(255,255,255,.5);font-weight:400}
-.hd-right{margin-left:auto;display:flex;gap:8px;align-items:center}
-.hd-badge{font-size:10px;padding:3px 10px;border-radius:20px;background:rgba(255,255,255,.08);color:rgba(255,255,255,.6)}
+/* ═══ LAYOUT ═══ */
+.app{display:flex;height:100vh}
+.sidebar{width:200px;background:var(--indigo);display:flex;flex-direction:column;flex-shrink:0}
+.sidebar-brand{padding:18px 16px;border-bottom:1px solid rgba(255,255,255,.08)}
+.sidebar-brand h1{font-size:14px;font-weight:700;color:#fff;letter-spacing:-.3px}
+.sidebar-brand h1 em{color:var(--ci);font-style:normal}
+.sidebar-brand p{font-size:9px;color:rgba(255,255,255,.35);margin-top:2px;letter-spacing:1px;text-transform:uppercase}
+.sidebar-nav{flex:1;padding:12px 8px}
+.nav-group{font-size:9px;color:rgba(255,255,255,.25);padding:14px 10px 4px;letter-spacing:1.5px;text-transform:uppercase;font-weight:600}
+.nav-item{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:6px;color:rgba(255,255,255,.55);font-size:11.5px;font-weight:500;cursor:pointer;transition:.15s;margin-bottom:1px}
+.nav-item:hover{background:rgba(255,255,255,.06);color:rgba(255,255,255,.8)}
+.nav-item.active{background:rgba(60,80,193,.3);color:#fff}
+.nav-item .ni{width:18px;text-align:center;font-size:13px;flex-shrink:0}
+.nav-item .badge{margin-left:auto;background:var(--royal);color:#fff;font-size:9px;padding:1px 6px;border-radius:99px;font-weight:600}
+.sidebar-footer{padding:12px 14px;border-top:1px solid rgba(255,255,255,.06);font-size:9px;color:rgba(255,255,255,.2)}
 
-/* ── TABS ── */
-.tab-bar{display:flex;gap:2px;padding:0 28px;background:var(--s1);border-bottom:1px solid var(--b1)}
-.tab{padding:10px 18px;font-size:12px;font-weight:500;color:var(--t3);cursor:pointer;border-bottom:2px solid transparent;transition:all .15s}
-.tab:hover{color:var(--t1)}
-.tab.active{color:var(--royal);border-bottom-color:var(--royal)}
+.main-area{flex:1;display:flex;flex-direction:column;overflow:hidden}
+.topbar{display:flex;align-items:center;gap:12px;padding:10px 24px;background:var(--s1);border-bottom:1px solid var(--b1);flex-shrink:0}
+.topbar-title{font-size:15px;font-weight:700}
+.topbar-sub{font-size:11px;color:var(--t3)}
+.topbar-right{margin-left:auto;display:flex;gap:6px}
 
-/* ── LAYOUT ── */
-.main{display:flex;gap:0;min-height:calc(100vh - 80px)}
-.panel-input{width:380px;flex-shrink:0;background:var(--s1);border-right:1px solid var(--b1);padding:20px 24px;overflow-y:auto;max-height:calc(100vh - 80px);position:sticky;top:40px}
-.panel-preview{flex:1;padding:24px;overflow-y:auto;display:flex;flex-direction:column;align-items:center;gap:24px}
+.workspace{flex:1;display:flex;overflow:hidden}
+.panel-input{width:400px;flex-shrink:0;background:var(--s1);border-right:1px solid var(--b1);overflow-y:auto;padding:0}
+.panel-preview{flex:1;background:var(--bg);overflow-y:auto;padding:24px;display:flex;flex-direction:column;align-items:center;gap:20px}
 
-/* ── FORM ── */
-.sec{margin-bottom:18px}
-.sec-title{font-size:10px;font-weight:500;color:var(--t4);letter-spacing:.1em;text-transform:uppercase;margin-bottom:10px}
+/* ═══ BUTTONS ═══ */
+.btn{padding:7px 14px;border-radius:var(--r);font-size:12px;font-weight:500;transition:.15s;display:inline-flex;align-items:center;gap:5px}
+.btn-primary{background:var(--royal);color:#fff}.btn-primary:hover{background:var(--royal2)}
+.btn-outline{background:transparent;border:1px solid var(--b1);color:var(--t2)}.btn-outline:hover{border-color:var(--royal);color:var(--royal)}
+.btn-success{background:var(--ok);color:#fff}
+.btn-danger{background:var(--danger-bg);color:var(--danger)}
+.btn-sm{padding:4px 10px;font-size:11px}
+.btn-ghost{background:none;color:var(--royal);font-size:11px;font-weight:600;padding:4px 0}
+
+/* ═══ FORM ═══ */
+.sec{padding:16px 20px;border-bottom:1px solid var(--b1)}
+.sec-title{font-size:11px;font-weight:700;color:var(--t1);margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.sec-title .st-icon{font-size:13px}
 .fg{margin-bottom:10px}
-.fg label{display:block;font-size:11px;font-weight:500;color:var(--t2);margin-bottom:4px}
-.fg input,.fg select,.fg textarea{
-  width:100%;padding:7px 10px;border:1px solid var(--b1);border-radius:6px;font-size:13px;
-  font-family:var(--sans);background:var(--s2);color:var(--t1);transition:border .12s,background .12s}
-.fg input:focus,.fg select:focus,.fg textarea:focus{outline:none;border-color:var(--royal);background:#fff}
-.fg textarea{resize:vertical;min-height:44px}
+.fg label{display:block;font-size:10px;color:var(--t3);margin-bottom:3px;font-weight:600;letter-spacing:.3px;text-transform:uppercase}
+.fg input,.fg select,.fg textarea{width:100%}
+.fg textarea{min-height:50px;resize:vertical}
 .fg .help{font-size:10px;color:var(--t4);margin-top:2px}
-.frow{display:flex;gap:8px}
-.frow .fg{flex:1}
-.divider{height:1px;background:var(--b1);margin:16px 0}
+.frow{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.frow3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
 
-/* ── SALARY BIG INPUT ── */
-.salary-input{position:relative}
-.salary-input input{font-family:var(--mono);font-size:18px;font-weight:500;padding:10px 50px 10px 12px;letter-spacing:.5px}
-.salary-input .unit{position:absolute;right:12px;top:50%;transform:translateY(-50%);font-size:12px;color:var(--t3);pointer-events:none}
+/* Calc display */
+.calc{display:flex;flex-direction:column;gap:0;border:1px solid var(--b1);border-radius:var(--r);overflow:hidden}
+.ci{display:flex;justify-content:space-between;align-items:center;padding:7px 12px;border-bottom:1px solid var(--b1);font-size:12px}
+.ci:last-child{border-bottom:none}
+.ci .cl{color:var(--t3);font-size:11px}
+.ci .cv{font-family:var(--mono);font-weight:500;font-size:12px}
+.ci.hl{background:var(--s2)}
+.ci.total{background:var(--royal);color:#fff}
+.ci.total .cl,.ci.total .cv{color:#fff}
 
-/* ── CALC GRID ── */
-.calc{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:10px}
-.ci{background:var(--s2);border-radius:6px;padding:7px 9px}
-.ci .cl{font-size:10px;color:var(--t4);margin-bottom:1px}
-.ci .cv{font-size:14px;font-weight:500;font-family:var(--mono);color:var(--t1)}
-.ci.full{grid-column:1/-1}
-.ci.hl{background:rgba(60,80,193,.05);border:1px solid rgba(60,80,193,.12)}
-.ci.hl .cv{color:var(--royal)}
+/* Status */
+.status{padding:8px 12px;border-radius:var(--r);font-size:11px;margin-top:8px;display:flex;align-items:center;gap:6px}
+.status.info{background:rgba(60,80,193,.06);color:var(--royal)}
+.status.ok{background:var(--ok-bg);color:#16a34a}
+.status.warn{background:var(--warn-bg);color:#b45309}
 
-/* ── BATCH LIST ── */
-.batch-list{margin-top:8px}
-.batch-row{display:flex;align-items:center;gap:6px;padding:6px 8px;background:var(--s2);border-radius:6px;margin-bottom:3px;font-size:12px;cursor:pointer;border:1px solid transparent;transition:all .12s}
-.batch-row:hover{border-color:var(--b2)}
-.batch-row.active{border-color:var(--royal);background:rgba(60,80,193,.04)}
-.batch-row .br-name{font-weight:500;width:56px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.batch-row .br-dept{color:var(--t3);width:50px;font-size:11px}
-.batch-row .br-salary{font-family:var(--mono);flex:1;text-align:right;font-size:11px}
-.batch-row .br-status{width:8px;height:8px;border-radius:50%;flex-shrink:0}
-.batch-row .br-del{width:18px;height:18px;border:none;background:none;color:var(--t4);cursor:pointer;font-size:12px;border-radius:50%;display:flex;align-items:center;justify-content:center}
-.batch-row .br-del:hover{background:rgba(184,48,56,.08);color:var(--danger)}
+/* ═══ TYPE SELECTOR ═══ */
+.type-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:12px}
+.type-card{padding:10px 8px;border:1.5px solid var(--b1);border-radius:var(--r);text-align:center;cursor:pointer;transition:.15s;font-size:11px;font-weight:500;color:var(--t3)}
+.type-card:hover{border-color:var(--royal);color:var(--royal)}
+.type-card.active{border-color:var(--royal);background:rgba(60,80,193,.06);color:var(--royal)}
+.type-card .tc-icon{font-size:18px;margin-bottom:4px}
+.type-card .tc-label{font-size:10px}
 
-/* ── BUTTONS ── */
-.btn-group{display:flex;gap:6px;margin-top:14px}
-.btn{flex:1;padding:9px;border:none;border-radius:6px;font-size:12px;font-weight:500;font-family:var(--sans);cursor:pointer;transition:all .12s}
-.btn-primary{background:var(--royal);color:#fff}
-.btn-primary:hover{background:#2d3da8}
-.btn-outline{background:transparent;border:1px solid var(--b2);color:var(--t2)}
-.btn-outline:hover{border-color:var(--royal);color:var(--royal)}
-.btn-sm{padding:6px 12px;font-size:11px;flex:none}
-.btn-ghost{background:none;border:none;color:var(--t3);cursor:pointer;font-size:11px;font-family:var(--sans);padding:4px 8px;border-radius:4px}
-.btn-ghost:hover{color:var(--royal);background:rgba(60,80,193,.05)}
+/* ═══ ALLOWANCE MANAGER ═══ */
+.allow-row{display:flex;align-items:center;gap:6px;margin-bottom:6px}
+.allow-row input[type=text]{flex:1}
+.allow-row input[type=number]{width:110px}
+.allow-row select{width:70px;font-size:10px;padding:5px}
+.allow-del{width:24px;height:24px;display:flex;align-items:center;justify-content:center;border-radius:4px;background:var(--danger-bg);color:var(--danger);font-size:12px;cursor:pointer;flex-shrink:0}
 
-/* ── STATUS ── */
-.status{padding:7px 10px;border-radius:6px;font-size:11px;margin-top:10px}
-.status.info{background:rgba(58,169,246,.06);color:#1a6fb5;border:1px solid rgba(58,169,246,.15)}
-.status.ok{background:var(--ok-bg);color:var(--ok);border:1px solid rgba(40,120,88,.15)}
+/* ═══ INSURANCE PREVIEW ═══ */
+.ins-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.ins-item{background:var(--s2);border-radius:var(--r);padding:8px 10px}
+.ins-item .il{font-size:10px;color:var(--t3)}
+.ins-item .iv{font-family:var(--mono);font-size:13px;font-weight:600}
+.ins-total{margin-top:8px;padding:10px 12px;background:rgba(60,80,193,.06);border-radius:var(--r);display:flex;justify-content:space-between;align-items:center}
+.ins-total .il{font-size:11px;font-weight:600;color:var(--royal)}
+.ins-total .iv{font-family:var(--mono);font-size:16px;font-weight:700;color:var(--royal)}
 
-/* ── SETTINGS COLLAPSE ── */
-.collapse-toggle{font-size:11px;color:var(--t4);cursor:pointer;display:flex;align-items:center;gap:4px;margin-bottom:8px;user-select:none}
-.collapse-toggle:hover{color:var(--royal)}
-.collapse-body{display:none;padding:10px;background:var(--s2);border-radius:6px;margin-bottom:10px}
-.collapse-body.open{display:block}
+/* ═══ XLSX UPLOAD ═══ */
+.upload-zone{border:2px dashed var(--b2);border-radius:var(--rl);padding:30px;text-align:center;cursor:pointer;transition:.2s;background:var(--s2)}
+.upload-zone:hover{border-color:var(--royal);background:rgba(60,80,193,.04)}
+.upload-zone.dragover{border-color:var(--royal);background:rgba(60,80,193,.08)}
+.upload-zone .uz-icon{font-size:32px;margin-bottom:8px}
+.upload-zone .uz-title{font-size:13px;font-weight:600;margin-bottom:4px}
+.upload-zone .uz-sub{font-size:11px;color:var(--t3)}
 
-/* ══════════════════════════════════════════
-   CONTRACT PREVIEW (A4 styled)
-   ══════════════════════════════════════════ */
-.contract{
-  width:210mm;background:#fff;padding:18mm 16mm 22mm;
-  box-shadow:0 1px 8px rgba(0,0,0,.06),0 4px 24px rgba(0,0,0,.04);
-  font-family:var(--serif);color:#111;font-size:13px;line-height:1.85;border-radius:2px}
-.contract h1{text-align:center;font-size:22px;font-weight:700;letter-spacing:4px;margin-bottom:20px;padding-bottom:10px;border-bottom:2px solid #222}
-.contract .clause{margin-bottom:4px;padding-left:1.2em;text-indent:-1.2em}
-.contract .sub{margin-bottom:3px;padding-left:2.4em;text-indent:-1.2em;font-size:12px;color:#333}
-.contract .sub2{padding-left:3.6em;text-indent:0;font-size:11.5px;color:#444}
-.contract table{width:100%;border-collapse:collapse;margin:8px 0;font-family:var(--sans);font-size:12px}
-.contract th,.contract td{border:1px solid #999;padding:5px 7px}
-.contract th{background:#f0f0f0;font-weight:500;text-align:center;font-size:11px}
-.contract td.r{text-align:right;font-family:var(--mono);font-size:11px}
-.contract td.l{text-align:left}
-.contract td.f{font-size:10px;color:#555;text-align:left;line-height:1.5}
-.contract .bold-row td{font-weight:600}
-.contract .total-row{background:#f0f0f0}
-.contract .total-row td{font-weight:700}
-.contract .notice{font-size:11.5px;color:#333;text-align:center;margin:18px 0;line-height:1.7}
-.contract .sig-date{text-align:center;margin:16px 0;font-size:13px}
-.contract .sig-area{display:flex;gap:16px;margin-top:10px}
-.contract .sig-box{flex:1;border:1px solid #bbb;border-radius:4px;padding:12px;font-family:var(--sans);font-size:11px;line-height:2}
-.contract .sig-box .st{font-weight:700;font-size:12px;margin-bottom:4px}
-.contract .watermark{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) rotate(-35deg);font-size:60px;color:rgba(60,80,193,.04);font-weight:700;letter-spacing:8px;pointer-events:none;white-space:nowrap}
-.contract-wrap{position:relative}
+.batch-table{width:100%;border-collapse:collapse;font-size:11px}
+.batch-table th{text-align:left;padding:8px 10px;background:var(--s2);color:var(--t3);font-weight:600;font-size:10px;text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid var(--b1)}
+.batch-table td{padding:8px 10px;border-bottom:1px solid var(--b1)}
+.batch-table tr{cursor:pointer;transition:.1s}
+.batch-table tr:hover td{background:var(--s2)}
+.batch-table tr.selected td{background:rgba(60,80,193,.06)}
 
-/* BATCH PRINT: page break per contract */
-.page-break{page-break-after:always}
+/* ═══ SIGNATURE PAD ═══ */
+.sig-area{border:1px solid var(--b1);border-radius:var(--r);background:#fff;position:relative}
+.sig-area canvas{display:block;border-radius:var(--r);cursor:crosshair}
+.sig-clear{position:absolute;top:6px;right:6px;font-size:10px;padding:3px 8px;border-radius:4px;background:var(--s2);color:var(--t3);cursor:pointer;border:1px solid var(--b1)}
 
-/* ── PRINT ── */
+/* ═══ HISTORY ═══ */
+.hist-item{display:flex;align-items:center;gap:12px;padding:12px 16px;border-bottom:1px solid var(--b1);transition:.1s}
+.hist-item:hover{background:var(--s2)}
+.hist-badge{width:36px;height:36px;border-radius:8px;background:var(--s2);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.hist-info{flex:1}
+.hist-info .hi-name{font-size:12px;font-weight:600}
+.hist-info .hi-meta{font-size:10px;color:var(--t3)}
+
+/* ═══ COMPARISON ═══ */
+.comp-row{display:flex;align-items:center;gap:12px;padding:6px 0;border-bottom:1px solid var(--b1)}
+.comp-label{width:80px;font-size:11px;color:var(--t3)}
+.comp-old{flex:1;font-family:var(--mono);font-size:12px;color:var(--t3);text-decoration:line-through}
+.comp-new{flex:1;font-family:var(--mono);font-size:12px;font-weight:600}
+.comp-delta{width:80px;text-align:right;font-family:var(--mono);font-size:11px;font-weight:600}
+.comp-delta.up{color:var(--ok)}.comp-delta.down{color:var(--danger)}
+
+/* ═══ CONTRACT PREVIEW (A4) ═══ */
+.a4{width:700px;background:#fff;padding:36px 44px;border:1px solid var(--b1);border-radius:4px;box-shadow:0 2px 16px rgba(0,0,0,.06);font-family:var(--serif);font-size:10.5px;line-height:1.55;color:#1a1a1a;position:relative;page-break-after:always}
+.a4 h2{text-align:center;font-size:18px;font-weight:700;margin-bottom:12px;letter-spacing:2px}
+.a4 p{margin-bottom:2px}
+.a4 .clause{font-weight:700;margin-top:6px;margin-bottom:1px}
+.a4 .sub{padding-left:12px;font-size:10px}
+.a4 .sub2{padding-left:24px;font-size:9.5px}
+.a4 table{width:100%;border-collapse:collapse;margin:4px 0 6px;font-size:10px}
+.a4 table th,.a4 table td{border:1px solid #999;padding:3px 6px}
+.a4 table th{background:#f5f5f5;font-weight:700;text-align:center}
+.a4 table .r{text-align:right}
+.a4 table .l{text-align:left}
+.a4 table .f{font-size:9px;color:#666;text-align:left}
+.a4 .bold-row td{font-weight:700;background:#fafafa}
+.a4 .total-row td{font-weight:700;background:#f0f0f0;font-size:11px}
+.a4 .notice{text-align:center;margin-top:12px;font-size:9.5px;line-height:1.6}
+.a4 .sign-area{margin-top:14px;display:grid;grid-template-columns:1fr 1fr;gap:20px;font-size:10px}
+.a4 .sign-col h4{font-size:10px;margin-bottom:6px}
+.a4 .sign-col p{font-size:9.5px;margin-bottom:1px}
+.a4 .watermark{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) rotate(-30deg);font-size:42px;font-weight:900;color:rgba(60,80,193,.04);letter-spacing:8px;pointer-events:none;white-space:nowrap}
+.a4 .stamp{margin-top:6px;font-size:9px;color:#999;font-style:italic}
+.a4 .email-tag{display:inline-block;margin-top:4px;font-size:8px;color:var(--royal);background:rgba(60,80,193,.06);padding:1px 6px;border-radius:2px;font-family:var(--sans)}
+
+/* ═══ PRINT ═══ */
 @media print{
-  body{background:#fff!important}
-  .hd,.tab-bar,.panel-input{display:none!important}
-  .main{display:block}
-  .panel-preview{padding:0}
-  .contract{box-shadow:none;width:100%;padding:14mm 16mm 18mm;border-radius:0}
-  .contract .watermark{display:none}
-  @page{size:A4;margin:0}
+  body{background:#fff!important;overflow:visible!important}
+  .sidebar,.topbar,.panel-input,.port-badge{display:none!important}
+  .main-area,.workspace,.panel-preview{overflow:visible!important;height:auto!important}
+  .panel-preview{padding:0!important}
+  .a4{box-shadow:none!important;border:none!important;margin:0!important;page-break-after:always}
 }
+
+.port-badge{position:fixed;bottom:12px;right:12px;background:var(--s1);border:1px solid var(--b1);border-radius:var(--r);padding:5px 12px;font-size:9px;color:var(--t3);z-index:50;display:flex;align-items:center;gap:6px;box-shadow:0 2px 8px rgba(0,0,0,.06)}
+.port-badge a{color:var(--royal);font-weight:600;text-decoration:none}
 </style>
 </head>
 <body>
 
-<!-- HEADER -->
-<div class="hd">
-  <div class="logo">HR <em>AI Tool</em></div>
-  <div class="hd-sep"></div>
-  <div class="hd-title">근로계약서 자동생성기</div>
-  <div class="hd-right">
-    <div class="hd-badge">Phase 1 · M3 연봉조정 연동</div>
-    <div class="hd-badge">Portfolio Demo</div>
-  </div>
-</div>
-
-<!-- TABS -->
-<div class="tab-bar">
-  <div class="tab active" onclick="switchTab('single')">개별 생성</div>
-  <div class="tab" onclick="switchTab('batch')">일괄 생성 (다건)</div>
-</div>
-
-<!-- MAIN -->
-<div class="main">
-
-<!-- ═══ LEFT PANEL ═══ -->
-<div class="panel-input">
-
-  <!-- Company Settings -->
-  <div class="sec">
-    <div class="collapse-toggle" onclick="toggleCollapse('settings')">
-      <span id="settings-arrow">▸</span> 회사 설정 (급여 구조)
+<div class="app">
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <div class="sidebar-brand">
+      <h1>MOON <em>HR</em></h1>
+      <p>Contract Generator v2.0</p>
     </div>
-    <div class="collapse-body" id="settings">
-      <div class="fg"><label>회사명</label><input id="companyName" value="IT 솔루션 기업 (비공개)" oninput="render()"></div>
-      <div class="fg"><label>대표이사</label><input id="ceoName" value="대표자명" oninput="render()"></div>
-      <div class="fg"><label>주소</label><input id="companyAddr" value="서울특별시 성동구" oninput="render()"></div>
-      <div class="fg"><label>전화번호</label><input id="companyTel" value="02-0000-0000" oninput="render()"></div>
-      <div class="divider"></div>
-      <div class="frow">
-        <div class="fg"><label>비과세(식대)</label><input type="number" id="taxFree" value="200000" oninput="render()"></div>
-        <div class="fg"><label>포괄 연장(월/h)</label><input type="number" id="otHours" value="21.65" step="0.01" oninput="render()"></div>
+    <div class="sidebar-nav">
+      <div class="nav-group">계약서 생성</div>
+      <div class="nav-item active" onclick="switchView('single')"><span class="ni">📝</span>개별 생성</div>
+      <div class="nav-item" onclick="switchView('batch')"><span class="ni">📊</span>엑셀 업로드<span class="badge" id="batchBadge" style="display:none">0</span></div>
+      <div class="nav-group">관리</div>
+      <div class="nav-item" onclick="switchView('history')"><span class="ni">📋</span>계약 이력<span class="badge" id="histBadge" style="display:none">0</span></div>
+      <div class="nav-item" onclick="switchView('emaillog')"><span class="ni">📧</span>발송 이력<span class="badge" id="emailBadge" style="display:none">0</span></div>
+      <div class="nav-group">연동</div>
+      <div class="nav-item" onclick="importFromATS()"><span class="ni">🔗</span>ATS 입사자 가져오기</div>
+      <div class="nav-item" onclick="importFromBI()"><span class="ni">📈</span>연봉 BI 데이터</div>
+    </div>
+    <div class="sidebar-footer">Portfolio Demo · 더미 데이터<br>© 2026 MOON HR</div>
+  </div>
+
+  <!-- MAIN -->
+  <div class="main-area">
+    <div class="topbar">
+      <div>
+        <div class="topbar-title" id="viewTitle">개별 계약서 생성</div>
+        <div class="topbar-sub" id="viewSub">총 연봉 입력 → 급여 자동 역산 → A4 계약서 미리보기</div>
       </div>
-      <div class="frow">
-        <div class="fg"><label>소정근로(월/h)</label><input type="number" id="stdHours" value="209" oninput="render()"></div>
-        <div class="fg"><label>명절상여 배수</label><input type="number" id="bonusRate" value="0.2" step="0.01" oninput="render()">
-          <div class="help">월급여 × 이 값 × 2회</div>
+      <div class="topbar-right">
+        <button class="btn btn-outline btn-sm" onclick="loadDemo()">🎲 데모 데이터</button>
+        <button class="btn btn-outline btn-sm" onclick="openEmailModal()">📧 메일 발송</button>
+        <button class="btn btn-primary btn-sm" onclick="window.print()">🖨 PDF 인쇄</button>
+      </div>
+    </div>
+
+    <div class="workspace">
+      <!-- INPUT PANEL -->
+      <div class="panel-input" id="inputPanel">
+        <!-- ═══ SINGLE MODE ═══ -->
+        <div id="v-single">
+          <!-- Contract Type -->
+          <div class="sec">
+            <div class="sec-title"><span class="st-icon">📋</span> 계약 유형</div>
+            <div class="type-grid">
+              <div class="type-card active" onclick="setType('regular',this)"><div class="tc-icon">👔</div>정규직<div class="tc-label">무기계약</div></div>
+              <div class="type-card" onclick="setType('probation',this)"><div class="tc-icon">🌱</div>수습<div class="tc-label">3개월 90%</div></div>
+              <div class="type-card" onclick="setType('contract',this)"><div class="tc-icon">📄</div>계약직<div class="tc-label">기간 설정</div></div>
+              <div class="type-card" onclick="setType('parttime',this)"><div class="tc-icon">⏰</div>파트타임<div class="tc-label">시급 기반</div></div>
+            </div>
+            <div id="contractExtra"></div>
+          </div>
+
+          <!-- Employee Info -->
+          <div class="sec">
+            <div class="sec-title"><span class="st-icon">👤</span> 직원 정보</div>
+            <div class="frow"><div class="fg"><label>직원명</label><input id="empName" oninput="render()"></div><div class="fg"><label>부서</label><select id="empDept" onchange="render()"><option>개발팀</option><option>기획팀</option><option>디자인팀</option><option>마케팅팀</option><option>경영지원팀</option></select></div></div>
+            <div class="frow"><div class="fg"><label>생년월일</label><input type="date" id="empBirth" oninput="render()"></div><div class="fg"><label>전화번호</label><input id="empTel" oninput="render()"></div></div>
+            <div class="frow"><div class="fg"><label>근로개시일</label><input type="date" id="startDate" oninput="render()"></div><div class="fg"><label>급여적용일</label><input type="date" id="salaryDate" oninput="render()"></div></div>
+            <div class="fg"><label>근무장소 / 담당업무</label><input id="workPlace" value="서울특별시 성동구" oninput="render()"></div>
+          </div>
+
+          <!-- Salary -->
+          <div class="sec">
+            <div class="sec-title"><span class="st-icon">💰</span> 연봉 설정</div>
+            <div class="fg"><label>총 연봉금액 (C+D)</label><input type="number" id="totalSalary" placeholder="35000000" oninput="render()"><div class="help">월급여 × 12.4 (급여총액 + 명절상여)</div></div>
+            <div id="probationNote" style="display:none" class="status warn">⚠ 수습 기간 3개월간 급여의 90%가 적용됩니다.</div>
+          </div>
+
+          <!-- Allowances -->
+          <div class="sec">
+            <div class="sec-title"><span class="st-icon">📦</span> 수당 항목 <button class="btn-ghost" onclick="addAllowance()" style="margin-left:auto">+ 항목 추가</button></div>
+            <div id="allowanceList">
+              <div class="allow-row" data-name="식대" data-amount="200000" data-tax="비과세">
+                <input type="text" value="식대" onchange="updateAllow(this)" style="flex:1">
+                <input type="number" value="200000" onchange="updateAllow(this)" style="width:100px">
+                <select onchange="updateAllow(this)"><option selected>비과세</option><option>과세</option></select>
+                <div class="allow-del" onclick="removeAllow(this)">✕</div>
+              </div>
+            </div>
+            <div class="help" style="margin-top:4px">비과세 한도: 식대 월 20만, 차량유지비 월 20만</div>
+          </div>
+
+          <!-- Company Settings (collapsed) -->
+          <div class="sec">
+            <div class="sec-title" style="cursor:pointer" onclick="toggleSettings()"><span class="st-icon">⚙</span> 회사 설정 <span id="settingsArrow" style="margin-left:auto;font-size:10px;color:var(--t4)">▸</span></div>
+            <div id="settingsBody" style="display:none">
+              <div class="fg"><label>회사명</label><input id="companyName" value="IT 솔루션 기업 (비공개)" oninput="render()"></div>
+              <div class="fg"><label>대표이사</label><input id="ceoName" value="대표자명" oninput="render()"></div>
+              <div class="frow"><div class="fg"><label>포괄 연장(월/h)</label><input type="number" id="otHours" value="21.65" step="0.01" oninput="render()"></div><div class="fg"><label>소정근로(월/h)</label><input type="number" id="stdHours" value="209" oninput="render()"></div></div>
+              <div class="fg"><label>명절상여 배수</label><input type="number" id="bonusRate" value="0.2" step="0.01" oninput="render()"><div class="help">월급여 × 이 값 × 2회 (설·추석)</div></div>
+            </div>
+          </div>
+
+          <!-- Auto Calc -->
+          <div class="sec">
+            <div class="sec-title"><span class="st-icon">🔢</span> 자동 산출</div>
+            <div class="calc" id="calcArea"></div>
+            <div class="status info" id="statusBar">총 연봉금액을 입력하면 급여 구조가 자동 역산됩니다.</div>
+          </div>
+
+          <!-- 4대보험 -->
+          <div class="sec">
+            <div class="sec-title"><span class="st-icon">🏥</span> 4대보험 예상 공제</div>
+            <div class="ins-grid" id="insGrid"></div>
+            <div class="ins-total" id="insTotal" style="display:none"></div>
+          </div>
+
+          <!-- Signature -->
+          <div class="sec">
+            <div class="sec-title"><span class="st-icon">✍</span> 전자 서명 (선택)</div>
+            <div class="sig-area">
+              <canvas id="sigCanvas" width="356" height="100"></canvas>
+              <div class="sig-clear" onclick="clearSig()">지우기</div>
+            </div>
+            <div class="help" style="margin-top:4px">마우스로 서명하면 계약서 PDF에 반영됩니다.</div>
+          </div>
+
+          <!-- Comparison -->
+          <div class="sec" id="compSection" style="display:none">
+            <div class="sec-title"><span class="st-icon">📊</span> 전년 대비 변동</div>
+            <div id="compBody"></div>
+          </div>
+
+          <!-- Actions -->
+          <div class="sec" style="display:flex;gap:6px;flex-wrap:wrap;border-bottom:none">
+            <button class="btn btn-primary" onclick="saveHistory()">💾 이력 저장</button>
+            <button class="btn btn-outline" onclick="openEmailModal()">📧 메일 발송</button>
+            <button class="btn btn-outline" onclick="showComparison()">📊 연봉 비교</button>
+          </div>
+        </div>
+
+        <!-- ═══ BATCH MODE ═══ -->
+        <div id="v-batch" style="display:none">
+          <div class="sec">
+            <div class="sec-title"><span class="st-icon">📤</span> 엑셀 파일 업로드</div>
+            <div class="upload-zone" id="uploadZone" onclick="document.getElementById('xlsxFile').click()">
+              <div class="uz-icon">📊</div>
+              <div class="uz-title">XLSX / XLS 파일을 드래그하거나 클릭하세요</div>
+              <div class="uz-sub">컬럼: 이름, 부서, 총연봉, 입사일, 생년월일 (순서 무관)</div>
+            </div>
+            <input type="file" id="xlsxFile" accept=".xlsx,.xls,.csv" style="display:none" onchange="handleXlsx(this)">
+            <button class="btn btn-ghost" onclick="loadBatchDemo()" style="margin-top:8px">더미 데이터 10명 불러오기</button>
+          </div>
+          <div class="sec" id="batchResult" style="display:none">
+            <div class="sec-title"><span class="st-icon">👥</span> 업로드 결과 (<span id="batchCount">0</span>명)</div>
+            <div style="overflow-x:auto"><table class="batch-table" id="batchTable"><thead><tr><th>#</th><th>이름</th><th>부서</th><th>총연봉</th><th>입사일</th><th>상태</th></tr></thead><tbody id="batchBody"></tbody></table></div>
+            <div style="margin-top:10px;display:flex;gap:6px">
+              <button class="btn btn-primary btn-sm" onclick="printBatch()">🖨 전원 PDF 인쇄</button>
+              <button class="btn btn-outline btn-sm" onclick="sendBatchEmail()">📧 전원 메일 발송</button>
+              <button class="btn btn-outline btn-sm" onclick="saveBatchHistory()">💾 전원 이력 저장</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ═══ HISTORY MODE ═══ -->
+        <div id="v-history" style="display:none">
+          <div class="sec">
+            <div class="sec-title"><span class="st-icon">📋</span> 계약 생성 이력</div>
+            <div id="histList"></div>
+          </div>
+        </div>
+
+        <!-- ═══ EMAIL LOG MODE ═══ -->
+        <div id="v-emaillog" style="display:none">
+          <div class="sec">
+            <div class="sec-title"><span class="st-icon">📧</span> 메일 발송 이력</div>
+            <div id="emailLogList"></div>
+          </div>
         </div>
       </div>
+
+      <!-- PREVIEW -->
+      <div class="panel-preview" id="previewArea"></div>
     </div>
   </div>
+</div>
 
-  <!-- SINGLE MODE -->
-  <div id="mode-single">
-    <div class="sec">
-      <div class="sec-title">직원 정보</div>
-      <div class="fg"><label>직원명</label><input id="empName" placeholder="직원 A" oninput="render()"></div>
-      <div class="frow">
-        <div class="fg"><label>생년월일</label><input type="date" id="empBirth" oninput="render()"></div>
-        <div class="fg"><label>전화번호</label><input id="empTel" placeholder="010-0000-0000" oninput="render()"></div>
-      </div>
+<!-- EMAIL MODAL -->
+<div class="modal-overlay" id="emailModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;align-items:center;justify-content:center">
+  <div style="background:var(--s1);border:1px solid var(--b1);border-radius:var(--rl);width:460px;box-shadow:0 8px 40px rgba(0,0,0,.15)">
+    <div style="padding:16px 20px;border-bottom:1px solid var(--b1);display:flex;align-items:center;justify-content:space-between">
+      <div style="font-size:14px;font-weight:700">📧 근로계약서 메일 발송</div>
+      <div style="width:24px;height:24px;display:flex;align-items:center;justify-content:center;border-radius:4px;cursor:pointer;color:var(--t3)" onclick="closeEmailModal()">✕</div>
     </div>
+    <div style="padding:20px">
+      <div class="fg"><label>받는 사람 (근로자 이메일)</label><input id="em-to" placeholder="employee@example.com"></div>
+      <div class="fg"><label>제목</label><input id="em-subject" value="[근로계약서] 근로계약서 확인 및 서명 요청"></div>
+      <div class="fg"><label>본문 메시지</label><textarea id="em-body" style="min-height:100px">안녕하세요.
 
-    <div class="sec">
-      <div class="sec-title">근로 조건</div>
-      <div class="frow">
-        <div class="fg"><label>근로개시일</label><input type="date" id="startDate" oninput="render()"></div>
-        <div class="fg"><label>급여적용일</label><input type="date" id="salaryDate" oninput="render()"></div>
+첨부된 근로계약서를 확인해 주시기 바랍니다.
+계약 내용에 이상이 없으시면 서명 후 회신 부탁드립니다.
+
+감사합니다.
+경영지원팀 드림</textarea></div>
+      <div style="background:var(--s2);border-radius:var(--r);padding:10px 12px;margin-bottom:12px">
+        <div style="font-size:10px;color:var(--t3);margin-bottom:4px;font-weight:600">첨부 파일 (자동 생성)</div>
+        <div style="font-size:11px;display:flex;align-items:center;gap:6px">📄 <span id="em-filename">근로계약서_홍길동_2026.pdf</span></div>
       </div>
-      <div class="fg"><label>근무장소</label><input id="workPlace" value="서울특별시 성동구" oninput="render()"></div>
-      <div class="fg"><label>담당업무</label><textarea id="workDuty" oninput="render()" placeholder="소프트웨어 개발"></textarea></div>
-      <div class="frow">
-        <div class="fg"><label>시업</label><input type="time" id="timeStart" value="09:30" oninput="render()"></div>
-        <div class="fg"><label>종업</label><input type="time" id="timeEnd" value="18:30" oninput="render()"></div>
+      <div style="display:flex;gap:6px;justify-content:flex-end">
+        <button class="btn btn-outline" onclick="closeEmailModal()">취소</button>
+        <button class="btn btn-primary" onclick="sendEmail()">📧 발송</button>
       </div>
-    </div>
-
-    <div class="divider"></div>
-
-    <div class="sec">
-      <div class="sec-title">연봉</div>
-      <div class="fg salary-input">
-        <label>총 연봉금액 (C+D)</label>
-        <input type="number" id="totalSalary" placeholder="35000000" oninput="render()">
-        <span class="unit">원</span>
-        <div class="help">월급여 × 12.4 (급여총액 + 명절상여)</div>
-      </div>
-    </div>
-
-    <div class="sec">
-      <div class="sec-title">자동 산출</div>
-      <div class="calc">
-        <div class="ci"><div class="cl">기본급 (A)</div><div class="cv" id="calcA">—</div></div>
-        <div class="ci"><div class="cl">연장수당</div><div class="cv" id="calcOT">—</div></div>
-        <div class="ci"><div class="cl">비과세</div><div class="cv" id="calcTF">—</div></div>
-        <div class="ci"><div class="cl">월급여 (B)</div><div class="cv" id="calcB">—</div></div>
-        <div class="ci"><div class="cl">급여총액 (C)</div><div class="cv" id="calcC">—</div></div>
-        <div class="ci"><div class="cl">명절상여 (D)</div><div class="cv" id="calcD">—</div></div>
-        <div class="ci full hl"><div class="cl">총 연봉 검증 (C+D)</div><div class="cv" id="calcTotal">—</div></div>
-      </div>
-      <div class="status info" id="statusBar">총 연봉금액을 입력하면 급여 구조가 자동 역산됩니다.</div>
-    </div>
-
-    <div class="btn-group">
-      <button class="btn btn-primary" onclick="window.print()">PDF 인쇄</button>
-      <button class="btn btn-outline" onclick="loadDemo()">데모 데이터</button>
     </div>
   </div>
-
-  <!-- BATCH MODE -->
-  <div id="mode-batch" style="display:none">
-    <div class="sec">
-      <div class="sec-title">일괄 생성 대상 (<span id="batchCount">0</span>명)</div>
-      <div class="batch-list" id="batchList"></div>
-      <button class="btn-ghost" onclick="loadBatchDemo()" style="margin-top:6px">더미 데이터 10명 불러오기</button>
-    </div>
-    <div class="divider"></div>
-    <div class="status info">직원 클릭 시 우측 미리보기가 전환됩니다. 인쇄 시 전원 일괄 출력.</div>
-    <div class="btn-group">
-      <button class="btn btn-primary" onclick="printBatch()">전원 PDF 인쇄</button>
-    </div>
-  </div>
-
 </div>
 
-<!-- ═══ RIGHT PANEL (PREVIEW) ═══ -->
-<div class="panel-preview" id="previewArea">
-  <!-- contracts rendered here -->
-</div>
-
-</div>
+<div class="port-badge">✦ MOON HR · Portfolio Demo <a href="https://moonjeah0515-dotcom.github.io/HR_-/" target="_blank">GitHub →</a></div>
 
 <script>
-/* ── Helpers ── */
-const $ = id => document.getElementById(id);
-const fmt = n => n != null && !isNaN(n) ? Math.round(n).toLocaleString('ko-KR') : '—';
-const won = n => n != null && !isNaN(n) ? fmt(n) + ' 원' : '';
-function fdate(s){ if(!s) return '　　년 　월 　일'; const d=new Date(s); return `${d.getFullYear()}년 ${String(d.getMonth()+1).padStart(2,'0')}월 ${String(d.getDate()).padStart(2,'0')}일`; }
+// ═══════════════════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════════════════
+let contractType='regular';
+let batchData=[];
+let history=JSON.parse(localStorage.getItem('moon_contract_hist')||'[]');
+let sigData=null;
+let prevSalary=null;
 
-/* ── Salary Calc ── */
-function getConfig(){
-  return {
-    taxFree: +$('taxFree').value || 200000,
-    otH: +$('otHours').value || 21.65,
-    stdH: +$('stdHours').value || 209,
-    bonusRate: +$('bonusRate').value || 0.2
-  };
-}
-function calcSalary(total, cfg){
-  if(!cfg) cfg = getConfig();
-  const mult = 12 + cfg.bonusRate * 2;
-  const B = total / mult;
-  const coeff = cfg.otH * 1.5 / cfg.stdH;
-  const AandTF = B / (1 + coeff);
-  const A = AandTF - cfg.taxFree;
-  if(A < 0) return null;
-  const OT = AandTF * coeff;
-  const C = B * 12;
-  const D = B * cfg.bonusRate * 2;
-  return { A:Math.round(A), OT:Math.round(OT), taxFree:cfg.taxFree, B:Math.round(B), C:Math.round(C), D:Math.round(D), total:Math.round(C+D), otH:cfg.otH, stdH:cfg.stdH, bonusRate:cfg.bonusRate };
-}
+const $=id=>document.getElementById(id);
+const fmt=n=>n!=null&&!isNaN(n)?Math.round(n).toLocaleString('ko-KR'):'—';
+const won=n=>fmt(n)+' 원';
 
-/* ── Contract HTML Builder ── */
-function buildContract(emp, isWatermark){
-  const s = calcSalary(emp.salary);
-  if(!s) return '<div style="padding:40px;color:#b83038">연봉이 너무 낮아 산출 불가</div>';
-  const company = $('companyName').value;
-  const ts = emp.timeStart || '09:30';
-  const te = emp.timeEnd || '18:30';
-
-  return `
-<div class="contract-wrap">
-<div class="contract">
-  ${isWatermark ? '<div class="watermark">PORTFOLIO SAMPLE</div>' : ''}
-  <h1>근 로 계 약 서</h1>
-  <p>${company}(이하 "사업주"라 함)과 <b>${emp.name||'　　'}</b> (이하 "근로자"라 함)은 다음과 같이 근로계약을 체결한다.</p>
-
-  <p class="clause">1. 근로개시일 및 급여적용일</p>
-  <p class="sub">1) 근로자의 근로개시일 : ${fdate(emp.startDate)} 부터 &nbsp;&nbsp; 2) 근로자의 급여적용일 : ${fdate(emp.salaryDate)} 부터</p>
-
-  <p class="clause">2. 근무장소/담당업무 : ${emp.workPlace||'서울특별시'} / ${emp.workDuty||'소프트웨어 개발'}</p>
-  <p class="sub">: 사업주가 필요 시 근무장소 또는 업무를 변경 할 수 있으며, 근로자는 정당한 이유 없이 이를 거부하지 못한다.</p>
-
-  <p class="clause">3. 근로시간 및 휴게시간 : 1일 8시간, 주 40시간 기본</p>
-  <table>
-    <tr><th>매주 근무일</th><th>시업시간</th><th>종업시간</th><th>비고</th></tr>
-    <tr><td>월요일~금요일까지</td><td>${ts}</td><td>${te}</td><td></td></tr>
-  </table>
-  <p class="sub">1) 휴게시간은 12:00~13:00, 18:30~19:30이며, 회사의 업무형편에 따라 변경할 수 있다.</p>
-  <p class="sub">2) 사업주는 1주 12시간을 한도로 근로자의 동의를 얻어 연장근로(휴일근로, 야간근로)를 명할 수 있다.</p>
-  <p class="sub2">위 연장근로에 동의 : <b>${emp.name||''}</b></p>
-
-  <p class="clause">4. 휴무일</p>
-  <p class="sub">1) 주휴일은 매주 일요일, 근로자의 날(5월1일), 관공서 공휴일, 대체공휴일이며 유급휴일임.</p>
-  <p class="sub">2) 1주간 근로일에 개근 시 일요일을 유급 주휴일로 부여, 토요일은 무급 휴무로 부여함.</p>
-  <p class="sub">3) 근로자의 연차유급휴가는 「근로기준법」에서 정하는 바에 따름.</p>
-
-  <p class="clause">5. 임금 : 매월 25일 선지급(1일부터 말일까지 산정) 근로자 명의 예금통장에 임금</p>
-  <table>
-    <tr><th colspan="2">급여내역</th><th style="width:100px"></th><th>산출근거(비고)</th></tr>
-    <tr><td class="l">기본급(A)</td><td class="r">${won(s.A)}</td><td colspan="2"></td></tr>
-    <tr><td class="l">연장수당</td><td class="r">${won(s.OT)}</td><td class="f" colspan="2">{[(A)+비과세]÷${s.stdH}h}×[${s.otH}h(월)x1.5배]</td></tr>
-    <tr><th colspan="4" style="background:#f8f8f8;font-size:10px">비과세</th></tr>
-    <tr><td class="l" style="padding-left:18px">식대</td><td class="r">${won(s.taxFree)}</td><td colspan="2"></td></tr>
-    <tr class="bold-row"><td class="l">월급여 계(B)</td><td class="r">${won(s.B)}</td><td colspan="2"></td></tr>
-    <tr class="bold-row"><td class="l">급여총액(C) [(B)×12개월]</td><td class="r" colspan="3">${won(s.C)}</td></tr>
-    <tr><td class="l">명절상여 총액(D)</td><td class="r">${won(s.D)}</td>
-      <td class="f" colspan="2">* 산정식 : [(B)*${(s.bonusRate*100).toFixed(0)}%]*2회(설날, 추석)<br>명절일 기준 3개월 이상 재직자 한정</td></tr>
-    <tr class="total-row"><td class="l">총 연봉금액(C+D)</td><td class="r" colspan="3">${won(s.total)}</td></tr>
-  </table>
-
-  <p class="clause">6. 사회보험가입 : 4대보험 가입(국민연금, 건강보험, 고용보험, 산재보험)</p>
-  <p class="clause">7. 연차유급휴가 : 「근로기준법」에서 정하는 바에 따라 부여함.</p>
-  <p class="clause">8. 겸업금지 : 근로자는 계약기간 중 경쟁회사에 이중으로 취업할수 없으며, 타 영리사업에 종사하려면 사업주의 승인을 득해야함</p>
-  <p class="clause">9. 퇴직 및 해고</p>
-  <p class="sub">1) 사업주는 퇴직연금에 가입하며 1년 이상 근무 후 퇴직 시 근로자에게 지급하며, 1년 미만 근무 시 회사로 반환</p>
-  <p class="sub">2) 퇴직할 경우 1개월 전에 사업주에게 퇴직승인을 득한 후 인수인계를 하여야 하며, 그렇지 아니한 경우 무단결근으로 간주</p>
-  <p class="sub">3) 근로자가 다음 각 호의 사유가 있을 경우에는 해고할 수 있음.</p>
-  <p class="sub2">가. 잦은 결근,지각 등 근태불량으로 3회 이상 지적을 받은 경우(연락두절 상태로 3일이상 무단결근시 퇴직으로 간주)</p>
-  <p class="sub2">나. 기타 취업규칙에서 정한 해고사유에 해당하는 경우</p>
-  <p class="clause">10. 이 계약서에서 정하지 아니한 사항은 「근로기준법」 등 노동관계법 및 본사 규정에서 정하는 바에 따른다.</p>
-
-  <div class="notice">
-    사업주와 근로자는 본인들의 의사에 따라 상호대등한 관계에서 본 계약서를 작성하였고<br>
-    본 계약서가 성립된 이후 상기 계약사항을 충실히 준수 이행할 것으로 약정하며 본 계약서에 서명 날인한다.
-  </div>
-  <div class="sig-date">${fdate(emp.salaryDate || emp.startDate)}</div>
-  <div class="sig-area">
-    <div class="sig-box">
-      <div class="st">"사업주"</div>
-      <div>주 　소 : ${$('companyAddr').value}</div>
-      <div>회 사 명 : ${company}</div>
-      <div>전화번호 : ${$('companyTel').value}</div>
-      <div>대표이사 : ${$('ceoName').value}</div>
-    </div>
-    <div class="sig-box">
-      <div class="st">"근로자"</div>
-      <div>생년월일 : ${fdate(emp.birth)}</div>
-      <div>전화번호 : ${emp.tel||''}</div>
-      <div>성 　명 : ${emp.name||''}</div>
-    </div>
-  </div>
-</div>
-</div>`;
+// ═══════════════════════════════════════════════════════════
+// VIEWS
+// ═══════════════════════════════════════════════════════════
+function switchView(v){
+  ['single','batch','history','emaillog'].forEach(x=>{
+    const el=$(('v-'+x));if(el)el.style.display=x===v?'block':'none';
+  });
+  document.querySelectorAll('.nav-item').forEach((el,i)=>{
+    const views=['single','batch','history','emaillog','ats','bi'];
+    el.classList.toggle('active',views[i]===v);
+  });
+  const titles={single:['개별 계약서 생성','총 연봉 입력 → 급여 자동 역산 → A4 계약서 미리보기'],batch:['엑셀 일괄 업로드','XLSX 파일로 전 직원 계약서 일괄 생성'],history:['계약 생성 이력','생성된 계약서 기록 관리'],emaillog:['메일 발송 이력','계약서 이메일 발송 기록']};
+  $('viewTitle').textContent=(titles[v]||titles.single)[0];
+  $('viewSub').textContent=(titles[v]||titles.single)[1];
+  if(v==='history')renderHistory();
+  if(v==='emaillog')renderEmailLog();
+  if(v==='single')render();
 }
 
-/* ── Tabs ── */
-let currentTab = 'single';
-function switchTab(tab){
-  currentTab = tab;
-  document.querySelectorAll('.tab').forEach((t,i) => t.classList.toggle('active', (i===0&&tab==='single')||(i===1&&tab==='batch')));
-  $('mode-single').style.display = tab==='single' ? '' : 'none';
-  $('mode-batch').style.display = tab==='batch' ? '' : 'none';
-  if(tab==='single') render();
-  else renderBatch();
-}
-
-/* ── Collapse ── */
-function toggleCollapse(id){
-  const b = $(id);
-  b.classList.toggle('open');
-  $(id+'-arrow').textContent = b.classList.contains('open') ? '▾' : '▸';
-}
-
-/* ── Single Mode Render ── */
-function render(){
-  if(currentTab !== 'single') return;
-  const total = +$('totalSalary').value;
-  const emp = {
-    name: $('empName').value,
-    birth: $('empBirth').value,
-    tel: $('empTel').value,
-    startDate: $('startDate').value,
-    salaryDate: $('salaryDate').value,
-    workPlace: $('workPlace').value,
-    workDuty: $('workDuty').value,
-    timeStart: $('timeStart').value,
-    timeEnd: $('timeEnd').value,
-    salary: total
-  };
-
-  if(total > 0){
-    const s = calcSalary(total);
-    if(s){
-      $('calcA').textContent = fmt(s.A);
-      $('calcOT').textContent = fmt(s.OT);
-      $('calcTF').textContent = fmt(s.taxFree);
-      $('calcB').textContent = fmt(s.B);
-      $('calcC').textContent = fmt(s.C);
-      $('calcD').textContent = fmt(s.D);
-      $('calcTotal').textContent = won(s.total);
-      $('statusBar').className = 'status ok';
-      $('statusBar').textContent = `기본급 ${fmt(s.A)}원 / 월급여 ${fmt(s.B)}원 산출 완료`;
-    }
-  } else {
-    ['calcA','calcOT','calcTF','calcB','calcC','calcD','calcTotal'].forEach(id => $(id).textContent = '—');
-    $('statusBar').className = 'status info';
-    $('statusBar').textContent = '총 연봉금액을 입력하면 급여 구조가 자동 역산됩니다.';
+// ═══════════════════════════════════════════════════════════
+// CONTRACT TYPE
+// ═══════════════════════════════════════════════════════════
+function setType(type,el){
+  contractType=type;
+  document.querySelectorAll('.type-card').forEach(c=>c.classList.remove('active'));
+  el.classList.add('active');
+  const extra=$('contractExtra');
+  const probNote=$('probationNote');
+  probNote.style.display=type==='probation'?'flex':'none';
+  if(type==='contract'){
+    extra.innerHTML='<div class="frow" style="margin-top:8px"><div class="fg"><label>계약 시작일</label><input type="date" id="contractStart" oninput="render()"></div><div class="fg"><label>계약 종료일</label><input type="date" id="contractEnd" oninput="render()"></div></div>';
+  }else if(type==='parttime'){
+    extra.innerHTML='<div class="frow" style="margin-top:8px"><div class="fg"><label>시급 (원)</label><input type="number" id="hourlyWage" value="12000" oninput="render()"></div><div class="fg"><label>주 근무시간</label><input type="number" id="weeklyHours" value="20" oninput="render()"></div></div>';
+  }else{
+    extra.innerHTML='';
   }
-
-  $('previewArea').innerHTML = buildContract(emp, true);
+  render();
 }
 
-/* ── Batch Mode ── */
-let batchData = [];
-let batchSelected = 0;
+// ═══════════════════════════════════════════════════════════
+// ALLOWANCES
+// ═══════════════════════════════════════════════════════════
+function getAllowances(){
+  const rows=document.querySelectorAll('#allowanceList .allow-row');
+  return Array.from(rows).map(r=>{
+    const inputs=r.querySelectorAll('input');
+    const sel=r.querySelector('select');
+    return {name:inputs[0].value,amount:parseInt(inputs[1].value)||0,tax:sel.value};
+  });
+}
+function addAllowance(){
+  const list=$('allowanceList');
+  const div=document.createElement('div');
+  div.className='allow-row';
+  div.innerHTML='<input type="text" placeholder="수당명" onchange="render()" style="flex:1"><input type="number" placeholder="금액" onchange="render()" style="width:100px"><select onchange="render()"><option>과세</option><option>비과세</option></select><div class="allow-del" onclick="removeAllow(this)">✕</div>';
+  list.appendChild(div);
+}
+function removeAllow(el){el.closest('.allow-row').remove();render();}
 
-const DUMMY_NAMES = ['직원 A','직원 B','직원 C','직원 D','직원 E','직원 F','직원 G','직원 H','직원 I','직원 J'];
-const DUMMY_DEPTS = ['개발1팀','개발2팀','기획팀','인프라팀','경영지원'];
-const DUMMY_DUTIES = ['클라우드/백엔드 개발','프론트엔드 개발','서비스 기획','인프라 운영','경영지원 업무'];
+// ═══════════════════════════════════════════════════════════
+// SALARY CALC ENGINE
+// ═══════════════════════════════════════════════════════════
+function calcSalary(totalInput){
+  const otH=parseFloat($('otHours').value)||21.65;
+  const stdH=parseFloat($('stdHours').value)||209;
+  const bonusRate=parseFloat($('bonusRate').value)||0.2;
+  const allows=getAllowances();
+  const taxFreeTotal=allows.filter(a=>a.tax==='비과세').reduce((s,a)=>s+a.amount,0);
+  const taxableAllows=allows.filter(a=>a.tax==='과세').reduce((s,a)=>s+a.amount,0);
+
+  // B = total / (12 + bonusRate*2*12/12) = total / 12.4 (when bonusRate=0.2)
+  const divisor=12+bonusRate*2;
+  const B=totalInput/divisor;
+  // B = A + OT + taxFree + taxableAllows
+  // OT = (A + taxFree) / stdH * otH * 1.5
+  // B = A + (A+taxFree)/stdH*otH*1.5 + taxFree + taxableAllows
+  // B - taxFree - taxableAllows = A + (A+taxFree)*otH*1.5/stdH
+  // B - taxFree - taxableAllows = A(1 + otH*1.5/stdH) + taxFree*otH*1.5/stdH
+  const otMult=otH*1.5/stdH;
+  const remainder=B-taxFreeTotal-taxableAllows;
+  const A=(remainder-taxFreeTotal*otMult)/(1+otMult);
+  const OT=(A+taxFreeTotal)/stdH*otH*1.5;
+  const C=B*12;
+  const D=B*bonusRate*2;
+
+  const probMult=contractType==='probation'?0.9:1;
+  return {
+    A:Math.round(A*probMult),OT:Math.round(OT*probMult),
+    taxFreeTotal,taxableAllows,allows,
+    B:Math.round(B*probMult),C:Math.round(B*probMult*12),
+    D:Math.round(B*probMult*bonusRate*2),
+    total:Math.round((B*12+B*bonusRate*2)*probMult),
+    otH,stdH,bonusRate,probMult
+  };
+}
+
+function calcInsurance(monthlyTaxable){
+  const pension=Math.round(monthlyTaxable*0.045);
+  const health=Math.round(monthlyTaxable*0.03545);
+  const longterm=Math.round(health*0.1295);
+  const employ=Math.round(monthlyTaxable*0.009);
+  const totalDeduct=pension+health+longterm+employ;
+  return {pension,health,longterm,employ,totalDeduct};
+}
+
+// ═══════════════════════════════════════════════════════════
+// RENDER
+// ═══════════════════════════════════════════════════════════
+function render(){
+  const totalInput=parseInt($('totalSalary')?.value)||0;
+  if(!totalInput){
+    $('calcArea').innerHTML='<div class="ci"><div class="cl">총 연봉을 입력하세요</div><div class="cv">—</div></div>';
+    $('insGrid').innerHTML='';
+    $('insTotal').style.display='none';
+    $('previewArea').innerHTML='<div style="text-align:center;padding:80px;color:var(--t3)"><div style="font-size:48px;margin-bottom:12px">📄</div><p>좌측에서 연봉을 입력하면<br>계약서 미리보기가 표시됩니다.</p></div>';
+    return;
+  }
+  const s=calcSalary(totalInput);
+  renderCalc(s);
+  renderInsurance(s);
+  renderContract(s);
+}
+
+function renderCalc(s){
+  const allows=s.allows||[];
+  let rows='';
+  rows+=`<div class="ci"><div class="cl">기본급 (A)</div><div class="cv">${won(s.A)}</div></div>`;
+  rows+=`<div class="ci"><div class="cl">연장수당</div><div class="cv">${won(s.OT)}</div></div>`;
+  allows.forEach(a=>{
+    rows+=`<div class="ci"><div class="cl">${a.name} <span style="font-size:9px;color:var(--t4)">${a.tax}</span></div><div class="cv">${won(a.amount)}</div></div>`;
+  });
+  if(s.taxableAllows>0) rows+=`<div class="ci hl"><div class="cl">과세 수당 소계</div><div class="cv">${won(s.taxableAllows)}</div></div>`;
+  rows+=`<div class="ci hl"><div class="cl">월급여 (B)</div><div class="cv">${won(s.B)}</div></div>`;
+  rows+=`<div class="ci"><div class="cl">급여총액 (C = B×12)</div><div class="cv">${won(s.C)}</div></div>`;
+  rows+=`<div class="ci"><div class="cl">명절상여 (D)</div><div class="cv">${won(s.D)}</div></div>`;
+  rows+=`<div class="ci total"><div class="cl">총 연봉 검증 (C+D)</div><div class="cv">${won(s.total)}</div></div>`;
+  $('calcArea').innerHTML=rows;
+
+  const diff=Math.abs(s.total-parseInt($('totalSalary').value));
+  if(diff<100){
+    $('statusBar').className='status ok';
+    $('statusBar').innerHTML='✅ 역산 검증 완료 — 오차 '+diff+'원'+(s.probMult<1?' (수습 90% 적용)':'');
+  }else{
+    $('statusBar').className='status warn';
+    $('statusBar').textContent='⚠ 오차 '+fmt(diff)+'원 발생';
+  }
+}
+
+function renderInsurance(s){
+  const taxable=s.B-s.taxFreeTotal;
+  const ins=calcInsurance(taxable>0?taxable:0);
+  $('insGrid').innerHTML=`
+    <div class="ins-item"><div class="il">국민연금 (4.5%)</div><div class="iv">${won(ins.pension)}</div></div>
+    <div class="ins-item"><div class="il">건강보험 (3.545%)</div><div class="iv">${won(ins.health)}</div></div>
+    <div class="ins-item"><div class="il">장기요양 (12.95%)</div><div class="iv">${won(ins.longterm)}</div></div>
+    <div class="ins-item"><div class="il">고용보험 (0.9%)</div><div class="iv">${won(ins.employ)}</div></div>`;
+  const net=s.B-ins.totalDeduct;
+  $('insTotal').style.display='flex';
+  $('insTotal').innerHTML=`<div><div class="il">예상 실수령액 (월)</div><div style="font-size:10px;color:var(--t3)">공제 합계: ${won(ins.totalDeduct)}</div></div><div class="iv">${won(net)}</div>`;
+}
+
+function renderContract(s,emp){
+  const e=emp||{
+    name:$('empName')?.value||'',
+    birth:$('empBirth')?.value||'',
+    tel:$('empTel')?.value||'',
+    dept:$('empDept')?.value||'개발팀',
+    startDate:$('startDate')?.value||'',
+    salaryDate:$('salaryDate')?.value||'',
+    workPlace:$('workPlace')?.value||'서울특별시 성동구',
+  };
+  const co={name:$('companyName')?.value||'IT 솔루션 기업',ceo:$('ceoName')?.value||'대표자명'};
+  const sd=e.startDate?formatKorDate(e.startDate):'____년 __월 __일';
+  const sad=e.salaryDate?formatKorDate(e.salaryDate):'____년 __월 __일';
+  const bd=e.birth?formatKorDate(e.birth):'';
+  const sigImg=sigData?`<img src="${sigData}" style="height:36px;margin-top:4px">`:'<div class="stamp">(서명란)</div>';
+
+  const typeLabel=contractType==='probation'?'<br><span style="color:#b83038;font-size:10px">※ 수습 3개월 (급여 90% 적용)</span>':contractType==='contract'?'<br><span style="font-size:10px">계약기간: '+(document.getElementById('contractStart')?.value||'__')+'~'+(document.getElementById('contractEnd')?.value||'__')+'</span>':'';
+
+  const allowRows=s.allows.map(a=>`<tr><td class="l" style="padding-left:${a.tax==='비과세'?'18':'0'}px">${a.name}</td><td class="r">${won(a.amount)}</td><td class="f" colspan="2">${a.tax}</td></tr>`).join('');
+
+  $('previewArea').innerHTML=`
+  <div class="a4">
+    <div class="watermark">PORTFOLIO SAMPLE</div>
+    <h2>근 로 계 약 서</h2>
+    <p>㈜${co.name}(이하 "사업주"라 함)과 <b>${e.name||'______'}</b> (이하 "근로자"라 함)은 다음과 같이 근로계약을 체결한다.${typeLabel}</p>
+
+    <p class="clause">1. 근로개시일 및 급여적용일</p>
+    <p class="sub">1) 근로자의 근로개시일 : ${sd} 부터 &nbsp;&nbsp;2) 근로자의 급여적용일 : ${sad} 부터</p>
+
+    <p class="clause">2. 근무장소/담당업무 : ${e.workPlace}</p>
+    <p class="sub">: 사업주가 필요 시 근무장소 또는 업무를 변경 할 수 있으며, 근로자는 정당한 이유 없이 이를 거부하지 못한다.</p>
+
+    <p class="clause">3. 근로시간 및 휴게시간 : 1일 8시간, 주 40시간 기본</p>
+    <table>
+      <tr><th>매주 근무일</th><th>시업시간</th><th>종업시간</th><th>비고</th></tr>
+      <tr><td>월요일~금요일까지</td><td>09:30</td><td>18:30</td><td></td></tr>
+    </table>
+    <p class="sub">1) 휴게시간은 12:00~13:00, 18:30~19:30이며, 회사의 업무형편에 따라 변경할 수 있다.</p>
+    <p class="sub">2) 사업주는 1주 12시간을 한도로 근로자의 동의를 얻어 연장근로(휴일근로, 야간근로)를 명할 수 있다.</p>
+    <p class="sub2">위 연장근로에 동의 : <b>${e.name||''}</b></p>
+
+    <p class="clause">4. 휴무일</p>
+    <p class="sub">1) 주휴일은 매주 일요일, 근로자의 날(5월1일), 관공서 공휴일, 대체공휴일이며 유급휴일임.</p>
+    <p class="sub">2) 1주간 근로일에 개근 시 일요일을 유급 주휴일로 부여, 토요일은 무급 휴무로 부여함.</p>
+
+    <p class="clause">5. 임금 : 매월 25일 선지급(1일부터 말일까지 산정) 근로자 명의 예금통장에 임금</p>
+    <table>
+      <tr><th colspan="2">급여내역</th><th style="width:80px"></th><th>산출근거(비고)</th></tr>
+      <tr><td class="l">기본급(A)</td><td class="r">${won(s.A)}</td><td colspan="2"></td></tr>
+      <tr><td class="l">연장수당</td><td class="r">${won(s.OT)}</td><td class="f" colspan="2">{[(A)+비과세]÷${s.stdH}h}×[${s.otH}h(월)x1.5배]</td></tr>
+      <tr><th colspan="4" style="background:#f8f8f8;font-size:10px">수당 항목</th></tr>
+      ${allowRows}
+      <tr class="bold-row"><td class="l">월급여 계(B)</td><td class="r">${won(s.B)}</td><td colspan="2"></td></tr>
+      <tr class="bold-row"><td class="l">급여총액(C) [(B)×12개월]</td><td class="r" colspan="3">${won(s.C)}</td></tr>
+      <tr><td class="l">명절상여 총액(D)</td><td class="r">${won(s.D)}</td>
+        <td class="f" colspan="2">* [(B)*${(s.bonusRate*100).toFixed(0)}%]*2회(설날, 추석)</td></tr>
+      <tr class="total-row"><td class="l">총 연봉금액(C+D)</td><td class="r" colspan="3">${won(s.total)}</td></tr>
+    </table>
+
+    <p class="clause">6. 사회보험가입 : 4대보험 가입(국민연금, 건강보험, 고용보험, 산재보험)</p>
+    <p class="clause">7. 연차유급휴가 : 「근로기준법」에서 정하는 바에 따라 부여함.</p>
+    <p class="clause">8. 겸업금지 : 근로자는 계약기간 중 경쟁회사에 이중으로 취업할수 없으며, 타 영리사업에 종사하려면 사업주의 승인을 득해야함</p>
+    <p class="clause">9. 퇴직 및 해고</p>
+    <p class="sub">1) 사업주는 퇴직연금에 가입하며 1년 이상 근무 후 퇴직 시 근로자에게 지급하며, 1년 미만 근무 시 회사로 반환</p>
+    <p class="sub">2) 퇴직할 경우 1개월 전에 사업주에게 퇴직승인을 득한 후 인수인계를 하여야 함</p>
+    <p class="clause">10. 이 계약서에서 정하지 아니한 사항은 「근로기준법」 등 노동관계법 및 본사 규정에서 정하는 바에 따른다.</p>
+
+    <div class="notice">
+      사업주와 근로자는 본인들의 의사에 따라 상호대등한 관계에서 본 계약서를 작성하였고<br>
+      본 계약서가 성립된 이후 상기 계약사항을 충실히 준수 이행할 것으로 약정하며 본 계약서에 서명 날인한다.<br><br>
+      <b>${e.salaryDate||'____년 __월 __일'}</b>
+    </div>
+
+    <div class="sign-area">
+      <div class="sign-col">
+        <h4>"사업주"</h4>
+        <p>회 사 명 : ㈜${co.name}</p>
+        <p>대표이사 : ${co.ceo}</p>
+      </div>
+      <div class="sign-col">
+        <h4>"근로자"</h4>
+        <p>생년월일 : ${bd||'____년 __월 __일'}</p>
+        <p>전화번호 : ${e.tel||'___-____-____'}</p>
+        <p>성 &nbsp;&nbsp; 명 : <b>${e.name||'______'}</b></p>
+        ${sigImg}
+      </div>
+    </div>
+  </div>`;
+}
+
+function formatKorDate(d){if(!d)return'';const p=d.split('-');return p[0]+'년 '+parseInt(p[1])+'월 '+parseInt(p[2])+'일';}
+
+// ═══════════════════════════════════════════════════════════
+// XLSX UPLOAD
+// ═══════════════════════════════════════════════════════════
+const uz=$('uploadZone');
+if(uz){
+  uz.addEventListener('dragover',e=>{e.preventDefault();uz.classList.add('dragover')});
+  uz.addEventListener('dragleave',()=>uz.classList.remove('dragover'));
+  uz.addEventListener('drop',e=>{e.preventDefault();uz.classList.remove('dragover');if(e.dataTransfer.files[0])processFile(e.dataTransfer.files[0])});
+}
+
+function handleXlsx(input){if(input.files[0])processFile(input.files[0])}
+
+function processFile(file){
+  const reader=new FileReader();
+  reader.onload=e=>{
+    const data=new Uint8Array(e.target.result);
+    const wb=XLSX.read(data,{type:'array'});
+    const ws=wb.Sheets[wb.SheetNames[0]];
+    const json=XLSX.utils.sheet_to_json(ws);
+    if(!json.length){alert('데이터가 없습니다');return}
+
+    // Auto-detect columns
+    const cols=Object.keys(json[0]);
+    const nameCol=cols.find(c=>/이름|성명|name/i.test(c))||cols[0];
+    const deptCol=cols.find(c=>/부서|팀|dept/i.test(c));
+    const salaryCol=cols.find(c=>/연봉|급여|총액|salary|총연봉/i.test(c));
+    const dateCol=cols.find(c=>/입사|시작|start|개시/i.test(c));
+    const birthCol=cols.find(c=>/생년|birth|생일/i.test(c));
+
+    batchData=json.map((r,i)=>({
+      id:i,name:r[nameCol]||'직원'+(i+1),
+      dept:deptCol?r[deptCol]:'개발팀',
+      totalSalary:salaryCol?parseInt(String(r[salaryCol]).replace(/[,원]/g,'')):35000000,
+      startDate:dateCol?r[dateCol]:'',
+      birth:birthCol?r[birthCol]:''
+    }));
+    renderBatch();
+  };
+  reader.readAsArrayBuffer(file);
+}
 
 function loadBatchDemo(){
-  batchData = DUMMY_NAMES.map((name,i) => {
-    const base = 28000000 + Math.floor(Math.random()*22000000);
-    const salary = Math.round(base / 10000) * 10000;
-    const dIdx = i % DUMMY_DEPTS.length;
-    return {
-      name, dept: DUMMY_DEPTS[dIdx],
-      birth: `${1985+Math.floor(Math.random()*15)}-${String(Math.floor(Math.random()*12)+1).padStart(2,'0')}-${String(Math.floor(Math.random()*28)+1).padStart(2,'0')}`,
-      tel: `010-${String(Math.floor(Math.random()*9000)+1000)}-${String(Math.floor(Math.random()*9000)+1000)}`,
-      startDate: '2025-03-01',
-      salaryDate: '2026-03-01',
-      workPlace: '서울특별시 성동구',
-      workDuty: DUMMY_DUTIES[dIdx],
-      timeStart: '09:30', timeEnd: '18:30',
-      salary
-    };
-  });
-  batchSelected = 0;
+  const names=['김민준','이서윤','박지호','최수아','정현우','강다은','조예준','윤하린','장도윤','한채은'];
+  const depts=['개발팀','개발팀','기획팀','디자인팀','개발팀','마케팅팀','개발팀','경영지원팀','개발팀','기획팀'];
+  batchData=names.map((n,i)=>({
+    id:i,name:n,dept:depts[i],
+    totalSalary:Math.round((3000+Math.random()*3000)/100)*1000000,
+    startDate:'2026-03-01',birth:'199'+(i%3)+'년'
+  }));
   renderBatch();
 }
 
 function renderBatch(){
-  $('batchCount').textContent = batchData.length;
-  let html = '';
-  batchData.forEach((emp,i) => {
-    const s = calcSalary(emp.salary);
-    html += `<div class="batch-row ${i===batchSelected?'active':''}" onclick="selectBatch(${i})">
-      <div class="br-status" style="background:${s?'var(--ok)':'var(--danger)'}"></div>
-      <div class="br-name">${emp.name}</div>
-      <div class="br-dept">${emp.dept||''}</div>
-      <div class="br-salary">${fmt(emp.salary)}원</div>
-      <button class="br-del" onclick="event.stopPropagation();removeBatch(${i})">×</button>
-    </div>`;
-  });
-  $('batchList').innerHTML = html;
-
-  if(batchData.length > 0){
-    $('previewArea').innerHTML = buildContract(batchData[batchSelected], true);
-  } else {
-    $('previewArea').innerHTML = '<div style="color:var(--t3);padding:60px;text-align:center">더미 데이터를 불러와주세요</div>';
-  }
+  $('batchResult').style.display='block';
+  $('batchCount').textContent=batchData.length;
+  $('batchBadge').style.display='inline';
+  $('batchBadge').textContent=batchData.length;
+  const tbody=$('batchBody');
+  tbody.innerHTML=batchData.map((d,i)=>`
+    <tr onclick="previewBatchItem(${i})" class="${i===0?'selected':''}">
+      <td>${i+1}</td>
+      <td style="font-weight:600">${d.name}</td>
+      <td>${d.dept}</td>
+      <td style="font-family:var(--mono)">${fmt(d.totalSalary)}</td>
+      <td style="color:var(--t3)">${d.startDate||'—'}</td>
+      <td><span style="color:var(--ok);font-size:10px;font-weight:600">✓ 준비</span></td>
+    </tr>`).join('');
+  previewBatchItem(0);
 }
 
-function selectBatch(i){
-  batchSelected = i;
-  renderBatch();
+function previewBatchItem(idx){
+  document.querySelectorAll('.batch-table tr').forEach(r=>r.classList.remove('selected'));
+  const rows=document.querySelectorAll('.batch-table tbody tr');
+  if(rows[idx])rows[idx].classList.add('selected');
+  const d=batchData[idx];
+  const s=calcSalaryBatch(d.totalSalary);
+  renderContract(s,{name:d.name,dept:d.dept,startDate:d.startDate,salaryDate:d.startDate,birth:d.birth,tel:'',workPlace:'서울특별시 성동구'});
 }
 
-function removeBatch(i){
-  batchData.splice(i,1);
-  if(batchSelected >= batchData.length) batchSelected = Math.max(0, batchData.length-1);
-  renderBatch();
+function calcSalaryBatch(total){
+  const otH=21.65,stdH=209,bonusRate=0.2;
+  const taxFree=200000;
+  const B=total/12.4;
+  const otMult=otH*1.5/stdH;
+  const A=(B-taxFree-taxFree*otMult)/(1+otMult);
+  const OT=(A+taxFree)/stdH*otH*1.5;
+  return {A:Math.round(A),OT:Math.round(OT),taxFreeTotal:taxFree,taxableAllows:0,
+    allows:[{name:'식대',amount:taxFree,tax:'비과세'}],
+    B:Math.round(B),C:Math.round(B*12),D:Math.round(B*bonusRate*2),
+    total:Math.round(B*12+B*bonusRate*2),otH,stdH,bonusRate,probMult:1};
 }
 
 function printBatch(){
-  let html = '';
-  batchData.forEach((emp,i) => {
-    html += buildContract(emp, false);
-    if(i < batchData.length-1) html += '<div class="page-break"></div>';
-  });
-  $('previewArea').innerHTML = html;
-  setTimeout(() => window.print(), 300);
+  const area=$('previewArea');
+  area.innerHTML=batchData.map(d=>{
+    const s=calcSalaryBatch(d.totalSalary);
+    return buildContractHTML(s,{name:d.name,dept:d.dept,startDate:d.startDate,salaryDate:d.startDate});
+  }).join('');
+  setTimeout(()=>window.print(),300);
 }
 
-/* ── Demo Data (Single) ── */
+function buildContractHTML(s,e){
+  const co={name:$('companyName')?.value||'IT 솔루션 기업',ceo:$('ceoName')?.value||'대표자명'};
+  const sd=e.startDate?formatKorDate(e.startDate):'____년 __월 __일';
+  const allowRows=s.allows.map(a=>`<tr><td class="l" style="padding-left:${a.tax==='비과세'?'18':'0'}px">${a.name}</td><td class="r">${won(a.amount)}</td><td class="f" colspan="2">${a.tax}</td></tr>`).join('');
+  return `<div class="a4"><div class="watermark">PORTFOLIO SAMPLE</div><h2>근 로 계 약 서</h2>
+<p>㈜${co.name}(이하 "사업주"라 함)과 <b>${e.name}</b> (이하 "근로자"라 함)은 다음과 같이 근로계약을 체결한다.</p>
+<p class="clause">1. 근로개시일 : ${sd}</p>
+<p class="clause">5. 임금</p>
+<table><tr><th colspan="2">급여내역</th><th></th><th>비고</th></tr>
+<tr><td class="l">기본급(A)</td><td class="r">${won(s.A)}</td><td colspan="2"></td></tr>
+<tr><td class="l">연장수당</td><td class="r">${won(s.OT)}</td><td class="f" colspan="2">포괄산정</td></tr>
+${allowRows}
+<tr class="bold-row"><td class="l">월급여(B)</td><td class="r">${won(s.B)}</td><td colspan="2"></td></tr>
+<tr class="bold-row"><td class="l">급여총액(C)</td><td class="r" colspan="3">${won(s.C)}</td></tr>
+<tr><td class="l">명절상여(D)</td><td class="r">${won(s.D)}</td><td class="f" colspan="2">B×20%×2회</td></tr>
+<tr class="total-row"><td class="l">총 연봉(C+D)</td><td class="r" colspan="3">${won(s.total)}</td></tr></table>
+<div class="sign-area"><div class="sign-col"><h4>"사업주"</h4><p>㈜${co.name}</p></div><div class="sign-col"><h4>"근로자"</h4><p>${e.name}</p></div></div></div>`;
+}
+
+// ═══════════════════════════════════════════════════════════
+// SIGNATURE PAD
+// ═══════════════════════════════════════════════════════════
+const canvas=$('sigCanvas');
+const ctx=canvas?.getContext('2d');
+let drawing=false;
+if(canvas){
+  canvas.addEventListener('mousedown',e=>{drawing=true;ctx.beginPath();ctx.moveTo(e.offsetX,e.offsetY)});
+  canvas.addEventListener('mousemove',e=>{if(!drawing)return;ctx.lineWidth=2;ctx.lineCap='round';ctx.strokeStyle='#1a1d2e';ctx.lineTo(e.offsetX,e.offsetY);ctx.stroke()});
+  canvas.addEventListener('mouseup',()=>{drawing=false;sigData=canvas.toDataURL();render()});
+  canvas.addEventListener('mouseleave',()=>{drawing=false});
+  // Touch
+  canvas.addEventListener('touchstart',e=>{e.preventDefault();drawing=true;const r=canvas.getBoundingClientRect();ctx.beginPath();ctx.moveTo(e.touches[0].clientX-r.left,e.touches[0].clientY-r.top)});
+  canvas.addEventListener('touchmove',e=>{e.preventDefault();if(!drawing)return;const r=canvas.getBoundingClientRect();ctx.lineWidth=2;ctx.lineCap='round';ctx.strokeStyle='#1a1d2e';ctx.lineTo(e.touches[0].clientX-r.left,e.touches[0].clientY-r.top);ctx.stroke()});
+  canvas.addEventListener('touchend',()=>{drawing=false;sigData=canvas.toDataURL();render()});
+}
+function clearSig(){ctx.clearRect(0,0,canvas.width,canvas.height);sigData=null;render()}
+
+// ═══════════════════════════════════════════════════════════
+// HISTORY
+// ═══════════════════════════════════════════════════════════
+function saveHistory(){
+  const name=$('empName')?.value;
+  const total=parseInt($('totalSalary')?.value)||0;
+  if(!name||!total){alert('직원명과 연봉을 입력해주세요');return}
+  history.unshift({
+    id:Date.now(),name,dept:$('empDept')?.value,total,type:contractType,
+    date:new Date().toISOString().split('T')[0],
+    allowances:getAllowances()
+  });
+  localStorage.setItem('moon_contract_hist',JSON.stringify(history));
+  updateHistBadge();
+  alert(name+'님 계약서 이력이 저장되었습니다.');
+}
+function saveBatchHistory(){
+  batchData.forEach(d=>{
+    history.unshift({id:Date.now()+Math.random(),name:d.name,dept:d.dept,total:d.totalSalary,type:'regular',date:new Date().toISOString().split('T')[0],allowances:[{name:'식대',amount:200000,tax:'비과세'}]});
+  });
+  localStorage.setItem('moon_contract_hist',JSON.stringify(history));
+  updateHistBadge();
+  alert(batchData.length+'명 이력이 저장되었습니다.');
+}
+function renderHistory(){
+  const list=$('histList');
+  if(!history.length){list.innerHTML='<div style="text-align:center;padding:30px;color:var(--t3)"><div style="font-size:32px;margin-bottom:8px">📋</div><p>저장된 이력이 없습니다.</p></div>';return}
+  list.innerHTML=history.map(h=>`
+    <div class="hist-item" onclick="loadFromHistory('${h.id}')">
+      <div class="hist-badge">📄</div>
+      <div class="hist-info">
+        <div class="hi-name">${h.name} · ${h.dept||''}</div>
+        <div class="hi-meta">${fmt(h.total)}원 · ${h.type==='regular'?'정규직':h.type==='probation'?'수습':h.type==='contract'?'계약직':'파트타임'} · ${h.date}</div>
+      </div>
+    </div>`).join('');
+}
+function loadFromHistory(id){
+  const h=history.find(x=>String(x.id)===String(id));
+  if(!h)return;
+  switchView('single');
+  $('empName').value=h.name;
+  if(h.dept)$('empDept').value=h.dept;
+  $('totalSalary').value=h.total;
+  prevSalary=h;
+  render();
+}
+function updateHistBadge(){
+  const b=$('histBadge');
+  if(history.length){b.style.display='inline';b.textContent=history.length}else{b.style.display='none'}
+}
+
+// ═══════════════════════════════════════════════════════════
+// COMPARISON
+// ═══════════════════════════════════════════════════════════
+function showComparison(){
+  if(!prevSalary){
+    // Create fake previous
+    const total=parseInt($('totalSalary')?.value)||0;
+    if(!total){alert('연봉을 먼저 입력하세요');return}
+    prevSalary={total:Math.round(total*0.93),name:$('empName')?.value||'',date:'2025-03-01'};
+  }
+  const sec=$('compSection');
+  sec.style.display='block';
+  const oldS=calcSalaryBatch(prevSalary.total);
+  const newTotal=parseInt($('totalSalary')?.value)||0;
+  const newS=calcSalaryBatch(newTotal);
+  const diff=newTotal-prevSalary.total;
+  const pct=prevSalary.total?((diff/prevSalary.total)*100).toFixed(1):0;
+  const cls=diff>=0?'up':'down';
+  $('compBody').innerHTML=`
+    <div style="margin-bottom:12px;padding:10px;background:${diff>=0?'var(--ok-bg)':'var(--danger-bg)'};border-radius:var(--r)">
+      <span style="font-size:11px;font-weight:600;color:${diff>=0?'var(--ok)':'var(--danger)'}">
+        ${diff>=0?'▲':'▼'} ${fmt(Math.abs(diff))}원 (${pct}%)
+      </span>
+    </div>
+    <div class="comp-row"><div class="comp-label">기본급</div><div class="comp-old">${fmt(oldS.A)}</div><div class="comp-new">${fmt(newS.A)}</div><div class="comp-delta ${cls}">${diff>=0?'+':''}${fmt(newS.A-oldS.A)}</div></div>
+    <div class="comp-row"><div class="comp-label">연장수당</div><div class="comp-old">${fmt(oldS.OT)}</div><div class="comp-new">${fmt(newS.OT)}</div><div class="comp-delta ${cls}">${diff>=0?'+':''}${fmt(newS.OT-oldS.OT)}</div></div>
+    <div class="comp-row"><div class="comp-label">월급여</div><div class="comp-old">${fmt(oldS.B)}</div><div class="comp-new">${fmt(newS.B)}</div><div class="comp-delta ${cls}">${diff>=0?'+':''}${fmt(newS.B-oldS.B)}</div></div>
+    <div class="comp-row"><div class="comp-label">총 연봉</div><div class="comp-old">${fmt(prevSalary.total)}</div><div class="comp-new">${fmt(newTotal)}</div><div class="comp-delta ${cls}">${diff>=0?'+':''}${fmt(diff)}</div></div>`;
+}
+
+// ═══════════════════════════════════════════════════════════
+// ATS / BI INTEGRATION
+// ═══════════════════════════════════════════════════════════
+function importFromATS(){
+  // Try reading from ATS localStorage
+  try{
+    const atsData=JSON.parse(localStorage.getItem('moon_ats_v2')||'{}');
+    const hired=(atsData.candidates||[]).filter(c=>c.stage===5);
+    if(hired.length){
+      batchData=hired.map((c,i)=>({
+        id:i,name:c.name,dept:c.dept||'개발팀',
+        totalSalary:c.expSalary?c.expSalary*10000:35000000,
+        startDate:new Date().toISOString().split('T')[0]
+      }));
+      switchView('batch');
+      renderBatch();
+      alert(`ATS에서 입사확정자 ${hired.length}명을 가져왔습니다.`);
+      return;
+    }
+  }catch(e){}
+  // Demo fallback
+  alert('ATS 데이터를 찾을 수 없습니다.\n→ 채용 파이프라인 ATS에서 입사확정(6단계) 처리된 후보자가 자동으로 연동됩니다.\n\n(데모: 3명 샘플 데이터를 불러옵니다)');
+  batchData=[
+    {id:0,name:'박지호',dept:'개발팀',totalSalary:45000000,startDate:'2026-06-01'},
+    {id:1,name:'정현우',dept:'기획팀',totalSalary:42000000,startDate:'2026-06-01'},
+    {id:2,name:'조예준',dept:'개발팀',totalSalary:50000000,startDate:'2026-06-15'},
+  ];
+  switchView('batch');
+  renderBatch();
+}
+
+function importFromBI(){
+  alert('연봉 조정 BI 대시보드(No.03)의 확정 데이터를 가져옵니다.\n→ XLSX 양식으로 내보낸 파일을 "엑셀 업로드"에서 불러오세요.\n\n연봉 BI → XLSX 내보내기 → 계약서 일괄 생성 흐름으로 연동됩니다.');
+  switchView('batch');
+}
+
+// ═══════════════════════════════════════════════════════════
+// EMAIL SEND
+// ═══════════════════════════════════════════════════════════
+function openEmailModal(){
+  const name=$('empName')?.value||'직원명';
+  const year=new Date().getFullYear();
+  $('em-filename').textContent=`근로계약서_${name}_${year}.pdf`;
+  $('em-subject').value=`[근로계약서] ${name}님 근로계약서 확인 및 서명 요청`;
+  $('emailModal').style.display='flex';
+}
+function closeEmailModal(){$('emailModal').style.display='none'}
+
+function sendEmail(){
+  const to=$('em-to').value.trim();
+  if(!to){alert('받는 사람 이메일을 입력해주세요.');return}
+  const subject=$('em-subject').value;
+  const body=$('em-body').value;
+  const name=$('empName')?.value||'직원';
+
+  // 실제 Gmail 연동 시 사용할 데이터 구조
+  const emailPayload={
+    to:to,
+    subject:subject,
+    body:body+'\n\n---\n첨부: 근로계약서_'+name+'_'+new Date().getFullYear()+'.pdf',
+    attachment:{
+      filename:'근로계약서_'+name+'_'+new Date().getFullYear()+'.pdf',
+      content:'(A4 계약서 HTML → PDF 변환)'
+    }
+  };
+
+  // 발송 이력 저장
+  const emailLog=JSON.parse(localStorage.getItem('moon_email_log')||'[]');
+  emailLog.unshift({
+    id:Date.now(),to,subject,name,
+    date:new Date().toISOString().split('T')[0],
+    time:new Date().toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit'}),
+    status:'sent'
+  });
+  localStorage.setItem('moon_email_log',JSON.stringify(emailLog));
+
+  closeEmailModal();
+  showToast(`✅ ${name}님에게 계약서가 발송되었습니다.`);
+  updateEmailBadge();
+}
+
+function sendBatchEmail(){
+  if(!batchData.length){alert('일괄 업로드 데이터가 없습니다.');return}
+  const confirmCount=batchData.length;
+  if(!confirm(`${confirmCount}명에게 근로계약서를 일괄 발송하시겠습니까?\n\n(각 직원의 이메일 주소가 필요합니다.\n데모 모드에서는 시뮬레이션으로 처리됩니다.)`))return;
+
+  const emailLog=JSON.parse(localStorage.getItem('moon_email_log')||'[]');
+  batchData.forEach(d=>{
+    emailLog.unshift({
+      id:Date.now()+Math.random(),
+      to:d.name.replace(/[^a-z]/gi,'')+'@example.com',
+      subject:`[근로계약서] ${d.name}님 근로계약서 확인 및 서명 요청`,
+      name:d.name,
+      date:new Date().toISOString().split('T')[0],
+      time:new Date().toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit'}),
+      status:'sent'
+    });
+  });
+  localStorage.setItem('moon_email_log',JSON.stringify(emailLog));
+  updateEmailBadge();
+  showToast(`✅ ${confirmCount}명에게 일괄 발송이 완료되었습니다.`);
+}
+
+function renderEmailLog(){
+  const log=JSON.parse(localStorage.getItem('moon_email_log')||'[]');
+  const list=$('emailLogList');
+  if(!list)return;
+  if(!log.length){list.innerHTML='<div style="text-align:center;padding:30px;color:var(--t3)"><div style="font-size:32px;margin-bottom:8px">📧</div><p>발송 이력이 없습니다.</p></div>';return}
+  list.innerHTML=log.slice(0,20).map(e=>`
+    <div class="hist-item">
+      <div class="hist-badge" style="background:${e.status==='sent'?'var(--ok-bg)':'var(--warn-bg)'}">
+        ${e.status==='sent'?'✅':'⏳'}
+      </div>
+      <div class="hist-info">
+        <div class="hi-name">${e.name} → ${e.to}</div>
+        <div class="hi-meta">${e.date} ${e.time} · ${e.subject}</div>
+      </div>
+    </div>`).join('');
+}
+
+function updateEmailBadge(){
+  const log=JSON.parse(localStorage.getItem('moon_email_log')||'[]');
+  const b=$('emailBadge');
+  if(b){b.style.display=log.length?'inline':'none';b.textContent=log.length}
+}
+
+// Toast notification
+function showToast(msg){
+  const toast=document.createElement('div');
+  toast.style.cssText='position:fixed;bottom:60px;left:50%;transform:translateX(-50%);background:var(--indigo);color:#fff;padding:10px 20px;border-radius:8px;font-size:12px;z-index:300;box-shadow:0 4px 20px rgba(0,0,0,.25);animation:fadeUp .3s ease';
+  toast.textContent=msg;
+  document.body.appendChild(toast);
+  setTimeout(()=>{toast.style.opacity='0';toast.style.transition='opacity .3s';setTimeout(()=>toast.remove(),300)},2500);
+}
+
+// ═══════════════════════════════════════════════════════════
+// UTILS
+// ═══════════════════════════════════════════════════════════
+function toggleSettings(){
+  const body=$('settingsBody');
+  const arrow=$('settingsArrow');
+  if(body.style.display==='none'){body.style.display='block';arrow.textContent='▾'}
+  else{body.style.display='none';arrow.textContent='▸'}
+}
+
 function loadDemo(){
-  $('empName').value = '직원 A';
-  $('empBirth').value = '1995-06-15';
-  $('empTel').value = '010-1234-5678';
-  $('startDate').value = '2025-08-01';
-  $('salaryDate').value = '2026-03-01';
-  $('workPlace').value = '서울특별시 성동구';
-  $('workDuty').value = '클라우드/사물인터넷/빅데이터 소프트웨어 개발';
-  $('totalSalary').value = '35000000';
+  $('empName').value='김민준';
+  $('empBirth').value='1995-03-15';
+  $('empTel').value='010-1234-5678';
+  $('empDept').value='개발팀';
+  $('startDate').value='2026-03-01';
+  $('salaryDate').value='2026-03-01';
+  $('totalSalary').value='45000000';
   render();
 }
 
-/* ── Init ── */
+// ═══ INIT ═══
+updateHistBadge();
+updateEmailBadge();
 render();
 </script>
 </body>

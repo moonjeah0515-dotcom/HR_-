@@ -6,548 +6,141 @@
 <title>Moonjeah — HR Portfolio</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-/* ═══════════════════════════════════════════
-   RESET & TOKENS
-═══════════════════════════════════════════ */
 *{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --white:#ffffff;
-  --off:#f7f7f5;
-  --ink:#0d0d0d;
-  --ink2:#3a3a3a;
-  --ink3:#7a7a7a;
-  --ink4:#c0c0c0;
-  --rule:#e4e4e4;
-  --accent:#1a2fff;
-  --accent-pale:#eef0ff;
-  --accent-dark:#0f1bcc;
-  --sans:'Noto Sans KR',sans-serif;
-  --serif:'Libre Baskerville',Georgia,serif;
-  --mono:'DM Mono',monospace;
+  --white:#ffffff;--off:#f7f7f5;--ink:#0d0d0d;--ink2:#3a3a3a;--ink3:#7a7a7a;--ink4:#c0c0c0;--rule:#e4e4e4;
+  --accent:#1a2fff;--accent-pale:#eef0ff;--accent-dark:#0f1bcc;
+  --sans:'Noto Sans KR',sans-serif;--serif:'Libre Baskerville',Georgia,serif;--mono:'DM Mono',monospace;
 }
 html{scroll-behavior:smooth}
-body{
-  font-family:var(--sans);
-  background:var(--white);
-  color:var(--ink);
-  font-size:14px;
-  line-height:1.6;
-  -webkit-font-smoothing:antialiased;
-}
-
-/* ═══════════════════════════════════════════
-   NAV
-═══════════════════════════════════════════ */
-.nav{
-  position:sticky;top:0;z-index:100;
-  background:rgba(255,255,255,.95);
-  backdrop-filter:blur(12px);
-  border-bottom:1px solid var(--rule);
-  display:flex;align-items:center;justify-content:space-between;
-  padding:0 52px;height:52px;
-}
-.nav-id{
-  font-family:var(--mono);font-size:11px;font-weight:500;
-  color:var(--ink);letter-spacing:.5px;
-  display:flex;align-items:center;gap:8px;
-}
-.nav-id .dot{
-  width:7px;height:7px;border-radius:50%;
-  background:var(--accent);
-  display:inline-block;
-  animation:pulse 2.5s ease-in-out infinite;
-}
+body{font-family:var(--sans);background:var(--white);color:var(--ink);font-size:14px;line-height:1.6;-webkit-font-smoothing:antialiased}
+.nav{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.95);backdrop-filter:blur(12px);border-bottom:1px solid var(--rule);display:flex;align-items:center;justify-content:space-between;padding:0 52px;height:52px}
+.nav-id{font-family:var(--mono);font-size:11px;font-weight:500;color:var(--ink);letter-spacing:.5px;display:flex;align-items:center;gap:8px}
+.nav-id .dot{width:7px;height:7px;border-radius:50%;background:var(--accent);display:inline-block;animation:pulse 2.5s ease-in-out infinite}
 @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.8)}}
 .nav-links{display:flex;gap:32px;align-items:center}
-.nav-links a{
-  font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;
-  color:var(--ink3);text-decoration:none;transition:color .15s;
-}
+.nav-links a{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--ink3);text-decoration:none;transition:color .15s}
 .nav-links a:hover{color:var(--ink)}
-.nav-links a.cta{
-  color:var(--white);background:var(--accent);
-  padding:6px 14px;border-radius:2px;
-  letter-spacing:.8px;
-  transition:background .15s;
-}
+.nav-links a.cta{color:var(--white);background:var(--accent);padding:6px 14px;border-radius:2px;letter-spacing:.8px;transition:background .15s}
 .nav-links a.cta:hover{background:var(--accent-dark)}
-
-/* ═══════════════════════════════════════════
-   HERO
-═══════════════════════════════════════════ */
-.hero{
-  max-width:1080px;margin:0 auto;
-  padding:100px 52px 80px;
-  display:grid;
-  grid-template-columns:1fr 300px;
-  gap:72px;align-items:end;
-  border-bottom:1px solid var(--rule);
-}
-.hero-kicker{
-  font-family:var(--mono);font-size:10px;font-weight:500;
-  letter-spacing:2.5px;text-transform:uppercase;
-  color:var(--accent);margin-bottom:32px;
-  display:flex;align-items:center;gap:12px;
-}
-.hero-kicker::before{
-  content:'';display:block;
-  width:36px;height:1.5px;background:var(--accent);flex-shrink:0;
-}
-.hero-h1{
-  font-family:var(--serif);
-  font-size:clamp(2.6rem,4.5vw,4rem);
-  font-weight:400;
-  line-height:1.15;
-  letter-spacing:-.5px;
-  color:var(--ink);
-  margin-bottom:32px;
-}
+.hero{max-width:1080px;margin:0 auto;padding:100px 52px 80px;display:grid;grid-template-columns:1fr 300px;gap:72px;align-items:end;border-bottom:1px solid var(--rule)}
+.hero-kicker{font-family:var(--mono);font-size:10px;font-weight:500;letter-spacing:2.5px;text-transform:uppercase;color:var(--accent);margin-bottom:32px;display:flex;align-items:center;gap:12px}
+.hero-kicker::before{content:'';display:block;width:36px;height:1.5px;background:var(--accent);flex-shrink:0}
+.hero-h1{font-family:var(--serif);font-size:clamp(2.6rem,4.5vw,4rem);font-weight:400;line-height:1.15;letter-spacing:-.5px;color:var(--ink);margin-bottom:32px}
 .hero-h1 em{font-style:italic;color:var(--accent)}
-.hero-h1 .underline{
-  position:relative;display:inline-block;
-}
-.hero-h1 .underline::after{
-  content:'';position:absolute;
-  left:0;bottom:2px;
-  width:100%;height:3px;
-  background:var(--accent);opacity:.25;
-}
-.hero-sub{
-  font-size:.875rem;color:var(--ink2);line-height:2;
-  max-width:500px;
-  border-left:2px solid var(--rule);
-  padding-left:20px;
-  margin-bottom:44px;
-}
+.hero-h1 .underline{position:relative;display:inline-block}
+.hero-h1 .underline::after{content:'';position:absolute;left:0;bottom:2px;width:100%;height:3px;background:var(--accent);opacity:.25}
+.hero-sub{font-size:.875rem;color:var(--ink2);line-height:2;max-width:500px;border-left:2px solid var(--rule);padding-left:20px;margin-bottom:44px}
 .hero-sub strong{color:var(--ink);font-weight:600}
-.hero-sub .note{
-  display:inline-block;margin-top:8px;
-  font-size:.75rem;color:var(--ink3);
-  font-style:italic;
-}
+.hero-sub .note{display:inline-block;margin-top:8px;font-size:.75rem;color:var(--ink3);font-style:italic}
 .hero-tag-row{display:flex;gap:7px;flex-wrap:wrap}
-.htag{
-  font-size:.68rem;font-weight:700;letter-spacing:.8px;text-transform:uppercase;
-  padding:5px 12px;border-radius:2px;
-  border:1px solid var(--rule);color:var(--ink3);
-  transition:all .15s;
-}
+.htag{font-size:.68rem;font-weight:700;letter-spacing:.8px;text-transform:uppercase;padding:5px 12px;border-radius:2px;border:1px solid var(--rule);color:var(--ink3);transition:all .15s}
 .htag:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-pale)}
 .htag.hi{border-color:var(--accent);color:var(--accent);background:var(--accent-pale)}
-
-/* STAT COLUMN */
-.hero-right{
-  border-left:1px solid var(--rule);
-  padding-left:52px;
-  display:flex;flex-direction:column;gap:0;
-}
-.stat-item{
-  padding:22px 0;
-  border-bottom:1px solid var(--rule);
-  position:relative;
-}
+.hero-right{border-left:1px solid var(--rule);padding-left:52px;display:flex;flex-direction:column;gap:0}
+.stat-item{padding:22px 0;border-bottom:1px solid var(--rule);position:relative}
 .stat-item:last-child{border-bottom:none}
-.stat-item::before{
-  content:'';position:absolute;left:-52px;top:0;
-  width:2px;height:0;background:var(--accent);
-  transition:height .4s ease;
-}
+.stat-item::before{content:'';position:absolute;left:-52px;top:0;width:2px;height:0;background:var(--accent);transition:height .4s ease}
 .stat-item:hover::before{height:100%}
-.stat-num{
-  font-family:var(--serif);font-style:italic;
-  font-size:2.8rem;font-weight:700;
-  color:var(--ink);line-height:1;
-  margin-bottom:5px;
-}
+.stat-num{font-family:var(--serif);font-style:italic;font-size:2.8rem;font-weight:700;color:var(--ink);line-height:1;margin-bottom:5px}
 .stat-num span{font-size:1.1rem;font-style:normal;font-weight:400;color:var(--ink3)}
 .stat-desc{font-size:.72rem;color:var(--ink3);line-height:1.6}
-.stat-badge{
-  display:inline-block;margin-top:4px;
-  font-family:var(--mono);font-size:.6rem;
-  color:var(--accent);background:var(--accent-pale);
-  padding:1px 6px;border-radius:1px;
-  letter-spacing:.5px;text-transform:uppercase;
-}
-
-/* ═══════════════════════════════════════════
-   COVER LETTER STRIP
-═══════════════════════════════════════════ */
-.cover-strip{
-  background:var(--ink);
-  color:var(--white);
-}
-.cover-inner{
-  max-width:1080px;margin:0 auto;
-  padding:56px 52px;
-  display:grid;
-  grid-template-columns:200px 1fr;
-  gap:52px;align-items:start;
-}
-.cover-label{
-  font-family:var(--mono);font-size:10px;
-  letter-spacing:2px;text-transform:uppercase;
-  color:rgba(255,255,255,.4);
-  padding-top:4px;
-}
-.cover-body{}
-.cover-quote{
-  font-family:var(--serif);font-style:italic;
-  font-size:1.2rem;font-weight:400;
-  color:var(--white);line-height:1.75;
-  margin-bottom:28px;
-  opacity:.9;
-}
-.cover-text{
-  font-size:.85rem;color:rgba(255,255,255,.65);
-  line-height:2;max-width:620px;
-}
+.stat-badge{display:inline-block;margin-top:4px;font-family:var(--mono);font-size:.6rem;color:var(--accent);background:var(--accent-pale);padding:1px 6px;border-radius:1px;letter-spacing:.5px;text-transform:uppercase}
+.cover-strip{background:var(--ink);color:var(--white)}
+.cover-inner{max-width:1080px;margin:0 auto;padding:56px 52px;display:grid;grid-template-columns:200px 1fr;gap:52px;align-items:start}
+.cover-label{font-family:var(--mono);font-size:10px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.4);padding-top:4px}
+.cover-quote{font-family:var(--serif);font-style:italic;font-size:1.2rem;font-weight:400;color:var(--white);line-height:1.75;margin-bottom:28px;opacity:.9}
+.cover-text{font-size:.85rem;color:rgba(255,255,255,.65);line-height:2;max-width:620px}
 .cover-text strong{color:var(--white);font-weight:600}
-.cover-metrics{
-  display:flex;gap:36px;margin-top:32px;flex-wrap:wrap;
-}
-.cm{
-  border-top:1px solid rgba(255,255,255,.15);
-  padding-top:14px;
-  min-width:120px;
-}
-.cm-num{
-  font-family:var(--mono);font-size:1.4rem;font-weight:500;
-  color:var(--white);
-}
+.cover-metrics{display:flex;gap:36px;margin-top:32px;flex-wrap:wrap}
+.cm{border-top:1px solid rgba(255,255,255,.15);padding-top:14px;min-width:120px}
+.cm-num{font-family:var(--mono);font-size:1.4rem;font-weight:500;color:var(--white)}
 .cm-label{font-size:.7rem;color:rgba(255,255,255,.45);margin-top:2px;line-height:1.4}
-
-/* ═══════════════════════════════════════════
-   SECTION
-═══════════════════════════════════════════ */
-.section{
-  max-width:1080px;margin:0 auto;
-  padding:80px 52px;
-  border-bottom:1px solid var(--rule);
-}
-.section-header{
-  display:grid;
-  grid-template-columns:200px 1fr;
-  gap:52px;
-  margin-bottom:56px;
-  align-items:baseline;
-}
-.section-no{
-  font-family:var(--mono);font-size:10px;font-weight:500;
-  letter-spacing:2px;text-transform:uppercase;color:var(--ink4);
-  padding-top:4px;
-}
-.section-title{
-  font-family:var(--serif);font-size:1.8rem;font-weight:400;font-style:italic;
-  color:var(--ink);letter-spacing:-.3px;
-}
-
-/* ═══════════════════════════════════════════
-   WORK ITEMS
-═══════════════════════════════════════════ */
+.section{max-width:1080px;margin:0 auto;padding:80px 52px;border-bottom:1px solid var(--rule)}
+.section-header{display:grid;grid-template-columns:200px 1fr;gap:52px;margin-bottom:56px;align-items:baseline}
+.section-no{font-family:var(--mono);font-size:10px;font-weight:500;letter-spacing:2px;text-transform:uppercase;color:var(--ink4);padding-top:4px}
+.section-title{font-family:var(--serif);font-size:1.8rem;font-weight:400;font-style:italic;color:var(--ink);letter-spacing:-.3px}
 .work-list{display:flex;flex-direction:column;gap:0}
-
-/* ═══ WHY I BUILD ═══ */
-.why-build{
-  margin:0 0 56px;padding:38px 40px 42px;
-  background:linear-gradient(180deg,#fafaf7 0%,#f5f4ee 100%);
-  border:1px solid var(--rule);border-left:3px solid var(--accent);
-  position:relative;
-}
-.why-label{
-  font-family:var(--mono);font-size:.62rem;font-weight:600;
-  letter-spacing:2.5px;text-transform:uppercase;color:var(--accent);
-  margin-bottom:22px;
-}
-.why-grid{
-  display:grid;grid-template-columns:repeat(3,1fr);gap:36px;
-}
-.why-h{
-  font-family:var(--serif);font-size:.95rem;font-weight:700;
-  color:var(--ink);letter-spacing:-.2px;margin-bottom:12px;
-  padding-bottom:10px;border-bottom:1px solid var(--rule);
-}
-.why-p{
-  font-size:.83rem;line-height:1.85;color:var(--ink2);
-  text-wrap:pretty;
-}
+.why-build{margin:0 0 56px;padding:38px 40px 42px;background:linear-gradient(180deg,#fafaf7 0%,#f5f4ee 100%);border:1px solid var(--rule);border-left:3px solid var(--accent);position:relative}
+.why-label{font-family:var(--mono);font-size:.62rem;font-weight:600;letter-spacing:2.5px;text-transform:uppercase;color:var(--accent);margin-bottom:22px}
+.why-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:36px}
+.why-h{font-family:var(--serif);font-size:.95rem;font-weight:700;color:var(--ink);letter-spacing:-.2px;margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid var(--rule)}
+.why-p{font-size:.83rem;line-height:1.85;color:var(--ink2);text-wrap:pretty}
 .why-p strong{color:var(--ink);font-weight:600;background:linear-gradient(180deg,transparent 60%,#fff5e6 60%);padding:0 1px}
-@media(max-width:900px){
-  .why-build{padding:28px 24px 32px}
-  .why-grid{grid-template-columns:1fr;gap:28px}
-}
-.cat-divider{
-  display:grid;
-  grid-template-columns:200px auto 1fr;
-  align-items:center;
-  gap:16px;
-  padding:48px 0 14px;
-  border-bottom:1px solid var(--rule);
-  margin-bottom:0;
-}
+@media(max-width:900px){.why-build{padding:28px 24px 32px}.why-grid{grid-template-columns:1fr;gap:28px}}
+.cat-divider{display:grid;grid-template-columns:200px auto 1fr;align-items:center;gap:16px;padding:48px 0 14px;border-bottom:1px solid var(--rule);margin-bottom:0}
 .cat-divider:first-child{padding-top:8px}
-.cat-num{
-  font-family:var(--mono);font-size:.66rem;font-weight:700;
-  color:var(--accent);letter-spacing:1.5px;
-  display:inline-block;width:24px;height:24px;line-height:24px;text-align:center;
-  border:1.5px solid var(--accent);border-radius:50%;
-  margin-left:0;
-}
-.cat-ko{
-  font-family:var(--serif);font-size:1.05rem;font-weight:700;
-  color:var(--ink);letter-spacing:-.2px;white-space:nowrap;
-}
-.cat-en{
-  font-family:var(--mono);font-size:.62rem;font-weight:500;
-  color:var(--ink3);letter-spacing:1.2px;text-transform:uppercase;
-  padding-left:10px;border-left:1px solid var(--rule);margin-left:2px;
-}
+.cat-num{font-family:var(--mono);font-size:.66rem;font-weight:700;color:var(--accent);letter-spacing:1.5px;display:inline-block;width:24px;height:24px;line-height:24px;text-align:center;border:1.5px solid var(--accent);border-radius:50%;margin-left:0}
+.cat-ko{font-family:var(--serif);font-size:1.05rem;font-weight:700;color:var(--ink);letter-spacing:-.2px;white-space:nowrap}
+.cat-en{font-family:var(--mono);font-size:.62rem;font-weight:500;color:var(--ink3);letter-spacing:1.2px;text-transform:uppercase;padding-left:10px;border-left:1px solid var(--rule);margin-left:2px}
 .cat-line{display:none}
-@media(max-width:760px){
-  .cat-divider{grid-template-columns:auto 1fr;padding:36px 0 12px}
-  .cat-en{font-size:.58rem;padding-left:8px}
-}
-.work-item{
-  display:grid;
-  grid-template-columns:200px 1fr auto;
-  gap:52px;
-  align-items:start;
-  padding:40px 0;
-  border-bottom:1px solid var(--rule);
-  text-decoration:none;color:inherit;
-  transition:background .2s;
-  position:relative;
-  cursor:pointer;
-}
+@media(max-width:760px){.cat-divider{grid-template-columns:auto 1fr;padding:36px 0 12px}.cat-en{font-size:.58rem;padding-left:8px}}
+.work-item{display:grid;grid-template-columns:200px 1fr auto;gap:52px;align-items:start;padding:40px 0;border-bottom:1px solid var(--rule);text-decoration:none;color:inherit;transition:background .2s;position:relative;cursor:pointer}
 .work-item:first-child{border-top:1px solid var(--rule)}
-.work-item::before{
-  content:'';position:absolute;
-  left:-52px;top:0;bottom:0;
-  width:3px;background:var(--accent);
-  transform:scaleY(0);transform-origin:bottom;
-  transition:transform .35s ease;
-}
+.work-item::before{content:'';position:absolute;left:-52px;top:0;bottom:0;width:3px;background:var(--accent);transform:scaleY(0);transform-origin:bottom;transition:transform .35s ease}
 .work-item:hover::before{transform:scaleY(1)}
 .work-item:hover{background:var(--off)}
 .work-item:hover .work-arrow{transform:translateX(6px);color:var(--accent)}
 .work-item:hover .work-num{color:var(--accent)}
-
-.work-meta{}
-.work-num{
-  font-family:var(--mono);font-size:10px;font-weight:500;
-  letter-spacing:1.5px;color:var(--ink4);
-  margin-bottom:8px;transition:color .15s;
-}
-.work-type{
-  font-size:.68rem;font-weight:700;letter-spacing:.6px;text-transform:uppercase;
-  color:var(--ink3);line-height:1.7;
-}
-.work-body{}
-.work-problem{
-  font-size:.78rem;color:var(--ink3);
-  font-style:italic;margin-bottom:10px;line-height:1.65;
-  display:flex;align-items:flex-start;gap:6px;
-}
+.work-num{font-family:var(--mono);font-size:10px;font-weight:500;letter-spacing:1.5px;color:var(--ink4);margin-bottom:8px;transition:color .15s}
+.work-type{font-size:.68rem;font-weight:700;letter-spacing:.6px;text-transform:uppercase;color:var(--ink3);line-height:1.7}
+.work-problem{font-size:.78rem;color:var(--ink3);font-style:italic;margin-bottom:10px;line-height:1.65;display:flex;align-items:flex-start;gap:6px}
 .work-problem::before{content:'"';color:var(--ink4);font-size:1.1rem;line-height:1;flex-shrink:0;margin-top:-2px}
-.work-title{
-  font-family:var(--serif);font-size:1.3rem;font-weight:700;
-  color:var(--ink);margin-bottom:10px;letter-spacing:-.2px;
-}
+.work-title{font-family:var(--serif);font-size:1.3rem;font-weight:700;color:var(--ink);margin-bottom:10px;letter-spacing:-.2px}
 .work-desc{font-size:.82rem;color:var(--ink2);line-height:1.8;margin-bottom:16px}
-.work-impact{
-  display:flex;gap:0;flex-wrap:wrap;
-  border:1px solid var(--rule);
-  border-radius:3px;
-  overflow:hidden;
-  margin-bottom:14px;
-}
-.wi{
-  flex:1;min-width:100px;
-  padding:12px 16px;
-  border-right:1px solid var(--rule);
-}
+.work-impact{display:flex;gap:0;flex-wrap:wrap;border:1px solid var(--rule);border-radius:3px;overflow:hidden;margin-bottom:14px}
+.wi{flex:1;min-width:100px;padding:12px 16px;border-right:1px solid var(--rule)}
 .wi:last-child{border-right:none}
-.wi-num{
-  font-family:var(--mono);font-size:.95rem;font-weight:500;
-  color:var(--accent);white-space:nowrap;margin-bottom:2px;
-}
+.wi-num{font-family:var(--mono);font-size:.95rem;font-weight:500;color:var(--accent);white-space:nowrap;margin-bottom:2px}
 .wi-label{font-size:.68rem;color:var(--ink3)}
 .work-tags{display:flex;flex-wrap:wrap;gap:5px}
-.wtag{
-  font-size:.63rem;font-weight:700;letter-spacing:.5px;text-transform:uppercase;
-  color:var(--ink3);border:1px solid var(--rule);
-  padding:3px 8px;border-radius:2px;
-}
-.work-right{
-  display:flex;flex-direction:column;align-items:flex-end;
-  padding-top:4px;gap:10px;
-}
-.work-arrow{
-  font-size:1.2rem;color:var(--ink4);
-  transition:transform .2s,color .2s;
-}
-.work-year{
-  font-family:var(--mono);font-size:.68rem;color:var(--ink4);
-  writing-mode:vertical-rl;letter-spacing:1px;
-}
-
-/* ═══════════════════════════════════════════
-   EXPERIENCE
-═══════════════════════════════════════════ */
+.wtag{font-size:.63rem;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--ink3);border:1px solid var(--rule);padding:3px 8px;border-radius:2px}
+.work-right{display:flex;flex-direction:column;align-items:flex-end;padding-top:4px;gap:10px}
+.work-arrow{font-size:1.2rem;color:var(--ink4);transition:transform .2s,color .2s}
+.work-year{font-family:var(--mono);font-size:.68rem;color:var(--ink4);writing-mode:vertical-rl;letter-spacing:1px}
 .exp-list{display:flex;flex-direction:column;gap:0}
-.exp-row{
-  display:grid;
-  grid-template-columns:200px 1fr;
-  gap:52px;
-  padding:32px 0;
-  border-bottom:1px solid var(--rule);
-}
+.exp-row{display:grid;grid-template-columns:200px 1fr;gap:52px;padding:32px 0;border-bottom:1px solid var(--rule)}
 .exp-row:first-child{border-top:1px solid var(--rule)}
 .exp-period{font-family:var(--mono);font-size:.68rem;color:var(--ink4);margin-bottom:5px}
 .exp-domain{font-size:.68rem;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--accent)}
 .exp-role{font-size:.92rem;font-weight:700;color:var(--ink);margin-bottom:12px}
-.exp-role .company-badge{
-  display:inline-block;margin-left:8px;
-  font-family:var(--mono);font-size:.6rem;
-  color:var(--ink3);background:var(--off);
-  padding:2px 7px;border-radius:1px;
-  font-weight:400;vertical-align:middle;
-}
+.exp-role .company-badge{display:inline-block;margin-left:8px;font-family:var(--mono);font-size:.6rem;color:var(--ink3);background:var(--off);padding:2px 7px;border-radius:1px;font-weight:400;vertical-align:middle}
 .exp-bullets{display:flex;flex-direction:column;gap:5px}
-.exp-bullets li{
-  font-size:.8rem;color:var(--ink2);line-height:1.65;
-  list-style:none;padding-left:16px;position:relative;
-}
-.exp-bullets li::before{
-  content:'—';position:absolute;left:0;
-  color:var(--ink4);font-size:.7rem;
-}
+.exp-bullets li{font-size:.8rem;color:var(--ink2);line-height:1.65;list-style:none;padding-left:16px;position:relative}
+.exp-bullets li::before{content:'—';position:absolute;left:0;color:var(--ink4);font-size:.7rem}
 .exp-bullets li strong{color:var(--accent);font-weight:700}
-.exp-row.current{
-  background:var(--accent-pale);
-  margin:0 -52px;padding:32px 52px;
-  border-left:3px solid var(--accent);
-}
+.exp-row.current{background:var(--accent-pale);margin:0 -52px;padding:32px 52px;border-left:3px solid var(--accent)}
 .exp-row.current .exp-role{color:var(--accent-dark)}
-.exp-row.gap{
-  background:var(--off);
-  margin:0 -52px;padding:16px 52px;
-  border-bottom:1px solid var(--rule);
-}
+.exp-row.gap{background:var(--off);margin:0 -52px;padding:16px 52px;border-bottom:1px solid var(--rule)}
 .exp-row.gap .exp-period{color:var(--ink4)}
-
-/* ═══════════════════════════════════════════
-   SKILLS
-═══════════════════════════════════════════ */
-.skill-grid{
-  display:grid;
-  grid-template-columns:200px 1fr;
-  gap:0;
-}
-.skill-row>*{
-  padding:20px 0;
-  border-bottom:1px solid var(--rule);
-}
+.skill-grid{display:grid;grid-template-columns:200px 1fr;gap:0}
+.skill-row>*{padding:20px 0;border-bottom:1px solid var(--rule)}
 .skill-row:first-child>*{border-top:1px solid var(--rule)}
-.skill-cat{
-  font-family:var(--mono);font-size:.68rem;font-weight:500;
-  letter-spacing:1.2px;text-transform:uppercase;color:var(--ink4);
-  padding-right:24px;
-}
-.skill-items-wrap{
-  display:flex;flex-wrap:wrap;gap:7px;align-items:center;
-  padding-left:52px;border-left:1px solid var(--rule);
-}
-.sk{
-  font-size:.73rem;font-weight:500;color:var(--ink2);
-  padding:4px 11px;border:1px solid var(--rule);border-radius:2px;
-  transition:all .15s;
-}
+.skill-cat{font-family:var(--mono);font-size:.68rem;font-weight:500;letter-spacing:1.2px;text-transform:uppercase;color:var(--ink4);padding-right:24px}
+.skill-items-wrap{display:flex;flex-wrap:wrap;gap:7px;align-items:center;padding-left:52px;border-left:1px solid var(--rule)}
+.sk{font-size:.73rem;font-weight:500;color:var(--ink2);padding:4px 11px;border:1px solid var(--rule);border-radius:2px;transition:all .15s}
 .sk:hover{border-color:var(--ink2);color:var(--ink)}
-.sk.hi{
-  color:var(--accent);border-color:var(--accent);
-  background:var(--accent-pale);font-weight:700;
-}
-
-/* ═══════════════════════════════════════════
-   ABOUT
-═══════════════════════════════════════════ */
-.about-section{
-  max-width:1080px;margin:0 auto;
-  padding:80px 52px 100px;
-}
-.about-grid{
-  display:grid;
-  grid-template-columns:200px 1fr;
-  gap:52px;
-}
-.about-label{
-  font-family:var(--mono);font-size:10px;font-weight:500;
-  letter-spacing:2px;text-transform:uppercase;color:var(--ink4);
-  margin-bottom:24px;
-}
-.about-avatar{
-  width:60px;height:60px;border-radius:4px;
-  background:var(--ink);
-  display:flex;align-items:center;justify-content:center;
-  font-family:var(--serif);font-size:1.25rem;font-weight:700;color:#fff;font-style:italic;
-}
-.about-name{
-  font-family:var(--serif);font-size:1.6rem;font-weight:700;
-  color:var(--ink);margin-bottom:2px;
-}
-.about-role-line{
-  font-family:var(--mono);font-size:.73rem;color:var(--accent);
-  letter-spacing:.5px;margin-bottom:28px;
-}
-.about-statement{
-  font-family:var(--serif);font-size:1.05rem;font-weight:400;
-  font-style:italic;color:var(--ink2);
-  line-height:1.9;
-  border-left:2px solid var(--rule);padding-left:20px;
-  margin-bottom:28px;
-  max-width:580px;
-}
+.sk.hi{color:var(--accent);border-color:var(--accent);background:var(--accent-pale);font-weight:700}
+.about-section{max-width:1080px;margin:0 auto;padding:80px 52px 100px}
+.about-grid{display:grid;grid-template-columns:200px 1fr;gap:52px}
+.about-label{font-family:var(--mono);font-size:10px;font-weight:500;letter-spacing:2px;text-transform:uppercase;color:var(--ink4);margin-bottom:24px}
+.about-avatar{width:60px;height:60px;border-radius:4px;background:var(--ink);display:flex;align-items:center;justify-content:center;font-family:var(--serif);font-size:1.25rem;font-weight:700;color:#fff;font-style:italic}
+.about-name{font-family:var(--serif);font-size:1.6rem;font-weight:700;color:var(--ink);margin-bottom:2px}
+.about-role-line{font-family:var(--mono);font-size:.73rem;color:var(--accent);letter-spacing:.5px;margin-bottom:28px}
+.about-statement{font-family:var(--serif);font-size:1.05rem;font-weight:400;font-style:italic;color:var(--ink2);line-height:1.9;border-left:2px solid var(--rule);padding-left:20px;margin-bottom:28px;max-width:580px}
 .about-body{font-size:.85rem;color:var(--ink2);line-height:2;margin-bottom:28px}
 .about-body strong{color:var(--ink);font-weight:600}
 .about-chips{display:flex;flex-wrap:wrap;gap:7px}
-.about-chip{
-  font-size:.68rem;font-weight:700;letter-spacing:.5px;text-transform:uppercase;
-  padding:4px 11px;border:1px solid var(--rule);border-radius:2px;color:var(--ink3);
-}
-
-/* ═══════════════════════════════════════════
-   FOOTER
-═══════════════════════════════════════════ */
-.footer{
-  border-top:1px solid var(--rule);
-  display:flex;align-items:center;justify-content:space-between;
-  padding:22px 52px;
-  max-width:1080px;margin:0 auto;
-}
+.about-chip{font-size:.68rem;font-weight:700;letter-spacing:.5px;text-transform:uppercase;padding:4px 11px;border:1px solid var(--rule);border-radius:2px;color:var(--ink3)}
+.footer{border-top:1px solid var(--rule);display:flex;align-items:center;justify-content:space-between;padding:22px 52px;max-width:1080px;margin:0 auto}
 .footer-l{font-family:var(--mono);font-size:.67rem;color:var(--ink4);letter-spacing:.5px}
 .footer-r{font-size:.72rem;color:var(--ink4)}
 .footer-r a{color:var(--accent);text-decoration:none}
-
-/* ═══════════════════════════════════════════
-   ANIMATIONS
-═══════════════════════════════════════════ */
 @keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
 .hero{animation:fadeUp .7s ease both}
 .cover-inner{animation:fadeUp .6s ease .1s both}
 .work-item{opacity:0;animation:fadeUp .5s ease forwards}
-.work-item:nth-of-type(1){animation-delay:.06s}
-.work-item:nth-of-type(2){animation-delay:.12s}
-.work-item:nth-of-type(3){animation-delay:.18s}
-.work-item:nth-of-type(4){animation-delay:.24s}
-.work-item:nth-of-type(5){animation-delay:.30s}
-.work-item:nth-of-type(6){animation-delay:.36s}
-.work-item:nth-of-type(7){animation-delay:.42s}
-.work-item:nth-of-type(8){animation-delay:.48s}
-.work-item:nth-of-type(9){animation-delay:.54s}
-
-/* ═══════════════════════════════════════════
-   RESPONSIVE
-═══════════════════════════════════════════ */
+.work-item:nth-of-type(1){animation-delay:.06s}.work-item:nth-of-type(2){animation-delay:.12s}.work-item:nth-of-type(3){animation-delay:.18s}.work-item:nth-of-type(4){animation-delay:.24s}.work-item:nth-of-type(5){animation-delay:.30s}.work-item:nth-of-type(6){animation-delay:.36s}.work-item:nth-of-type(7){animation-delay:.42s}.work-item:nth-of-type(8){animation-delay:.48s}.work-item:nth-of-type(9){animation-delay:.54s}
 @media(max-width:800px){
   .nav{padding:0 20px}
   .hero,.section,.about-section{padding-left:20px;padding-right:20px}
@@ -571,7 +164,6 @@ body{
 </head>
 <body>
 
-<!-- NAV -->
 <nav class="nav">
   <div class="nav-id"><span class="dot"></span> Moonjongwon · HR Portfolio</div>
   <div class="nav-links">
@@ -582,7 +174,6 @@ body{
   </div>
 </nav>
 
-<!-- HERO -->
 <section class="hero">
   <div class="hero-left">
     <div class="hero-kicker">Data-Driven HR · IT 도메인 8년 · 1인 HR 전주기 운영</div>
@@ -598,48 +189,22 @@ body{
       <span class="note">※ 포트폴리오 내 HR 데이터는 더미데이터로 대체하였습니다.</span>
     </p>
     <div class="hero-tag-row">
-      <span class="htag hi">인사 기획</span>
-      <span class="htag hi">채용 운영</span>
-      <span class="htag hi">성과평가</span>
-      <span class="htag hi">HR 자동화</span>
-      <span class="htag hi">상법 & 노무</span>
-      <span class="htag hi">IT 기업 HR</span>
-      <span class="htag hi">BI 대시보드</span>
-      <span class="htag hi">GAS / VBA</span>
+      <span class="htag hi">인사 기획</span><span class="htag hi">채용 운영</span><span class="htag hi">성과평가</span><span class="htag hi">HR 자동화</span><span class="htag hi">상법 & 노무</span><span class="htag hi">IT 기업 HR</span><span class="htag hi">BI 대시보드</span><span class="htag hi">GAS / VBA</span>
     </div>
   </div>
-
   <div class="hero-right">
-    <div class="stat-item">
-      <div class="stat-num">8<span>년차</span></div>
-      <div class="stat-desc">HR 실무 경력<br>AI/IT · 호텔 · F&B 도메인</div>
-    </div>
-    <div class="stat-item">
-      <div class="stat-num">100+<span>명</span></div>
-      <div class="stat-desc">연봉·성과관리 운영<br>BI 대시보드 실시간 운영</div>
-      <div class="stat-badge">Scale-up 100% ↑</div>
-    </div>
-    <div class="stat-item">
-      <div class="stat-num">7<span>종</span></div>
-      <div class="stat-desc">직접 구현한 HR AI Tool<br>BI·ATS·급여엔진·성과·퇴직·계약서</div>
-      <div class="stat-badge">SaaS형 모듈 설계</div>
-    </div>
-    <div class="stat-item">
-      <div class="stat-num">100+<span>건</span></div>
-      <div class="stat-desc">채용 이슈해결 및 채용성과<br>연간 100+ 이상 채용</div>
-    </div>
+    <div class="stat-item"><div class="stat-num">8<span>년차</span></div><div class="stat-desc">HR 실무 경력<br>AI/IT · 호텔 · F&B 도메인</div></div>
+    <div class="stat-item"><div class="stat-num">100+<span>명</span></div><div class="stat-desc">연봉·성과관리 운영<br>BI 대시보드 실시간 운영</div><div class="stat-badge">Scale-up 100% ↑</div></div>
+    <div class="stat-item"><div class="stat-num">7<span>종</span></div><div class="stat-desc">직접 구현한 HR AI Tool<br>BI·ATS·급여엔진·성과·퇴직·계약서</div><div class="stat-badge">SaaS형 모듈 설계</div></div>
+    <div class="stat-item"><div class="stat-num">100+<span>건</span></div><div class="stat-desc">채용 이슈해결 및 채용성과<br>연간 100+ 이상 채용</div></div>
   </div>
 </section>
 
-<!-- COVER LETTER STRIP -->
 <div class="cover-strip">
   <div class="cover-inner">
     <div class="cover-label">Cover Letter<br>문종원</div>
     <div class="cover-body">
-      <p class="cover-quote">
-        "데이터로 말하고, 자동화로 구조를 만들며,<br>
-        사람이 성장할 수 있는 환경을 설계합니다."
-      </p>
+      <p class="cover-quote">"데이터로 말하고, 자동화로 구조를 만들며,<br>사람이 성장할 수 있는 환경을 설계합니다."</p>
       <p class="cover-text">
         조직의 운영 효율과 사람의 성장을 <strong>데이터로 설계하는</strong> HR 매니저 문종원입니다.<br>
         시리즈 B~C 규모 피플팀 매니저로 85명→170명 스케일업(IT 직군 40%)을 이끌며,
@@ -652,438 +217,159 @@ body{
         법무 이슈에서는 <strong>리스크 0건</strong>의 안정적 운영을 유지했습니다.
       </p>
       <div class="cover-metrics">
-        <div class="cm">
-          <div class="cm-num">95%+</div>
-          <div class="cm-label">B2G·B2B 채용<br>목표 달성률</div>
-        </div>
-        <div class="cm">
-          <div class="cm-num">50%+</div>
-          <div class="cm-label">파견 인력<br>리텐션 개선</div>
-        </div>
-        <div class="cm">
-          <div class="cm-num">15%</div>
-          <div class="cm-label">총무 고정비<br>절감</div>
-        </div>
-        <div class="cm">
-          <div class="cm-num">8종</div>
-          <div class="cm-label">HR 시스템<br>단일 포털 통합</div>
-        </div>
-        <div class="cm">
-          <div class="cm-num">0건</div>
-          <div class="cm-label">법무 <br>리스크</div>
-        </div>
+        <div class="cm"><div class="cm-num">95%+</div><div class="cm-label">B2G·B2B 채용<br>목표 달성률</div></div>
+        <div class="cm"><div class="cm-num">50%+</div><div class="cm-label">파견 인력<br>리텐션 개선</div></div>
+        <div class="cm"><div class="cm-num">15%</div><div class="cm-label">총무 고정비<br>절감</div></div>
+        <div class="cm"><div class="cm-num">8종</div><div class="cm-label">HR 시스템<br>단일 포털 통합</div></div>
+        <div class="cm"><div class="cm-num">0건</div><div class="cm-label">법무 <br>리스크</div></div>
       </div>
     </div>
   </div>
 </div>
 
-<!-- WORKS -->
 <section class="section" id="works">
   <div class="section-header">
     <div class="section-no">01 — Works</div>
     <div class="section-title">실무에서 직접 만든 것들</div>
   </div>
 
-  <!-- WHY I BUILD: 왜 직접 만들었나 -->
   <div class="why-build">
     <div class="why-label">Why I Build</div>
     <div class="why-grid">
-      <div class="why-col">
-        <div class="why-h">왜 직접 만들었나</div>
-        <p class="why-p">
-          여러 HR SaaS 플랫폼을 실무에서 사용해봤습니다.
-          기능별로 필요도구는 많지만, <strong>실제 운영 흐름에 맞는 단일한 그림</strong>은 없었습니다.
-          더 큰 문제는 — 인력은 퇴사하면 남지 않는다는 것. 그리고 많은 비용..
-          <strong>경험과 노하우를 도구로 남기지 않으면 매번 다시 시작</strong>해야 했습니다.
-        </p>
-      </div>
-      <div class="why-col">
-        <div class="why-h">그래서 무엇이 달라졌나</div>
-        <p class="why-p">
-          기존 업무 경험을 바탕으로 채용·보상·성과·퇴직까지
-          <strong>HR 라이프사이클 전 영역의 산출물을 직접 재구성</strong>했습니다.
-          매번 수기로 만들던 자료가 자동화되었고,
-          <strong>임원 보고와 의사결정에 데이터로 즉답</strong>할 수 있는 환경이 만들어졌습니다.
-        </p>
-      </div>
-      <div class="why-col">
-        <div class="why-h">왜 이게 무기인가</div>
-        <p class="why-p">
-          HR을 아는 사람이 도구를 만들 때, 도구는 운영을 바꿉니다.
-          이 산출물들은 <strong>제 커리어와 함께 이동하는 자산</strong>이고,
-          어느 조직에 가든 <strong>HR 운영을 빠르게 정상화할 수 있는 무기</strong>라고 생각합니다.
-        </p>
-      </div>
+      <div class="why-col"><div class="why-h">왜 직접 만들었나</div><p class="why-p">여러 HR SaaS 플랫폼을 실무에서 사용해봤습니다. 기능별로 필요도구는 많지만, <strong>실제 운영 흐름에 맞는 단일한 그림</strong>은 없었습니다. 더 큰 문제는 — 인력은 퇴사하면 남지 않는다는 것. 그리고 많은 비용.. <strong>경험과 노하우를 도구로 남기지 않으면 매번 다시 시작</strong>해야 했습니다.</p></div>
+      <div class="why-col"><div class="why-h">그래서 무엇이 달라졌나</div><p class="why-p">기존 업무 경험을 바탕으로 채용·보상·성과·퇴직까지 <strong>HR 라이프사이클 전 영역의 산출물을 직접 재구성</strong>했습니다. 매번 수기로 만들던 자료가 자동화되었고, <strong>임원 보고와 의사결정에 데이터로 즉답</strong>할 수 있는 환경이 만들어졌습니다.</p></div>
+      <div class="why-col"><div class="why-h">왜 이게 무기인가</div><p class="why-p">HR을 아는 사람이 도구를 만들 때, 도구는 운영을 바꿉니다. 이 산출물들은 <strong>제 커리어와 함께 이동하는 자산</strong>이고, 어느 조직에 가든 <strong>HR 운영을 빠르게 정상화할 수 있는 무기</strong>라고 생각합니다.</p></div>
     </div>
   </div>
 
   <div class="work-list">
-
-    <!-- ━━━ 채용 ━━━ -->
     <div class="cat-divider"><span class="cat-num">A</span><span class="cat-ko">채용</span><span class="cat-en">Talent Acquisition</span><span class="cat-line"></span></div>
 
-    <!-- No.01 채용 현황 대시보드 -->
     <a class="work-item" href="채용대시보드_portfolio.html">
-      <div class="work-meta">
-        <div class="work-num">No.01</div>
-        <div class="work-type">Analytics<br>채용 기획</div>
-      </div>
+      <div class="work-meta"><div class="work-num">No.01</div><div class="work-type">Analytics<br>채용 기획</div></div>
       <div class="work-body">
         <div class="work-problem">어디서 좋은 사람이 왔는지 물어봐도 아무도 데이터로 답하지 못했습니다.</div>
         <div class="work-title">채용 현황 대시보드</div>
         <div class="work-desc">5개 채널 유입부터 최종합격까지 병목현상 추적. 부서별 채용 비용, D+day 트래킹, 전형 지연 알림 자동화 4개 포인트를 7탭 Sheets 구조로 설계.(필요기능은 계속 업데이트중)</div>
-        <div class="work-impact">
-          <div class="wi">
-            <div class="wi-num">5채널</div>
-            <div class="wi-label">유입별 전환율 추적</div>
-          </div>
-          <div class="wi">
-            <div class="wi-num">7탭</div>
-            <div class="wi-label">채용 DB 구조 설계</div>
-          </div>
-          <div class="wi">
-            <div class="wi-num">4포인트</div>
-            <div class="wi-label">자동화 트리거</div>
-          </div>
-        </div>
-        <div class="work-tags">
-          <span class="wtag">채용 퍼널 분석</span>
-          <span class="wtag">채널 효율</span>
-          <span class="wtag">D+day 트래킹</span>
-          <span class="wtag">인터랙티브 필터</span>
-        </div>
+        <div class="work-impact"><div class="wi"><div class="wi-num">5채널</div><div class="wi-label">유입별 전환율 추적</div></div><div class="wi"><div class="wi-num">7탭</div><div class="wi-label">채용 DB 구조 설계</div></div><div class="wi"><div class="wi-num">4포인트</div><div class="wi-label">자동화 트리거</div></div></div>
+        <div class="work-tags"><span class="wtag">채용 퍼널 분석</span><span class="wtag">채널 효율</span><span class="wtag">D+day 트래킹</span><span class="wtag">인터랙티브 필터</span></div>
       </div>
-      <div class="work-right">
-        <div class="work-arrow">→</div>
-        <div class="work-year">2026</div>
-      </div>
+      <div class="work-right"><div class="work-arrow">→</div><div class="work-year">2026</div></div>
     </a>
 
-    <!-- No.02 채용 파이프라인 ATS -->
+    <!-- ★ No.02 ATS v2.0 (UPDATED) -->
     <a class="work-item" href="채용파이프라인_ATS_portfolio.html">
-      <div class="work-meta">
-        <div class="work-num">No.02</div>
-        <div class="work-type">HR AI Tool<br>채용 운영</div>
-      </div>
+      <div class="work-meta"><div class="work-num">No.02</div><div class="work-type">Full-Spec ATS<br>채용 운영</div></div>
       <div class="work-body">
-        <div class="work-problem">지원자 20명이 어느 단계에 있는지 물어보면 엑셀로 보고드렸습니다..</div>
-        <div class="work-title">채용 파이프라인 ATS</div>
-        <div class="work-desc">접수→서류→1차→2차→오퍼→입사 6단계 대시보드 + 면접평가표 + 지원자프로필, 지원자별 병목데이터 분석·D+day 지연 알림까지 단일 HTML로 구현. 채용 대시보드(No.01)의 분석 데이터를 운영 도구로 전환.</div>
-        <div class="work-impact">
-          <div class="wi">
-            <div class="wi-num">6단계</div>
-            <div class="wi-label">칸반 파이프라인</div>
-          </div>
-          <div class="wi">
-            <div class="wi-num">6채널</div>
-            <div class="wi-label">전환율 자동 집계</div>
-          </div>
-          <div class="wi">
-            <div class="wi-num">D+day</div>
-            <div class="wi-label">지연 건 자동 감지</div>
-          </div>
-        </div>
-        <div class="work-tags">
-          <span class="wtag">ATS 파이프라인</span>
-          <span class="wtag">퍼널 분석</span>
-          <span class="wtag">칸반 보드</span>
-          <span class="wtag">채널 ROI</span>
-        </div>
+        <div class="work-problem">지원자 28명이 어느 단계에 있는지 물어보면 엑셀 열어서 5분 걸렸습니다.</div>
+        <div class="work-title">채용 파이프라인 ATS v2.0</div>
+        <div class="work-desc">6단계 칸반 보드 + 지원자 상세 프로필(연봉·경력·이력서) + 면접 스코어카드(4항목×5점) + 커뮤니케이션 타임라인 + 공고 관리 + 면접 스케줄링(주간 캘린더) + 탈렌트 풀 + 온보딩 체크리스트 + 채용 리포트(TTH·CPH·Source Quality)까지, 풀스펙 ATS를 단일 HTML로 구현.</div>
+        <div class="work-impact"><div class="wi"><div class="wi-num">5개 모듈</div><div class="wi-label">파이프라인·공고·면접·풀·리포트</div></div><div class="wi"><div class="wi-num">8지표</div><div class="wi-label">TTH·CPH·Source Quality 등</div></div><div class="wi"><div class="wi-num">D+day</div><div class="wi-label">지연 건 자동 감지</div></div></div>
+        <div class="work-tags"><span class="wtag">ATS 파이프라인</span><span class="wtag">스코어카드</span><span class="wtag">탈렌트 풀</span><span class="wtag">면접 스케줄</span><span class="wtag">온보딩</span><span class="wtag">Source Quality</span></div>
       </div>
-      <div class="work-right">
-        <div class="work-arrow">→</div>
-        <div class="work-year">2026</div>
-      </div>
+      <div class="work-right"><div class="work-arrow">→</div><div class="work-year">2026</div></div>
     </a>
 
-    <!-- ━━━ 보상 · 급여 ━━━ -->
     <div class="cat-divider"><span class="cat-num">B</span><span class="cat-ko">보상 · 급여</span><span class="cat-en">Compensation · Payroll</span><span class="cat-line"></span></div>
 
-    <!-- No.03 연봉 조정 대시보드 -->
     <a class="work-item" href="연봉조정BI_MOON_portfolio.html">
-      <div class="work-meta">
-        <div class="work-num">No.03</div>
-        <div class="work-type">BI Dashboard<br>보상 기획</div>
-      </div>
+      <div class="work-meta"><div class="work-num">No.03</div><div class="work-type">BI Dashboard<br>보상 기획</div></div>
       <div class="work-body">
         <div class="work-problem">연봉 시즌마다 수백 명을 수작업했습니다.</div>
         <div class="work-title">연봉 조정 대시보드</div>
         <div class="work-desc">전 직원 연봉 포지셔닝 시각화, Floor/Cap 상태 자동 분류, 직급별 인상률 시뮬레이터, 양식 업로드로 누구나 활용가능하게,직접 설계하고 실무에 적용했습니다. (기능은 계속 업데이트 중)</div>
-        <div class="work-impact">
-          <div class="wi">
-            <div class="wi-num">수백 명</div>
-            <div class="wi-label">수작업 → 인터랙티브 BI</div>
-          </div>
-          <div class="wi">
-            <div class="wi-num">실시간</div>
-            <div class="wi-label">시뮬레이션 전환</div>
-          </div>
-          <div class="wi">
-            <div class="wi-num">임원 보고</div>
-            <div class="wi-label">실제 의사결정 활용</div>
-          </div>
-        </div>
-        <div class="work-tags">
-          <span class="wtag">Chart.js</span>
-          <span class="wtag">연봉테이블 관리</span>
-          <span class="wtag">Floor/Cap 관리</span>
-          <span class="wtag">역전 감지 로직</span>
-        </div>
+        <div class="work-impact"><div class="wi"><div class="wi-num">수백 명</div><div class="wi-label">수작업 → 인터랙티브 BI</div></div><div class="wi"><div class="wi-num">실시간</div><div class="wi-label">시뮬레이션 전환</div></div><div class="wi"><div class="wi-num">임원 보고</div><div class="wi-label">실제 의사결정 활용</div></div></div>
+        <div class="work-tags"><span class="wtag">Chart.js</span><span class="wtag">연봉테이블 관리</span><span class="wtag">Floor/Cap 관리</span><span class="wtag">역전 감지 로직</span></div>
       </div>
-      <div class="work-right">
-        <div class="work-arrow">→</div>
-        <div class="work-year">2025–26</div>
-      </div>
+      <div class="work-right"><div class="work-arrow">→</div><div class="work-year">2025–26</div></div>
     </a>
 
-    <!-- No.04 근로계약서 자동생성기 -->
+    <!-- ★ No.04 근로계약서 자동생성기 v2.0 (UPDATED) -->
     <a class="work-item" href="근로계약서_자동생성기_portfolio.html">
-      <div class="work-meta">
-        <div class="work-num">No.04</div>
-        <div class="work-type">HR AI Tool <br>급여 자동화</div>
-      </div>
+      <div class="work-meta"><div class="work-num">No.04</div><div class="work-type">Contract Engine<br>급여 자동화</div></div>
       <div class="work-body">
         <div class="work-problem">매년 80명분 근로계약서를 수작업으로 만드는 데 이틀이 걸렸습니다.</div>
-        <div class="work-title">근로계약서 자동생성기</div>
-        <div class="work-desc">총 연봉금액 입력 → 기본급·연장수당·비과세·명절상여 자동 역산. A4 근로계약서 실시간 미리보기 + 일괄 PDF 출력. 연봉 조정 대시보드(No.03)와 연동 가능한 구조로 설계.</div>
-        <div class="work-impact">
-          <div class="wi">
-            <div class="wi-num">10명+</div>
-            <div class="wi-label">일괄 계약서 생성</div>
-          </div>
-          <div class="wi">
-            <div class="wi-num">역산 자동</div>
-            <div class="wi-label">기본급·수당·상여</div>
-          </div>
-          <div class="wi">
-            <div class="wi-num">BI 연동</div>
-            <div class="wi-label">연봉조정 대시보드</div>
-          </div>
-        </div>
-        <div class="work-tags">
-          <span class="wtag">급여 역산 엔진</span>
-          <span class="wtag">PDF 생성</span>
-          <span class="wtag">포괄임금제</span>
-          <span class="wtag">BI Linkable</span>
-        </div>
+        <div class="work-title">근로계약서 자동생성기 v2.0</div>
+        <div class="work-desc">XLSX 업로드 일괄 생성 + 계약 유형 4종(정규·수습·계약·파트타임) + 수당 항목 동적 관리(과세/비과세) + 4대보험 예상 공제·실수령액 + 전자서명 패드 + 메일 발송(개별·일괄) + 전년 대비 연봉 비교. ATS(No.02) 입사확정 데이터 및 연봉 BI(No.03)와 실시간 연동.</div>
+        <div class="work-impact"><div class="wi"><div class="wi-num">80명+</div><div class="wi-label">XLSX 일괄 계약서 생성</div></div><div class="wi"><div class="wi-num">ATS 연동</div><div class="wi-label">입사확정 → 계약서 자동</div></div><div class="wi"><div class="wi-num">전자계약</div><div class="wi-label">서명 + 메일 발송</div></div></div>
+        <div class="work-tags"><span class="wtag">XLSX 일괄 생성</span><span class="wtag">4대보험 공제</span><span class="wtag">전자서명</span><span class="wtag">메일 발송</span><span class="wtag">ATS·BI 연동</span></div>
       </div>
-      <div class="work-right">
-        <div class="work-arrow">→</div>
-        <div class="work-year">2026</div>
-      </div>
+      <div class="work-right"><div class="work-arrow">→</div><div class="work-year">2026</div></div>
     </a>
 
-    <!-- No.05 스톡옵션 관리 대시보드 -->
     <a class="work-item" href="스톡옵션대시보드_portfolio.html">
-      <div class="work-meta">
-        <div class="work-num">No.05</div>
-        <div class="work-type">BI Dashboard<br>장기 인센티브</div>
-      </div>
+      <div class="work-meta"><div class="work-num">No.05</div><div class="work-type">BI Dashboard<br>장기 인센티브</div></div>
       <div class="work-body">
         <div class="work-problem">스톡옵션은 부여하는 순간보다, 시간이 지난 뒤 누가 얼마를 가지고 있는지 추적이 더 어렵습니다.</div>
         <div class="work-title">스톡옵션 관리 대시보드</div>
         <div class="work-desc">라운드별 부여 이력, 베스팅 진행률, 행사·소멸·만료 상태 추적, 부여가 vs 현재 시가 차익까지. 개인·부서·직급별 필터링과 라운드별 시뮬레이션을 단일 대시보드로 통합.</div>
-        <div class="work-impact">
-          <div class="wi">
-            <div class="wi-num">5단계</div>
-            <div class="wi-label">베스팅·행사 상태</div>
-          </div>
-          <div class="wi">
-            <div class="wi-num">라운드별</div>
-            <div class="wi-label">부여 이력 추적</div>
-          </div>
-          <div class="wi">
-            <div class="wi-num">시가 연동</div>
-            <div class="wi-label">차익 자동 계산</div>
-          </div>
-        </div>
-        <div class="work-tags">
-          <span class="wtag">스톡옵션</span>
-          <span class="wtag">베스팅 추적</span>
-          <span class="wtag">장기 인센티브</span>
-          <span class="wtag">보상 BI</span>
-        </div>
+        <div class="work-impact"><div class="wi"><div class="wi-num">5단계</div><div class="wi-label">베스팅·행사 상태</div></div><div class="wi"><div class="wi-num">라운드별</div><div class="wi-label">부여 이력 추적</div></div><div class="wi"><div class="wi-num">시가 연동</div><div class="wi-label">차익 자동 계산</div></div></div>
+        <div class="work-tags"><span class="wtag">스톡옵션</span><span class="wtag">베스팅 추적</span><span class="wtag">장기 인센티브</span><span class="wtag">보상 BI</span></div>
       </div>
-      <div class="work-right">
-        <div class="work-arrow">→</div>
-        <div class="work-year">2026</div>
-      </div>
+      <div class="work-right"><div class="work-arrow">→</div><div class="work-year">2026</div></div>
     </a>
 
-    <!-- No.06 근태·급여 엔진 -->
     <a class="work-item" href="근태급여엔진_portfolio.html">
-      <div class="work-meta">
-        <div class="work-num">No.06</div>
-        <div class="work-type">HR AI Tool<br>근태·급여</div>
-      </div>
+      <div class="work-meta"><div class="work-num">No.06</div><div class="work-type">HR AI Tool<br>근태·급여</div></div>
       <div class="work-body">
         <div class="work-problem">매월 급여일이면 엑셀에 근태 데이터 옮기고 수당 계산하는 데만 하루가 걸렸습니다.</div>
         <div class="work-title">근태·급여 엔진</div>
         <div class="work-desc">표준·탄력·선택적·자율출근 4종 근무제 대응. 근태 현황에서 버튼 하나로 급여 자동 정산 — 포괄임금 연장수당, 야간·휴일 추가수당, 4대보험 공제까지 10초 내 완료.</div>
-        <div class="work-impact">
-          <div class="wi">
-            <div class="wi-num">4종</div>
-            <div class="wi-label">근무제 대응</div>
-          </div>
-          <div class="wi">
-            <div class="wi-num">10초</div>
-            <div class="wi-label">급여 자동 정산</div>
-          </div>
-          <div class="wi">
-            <div class="wi-num">4대보험</div>
-            <div class="wi-label">공제 자동 계산</div>
-          </div>
-        </div>
-        <div class="work-tags">
-          <span class="wtag">근태 관리</span>
-          <span class="wtag">급여 자동화</span>
-          <span class="wtag">포괄임금제</span>
-          <span class="wtag">4대보험 공제</span>
-        </div>
+        <div class="work-impact"><div class="wi"><div class="wi-num">4종</div><div class="wi-label">근무제 대응</div></div><div class="wi"><div class="wi-num">10초</div><div class="wi-label">급여 자동 정산</div></div><div class="wi"><div class="wi-num">4대보험</div><div class="wi-label">공제 자동 계산</div></div></div>
+        <div class="work-tags"><span class="wtag">근태 관리</span><span class="wtag">급여 자동화</span><span class="wtag">포괄임금제</span><span class="wtag">4대보험 공제</span></div>
       </div>
-      <div class="work-right">
-        <div class="work-arrow">→</div>
-        <div class="work-year">2026</div>
-      </div>
+      <div class="work-right"><div class="work-arrow">→</div><div class="work-year">2026</div></div>
     </a>
 
-    <!-- ━━━ 성과 ━━━ -->
     <div class="cat-divider"><span class="cat-num">C</span><span class="cat-ko">성과</span><span class="cat-en">Performance Management</span><span class="cat-line"></span></div>
 
-    <!-- No.07 성과관리 시스템 -->
     <a class="work-item" href="성과관리시스템_portfolio.html">
-      <div class="work-meta">
-        <div class="work-num">No.07</div>
-        <div class="work-type">HR AI Tool<br>성과 기획</div>
-      </div>
+      <div class="work-meta"><div class="work-num">No.07</div><div class="work-type">HR AI Tool<br>성과 기획</div></div>
       <div class="work-body">
         <div class="work-problem">"원래 그렇게 해왔어요"가 평가 기준인 조직에서, FTE 기반 성과관리 체계를 직접 설계했습니다.</div>
         <div class="work-title">성과관리 시스템 (FTE 기반)</div>
         <div class="work-desc">HC vs FTE 비교 대시보드, KPI(60%)+역량(40%) 평가 시트, S~D 5등급 강제배분 자동화, 등급별 인상률 시뮬레이션까지. 연봉 조정 BI(No.03)·근로계약서(No.04)와 연동 가능한 구조.</div>
-        <div class="work-impact">
-          <div class="wi">
-            <div class="wi-num">FTE 기반</div>
-            <div class="wi-label">HC vs 실질공수 비교</div>
-          </div>
-          <div class="wi">
-            <div class="wi-num">5등급</div>
-            <div class="wi-label">강제배분 자동화</div>
-          </div>
-          <div class="wi">
-            <div class="wi-num">BI 연동</div>
-            <div class="wi-label">연봉·계약서 자동 연결</div>
-          </div>
-        </div>
-        <div class="work-tags">
-          <span class="wtag">FTE 분석</span>
-          <span class="wtag">KPI + 역량 평가</span>
-          <span class="wtag">등급 배분</span>
-          <span class="wtag">연봉 시뮬레이션</span>
-        </div>
+        <div class="work-impact"><div class="wi"><div class="wi-num">FTE 기반</div><div class="wi-label">HC vs 실질공수 비교</div></div><div class="wi"><div class="wi-num">5등급</div><div class="wi-label">강제배분 자동화</div></div><div class="wi"><div class="wi-num">BI 연동</div><div class="wi-label">연봉·계약서 자동 연결</div></div></div>
+        <div class="work-tags"><span class="wtag">FTE 분석</span><span class="wtag">KPI + 역량 평가</span><span class="wtag">등급 배분</span><span class="wtag">연봉 시뮬레이션</span></div>
       </div>
-      <div class="work-right">
-        <div class="work-arrow">→</div>
-        <div class="work-year">2026</div>
-      </div>
+      <div class="work-right"><div class="work-arrow">→</div><div class="work-year">2026</div></div>
     </a>
 
-    <!-- ━━━ 퇴직 ━━━ -->
     <div class="cat-divider"><span class="cat-num">D</span><span class="cat-ko">퇴직</span><span class="cat-en">Offboarding</span><span class="cat-line"></span></div>
 
-    <!-- No.08 퇴직 처리 시스템 -->
     <a class="work-item" href="퇴직처리시스템_portfolio.html">
-      <div class="work-meta">
-        <div class="work-num">No.08</div>
-        <div class="work-type">HR AI Tool<br>퇴직 처리</div>
-      </div>
+      <div class="work-meta"><div class="work-num">No.08</div><div class="work-type">HR AI Tool<br>퇴직 처리</div></div>
       <div class="work-body">
         <div class="work-problem">퇴직금 계산을 엑셀로 하다가 평균임금 기준을 잘못 잡아 재계산한 적이 있습니다.</div>
         <div class="work-title">퇴직 처리 시스템</div>
         <div class="work-desc">평균임금 기반 퇴직금 자동 산정, 잔여연차 수당 정산, DC/DB 퇴직연금 확인, 4대보험 상실 신고부터 자산 반납까지 20항목 체크리스트를 단일 도구로 통합.</div>
-        <div class="work-impact">
-          <div class="wi">
-            <div class="wi-num">자동 산정</div>
-            <div class="wi-label">퇴직금 + 연차수당</div>
-          </div>
-          <div class="wi">
-            <div class="wi-num">20항목</div>
-            <div class="wi-label">퇴직 체크리스트</div>
-          </div>
-          <div class="wi">
-            <div class="wi-num">DC/DB</div>
-            <div class="wi-label">퇴직연금 확인</div>
-          </div>
-        </div>
-        <div class="work-tags">
-          <span class="wtag">퇴직금 산정</span>
-          <span class="wtag">연차 정산</span>
-          <span class="wtag">4대보험 상실</span>
-          <span class="wtag">오프보딩</span>
-        </div>
+        <div class="work-impact"><div class="wi"><div class="wi-num">자동 산정</div><div class="wi-label">퇴직금 + 연차수당</div></div><div class="wi"><div class="wi-num">20항목</div><div class="wi-label">퇴직 체크리스트</div></div><div class="wi"><div class="wi-num">DC/DB</div><div class="wi-label">퇴직연금 확인</div></div></div>
+        <div class="work-tags"><span class="wtag">퇴직금 산정</span><span class="wtag">연차 정산</span><span class="wtag">4대보험 상실</span><span class="wtag">오프보딩</span></div>
       </div>
-      <div class="work-right">
-        <div class="work-arrow">→</div>
-        <div class="work-year">2026</div>
-      </div>
+      <div class="work-right"><div class="work-arrow">→</div><div class="work-year">2026</div></div>
     </a>
 
-    <!-- ━━━ HR 인프라 ━━━ -->
     <div class="cat-divider"><span class="cat-num">E</span><span class="cat-ko">HR 인프라</span><span class="cat-en">HR Operations</span><span class="cat-line"></span></div>
 
-    <!-- No.09 HR 스마트 대시보드 -->
     <a class="work-item" href="MOON_HR_Portal_portfolio.html">
-      <div class="work-meta">
-        <div class="work-num">No.09</div>
-        <div class="work-type">Smart Portal<br>HR 운영</div>
-      </div>
+      <div class="work-meta"><div class="work-num">No.09</div><div class="work-type">Smart Portal<br>HR 운영</div></div>
       <div class="work-body">
         <div class="work-problem">신입 온보딩 첫날, 써야 할 사이트를 찾는 데만 반나절이 걸렸습니다.</div>
         <div class="work-title">HR 스마트 대시보드</div>
         <div class="work-desc">4대보험·채용플랫폼·정부과제·복리후생·협력사 포털 등 HR 업무 사이트 8종 이상을 카테고리로 통합한 원스톱 포털. Google Apps Script 연동으로 실시간 업데이트 가능하도록 설계 후 Netlify 배포.</div>
-        <div class="work-impact">
-          <div class="wi">
-            <div class="wi-num">8종</div>
-            <div class="wi-label">HR 시스템 단일 통합</div>
-          </div>
-          <div class="wi">
-            <div class="wi-num">80%↓</div>
-            <div class="wi-label">접근 단계 단축</div>
-          </div>
-          <div class="wi">
-            <div class="wi-num">Netlify</div>
-            <div class="wi-label">외부 배포 완료</div>
-          </div>
-        </div>
-        <div class="work-tags">
-          <span class="wtag">Google Apps Script</span>
-          <span class="wtag">Netlify 배포</span>
-          <span class="wtag">포털 설계</span>
-          <span class="wtag">온보딩</span>
-        </div>
+        <div class="work-impact"><div class="wi"><div class="wi-num">8종</div><div class="wi-label">HR 시스템 단일 통합</div></div><div class="wi"><div class="wi-num">80%↓</div><div class="wi-label">접근 단계 단축</div></div><div class="wi"><div class="wi-num">Netlify</div><div class="wi-label">외부 배포 완료</div></div></div>
+        <div class="work-tags"><span class="wtag">Google Apps Script</span><span class="wtag">Netlify 배포</span><span class="wtag">포털 설계</span><span class="wtag">온보딩</span></div>
       </div>
-      <div class="work-right">
-        <div class="work-arrow">→</div>
-        <div class="work-year">2026</div>
-      </div>
+      <div class="work-right"><div class="work-arrow">→</div><div class="work-year">2026</div></div>
     </a>
-
   </div>
 </section>
 
-<!-- EXPERIENCE -->
 <section class="section" id="exp">
-  <div class="section-header">
-    <div class="section-no">02 — Experience</div>
-    <div class="section-title">맡아온 일들</div>
-  </div>
+  <div class="section-header"><div class="section-no">02 — Experience</div><div class="section-title">맡아온 일들</div></div>
   <div class="exp-list">
-
-    <!-- 현직 (current / highlight) -->
     <div class="exp-row current">
-      <div class="exp-left">
-        <div class="exp-period">2026.02 — 현재</div>
-        <div class="exp-domain">인사기획 · HR 자동화</div>
-      </div>
+      <div class="exp-left"><div class="exp-period">2026.02 — 현재</div><div class="exp-domain">인사기획 · HR 자동화</div></div>
       <div class="exp-right">
         <div class="exp-role">IT 솔루션 기업 (회사명 비공개) · 인사기획팀 대리 <span class="company-badge">IT · 80인 · 1인 HR</span></div>
         <ul class="exp-bullets">
@@ -1095,24 +381,12 @@ body{
         </ul>
       </div>
     </div>
-
-    <!-- 커리어 갭 -->
     <div class="exp-row gap">
-      <div class="exp-left">
-        <div class="exp-period">2025.05 — 2026.02</div>
-        <div class="exp-domain" style="color:var(--ink4);font-size:.65rem">커리어 리프레시</div>
-      </div>
-      <div class="exp-right" style="display:flex;align-items:center">
-        <span style="font-size:.78rem;color:var(--ink3)">건강 회복 및 HR·AI 분야 자기개발 — 이 기간 중 Chart.js·VBA·GAS 기반 HR 자동화 도구 자체 제작</span>
-      </div>
+      <div class="exp-left"><div class="exp-period">2025.05 — 2026.02</div><div class="exp-domain" style="color:var(--ink4);font-size:.65rem">커리어 리프레시</div></div>
+      <div class="exp-right" style="display:flex;align-items:center"><span style="font-size:.78rem;color:var(--ink3)">건강 회복 및 HR·AI 분야 자기개발 — 이 기간 중 Chart.js·VBA·GAS 기반 HR 자동화 도구 자체 제작</span></div>
     </div>
-
-    <!-- AIworkx -->
     <div class="exp-row">
-      <div class="exp-left">
-        <div class="exp-period">2020.08 — 2025.04</div>
-        <div class="exp-domain">채용 스케일업 · M&A · IPO</div>
-      </div>
+      <div class="exp-left"><div class="exp-period">2020.08 — 2025.04</div><div class="exp-domain">채용 스케일업 · M&A · IPO</div></div>
       <div class="exp-right">
         <div class="exp-role">에이아이웍스(AIworkx) · 피플팀 매니저</div>
         <ul class="exp-bullets">
@@ -1124,13 +398,8 @@ body{
         </ul>
       </div>
     </div>
-
-    <!-- 청담이상 -->
     <div class="exp-row">
-      <div class="exp-left">
-        <div class="exp-period">2018.08 — 2019.11</div>
-        <div class="exp-domain">창업 · 비용 설계</div>
-      </div>
+      <div class="exp-left"><div class="exp-period">2018.08 — 2019.11</div><div class="exp-domain">창업 · 비용 설계</div></div>
       <div class="exp-right">
         <div class="exp-role">청담이상 논현점 · 동업자 (프리미엄 F&B)</div>
         <ul class="exp-bullets">
@@ -1139,13 +408,8 @@ body{
         </ul>
       </div>
     </div>
-
-    <!-- 오클라우드 -->
     <div class="exp-row">
-      <div class="exp-left">
-        <div class="exp-period">2017.06 — 2018.06</div>
-        <div class="exp-domain">HRM · 조직 개편</div>
-      </div>
+      <div class="exp-left"><div class="exp-period">2017.06 — 2018.06</div><div class="exp-domain">HRM · 조직 개편</div></div>
       <div class="exp-right">
         <div class="exp-role">오클라우드호텔 · 경영지원팀 주임</div>
         <ul class="exp-bullets">
@@ -1154,13 +418,8 @@ body{
         </ul>
       </div>
     </div>
-
-    <!-- 롯데호텔 -->
     <div class="exp-row">
-      <div class="exp-left">
-        <div class="exp-period">2016.02 — 2017.02</div>
-        <div class="exp-domain">대규모 채용 · 법규 관리</div>
-      </div>
+      <div class="exp-left"><div class="exp-period">2016.02 — 2017.02</div><div class="exp-domain">대규모 채용 · 법규 관리</div></div>
       <div class="exp-right">
         <div class="exp-role">롯데호텔서울 · 채용담당</div>
         <ul class="exp-bullets">
@@ -1170,123 +429,35 @@ body{
         </ul>
       </div>
     </div>
-
   </div>
-  <div style="margin-top:28px;text-align:right">
-    <a href="career.html" style="font-size:.73rem;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--accent);text-decoration:none;border-bottom:1.5px solid var(--accent);padding-bottom:1px;">전체 경력기술서 보기 →</a>
-  </div>
+  <div style="margin-top:28px;text-align:right"><a href="career.html" style="font-size:.73rem;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--accent);text-decoration:none;border-bottom:1.5px solid var(--accent);padding-bottom:1px;">전체 경력기술서 보기 →</a></div>
 </section>
 
-<!-- SKILLS -->
 <section class="section" id="skills">
-  <div class="section-header">
-    <div class="section-no">03 — Skills</div>
-    <div class="section-title">할 수 있는 것들</div>
-  </div>
+  <div class="section-header"><div class="section-no">03 — Skills</div><div class="section-title">할 수 있는 것들</div></div>
   <div class="skill-grid">
-    <div class="skill-row">
-      <div class="skill-cat">HR 기획</div>
-      <div class="skill-items-wrap">
-        <span class="sk hi">보상 설계</span>
-        <span class="sk hi">성과평가 기획</span>
-        <span class="sk hi">채용 기획·운영</span>
-        <span class="sk hi">조직 기획</span>
-        <span class="sk hi">규정 제개정</span>
-        <span class="sk hi">AI Tool 활용</span>
-      </div>
-    </div>
-    <div class="skill-row">
-      <div class="skill-cat">HR 운영</div>
-      <div class="skill-items-wrap">
-        <span class="sk">급여 처리</span>
-        <span class="sk">4대보험</span>
-        <span class="sk">퇴직연금(DC)</span>
-        <span class="sk">연말정산</span>
-        <span class="sk hi">자산관리</span>
-        <span class="sk hi">온보딩 설계</span>
-      </div>
-    </div>
-    <div class="skill-row">
-      <div class="skill-cat">자동화·개발</div>
-      <div class="skill-items-wrap">
-        <span class="sk hi">Excel VBA</span>
-        <span class="sk hi">Google Apps Script</span>
-        <span class="sk hi">Chart.js</span>
-        <span class="sk hi">HTML / CSS / JS</span>
-        <span class="sk hi">데이터 시각화</span>
-        <span class="sk hi">Netlify 배포</span>
-      </div>
-    </div>
-    <div class="skill-row">
-      <div class="skill-cat">보고·문서</div>
-      <div class="skill-items-wrap">
-        <span class="sk hi">임원 보고서</span>
-        <span class="sk hi">BI 대시보드</span>
-        <span class="sk hi">노사협의회 자료</span>
-        <span class="sk hi">PPT 기획</span>
-      </div>
-    </div>
-    <div class="skill-row">
-      <div class="skill-cat">채용 채널</div>
-      <div class="skill-items-wrap">
-        <span class="sk hi">잡코리아 / 사람인</span>
-        <span class="sk hi">원티드</span>
-        <span class="sk hi">링크드인</span>
-        <span class="sk hi">헤드헌팅</span>
-        <span class="sk hi">인재 파이프라인</span>
-      </div>
-    </div>
-    <div class="skill-row">
-      <div class="skill-cat">법무·노무</div>
-      <div class="skill-items-wrap">
-        <span class="sk hi">근로기준법</span>
-        <span class="sk hi">상법 (유상증자·M&A)</span>
-        <span class="sk hi">스톡옵션</span>
-        <span class="sk hi">취업규칙 제개정</span>
-        <span class="sk hi">근로계약서</span>
-      </div>
-    </div>
+    <div class="skill-row"><div class="skill-cat">HR 기획</div><div class="skill-items-wrap"><span class="sk hi">보상 설계</span><span class="sk hi">성과평가 기획</span><span class="sk hi">채용 기획·운영</span><span class="sk hi">조직 기획</span><span class="sk hi">규정 제개정</span><span class="sk hi">AI Tool 활용</span></div></div>
+    <div class="skill-row"><div class="skill-cat">HR 운영</div><div class="skill-items-wrap"><span class="sk">급여 처리</span><span class="sk">4대보험</span><span class="sk">퇴직연금(DC)</span><span class="sk">연말정산</span><span class="sk hi">자산관리</span><span class="sk hi">온보딩 설계</span></div></div>
+    <div class="skill-row"><div class="skill-cat">자동화·개발</div><div class="skill-items-wrap"><span class="sk hi">Excel VBA</span><span class="sk hi">Google Apps Script</span><span class="sk hi">Chart.js</span><span class="sk hi">HTML / CSS / JS</span><span class="sk hi">데이터 시각화</span><span class="sk hi">Netlify 배포</span></div></div>
+    <div class="skill-row"><div class="skill-cat">보고·문서</div><div class="skill-items-wrap"><span class="sk hi">임원 보고서</span><span class="sk hi">BI 대시보드</span><span class="sk hi">노사협의회 자료</span><span class="sk hi">PPT 기획</span></div></div>
+    <div class="skill-row"><div class="skill-cat">채용 채널</div><div class="skill-items-wrap"><span class="sk hi">잡코리아 / 사람인</span><span class="sk hi">원티드</span><span class="sk hi">링크드인</span><span class="sk hi">헤드헌팅</span><span class="sk hi">인재 파이프라인</span></div></div>
+    <div class="skill-row"><div class="skill-cat">법무·노무</div><div class="skill-items-wrap"><span class="sk hi">근로기준법</span><span class="sk hi">상법 (유상증자·M&A)</span><span class="sk hi">스톡옵션</span><span class="sk hi">취업규칙 제개정</span><span class="sk hi">근로계약서</span></div></div>
   </div>
 </section>
 
-<!-- ABOUT -->
 <section class="about-section" id="about">
   <div class="about-grid">
-    <div class="about-left-col">
-      <div class="about-label">About</div>
-      <div class="about-avatar">MJ</div>
-    </div>
+    <div class="about-left-col"><div class="about-label">About</div><div class="about-avatar">MJ</div></div>
     <div class="about-right-col">
       <div class="about-name">문종원 Moonjeah</div>
       <div class="about-role-line">IT 기업 특화 HR 제너럴리스트 · Data-Driven HRer</div>
-      <p class="about-statement">
-        "HR이 데이터로 말할 수 있어야 한다고 생각합니다.<br>
-        그래서 필요한 도구가 없으면 직접 만들었습니다."
-      </p>
-      <p class="about-body">
-        IT 기업 & 호텔업계에서 8년 이상 <strong>인사 기획·채용 운영·상법·법무·노무·성과평가 설계</strong>를 전담해왔습니다.<br>
-        단순히 업무를 처리하는 것을 넘어, 반복되는 수작업은 자동화하고<br>
-        경영진의 의사결정은 시각화된 데이터로 뒷받침했습니다.<br><br>
-        <strong>HR 전주기를 혼자 다룰 수 있는 HRer,</strong><br>
-        필요한 도구를 직접 만드는 실행력을 갖춘 기획자입니다.
-      </p>
-      <div class="about-chips">
-        <span class="about-chip">인사 기획</span>
-        <span class="about-chip">채용 기획</span>
-        <span class="about-chip">성과평가</span>
-        <span class="about-chip">보상 설계</span>
-        <span class="about-chip">급여·4대보험</span>
-        <span class="about-chip">Excel VBA</span>
-        <span class="about-chip">GAS</span>
-        <span class="about-chip">BI 대시보드</span>
-        <span class="about-chip">IT 기업 HR</span>
-        <span class="about-chip">상법·스톡옵션</span>
-      </div>
+      <p class="about-statement">"HR이 데이터로 말할 수 있어야 한다고 생각합니다.<br>그래서 필요한 도구가 없으면 직접 만들었습니다."</p>
+      <p class="about-body">IT 기업 & 호텔업계에서 8년 이상 <strong>인사 기획·채용 운영·상법·법무·노무·성과평가 설계</strong>를 전담해왔습니다.<br>단순히 업무를 처리하는 것을 넘어, 반복되는 수작업은 자동화하고<br>경영진의 의사결정은 시각화된 데이터로 뒷받침했습니다.<br><br><strong>HR 전주기를 혼자 다룰 수 있는 HRer,</strong><br>필요한 도구를 직접 만드는 실행력을 갖춘 기획자입니다.</p>
+      <div class="about-chips"><span class="about-chip">인사 기획</span><span class="about-chip">채용 기획</span><span class="about-chip">성과평가</span><span class="about-chip">보상 설계</span><span class="about-chip">급여·4대보험</span><span class="about-chip">Excel VBA</span><span class="about-chip">GAS</span><span class="about-chip">BI 대시보드</span><span class="about-chip">IT 기업 HR</span><span class="about-chip">상법·스톡옵션</span></div>
     </div>
   </div>
 </section>
 
-<!-- FOOTER -->
 <footer class="footer">
   <div class="footer-l">© 2026 Moonjongwon · HR Portfolio · 실무 데이터 더미 처리</div>
   <div class="footer-r">MOON HR · People Team</div>
