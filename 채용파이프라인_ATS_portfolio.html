@@ -2,508 +2,1115 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>채용 파이프라인 ATS — HR SaaS Module</title>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>채용 파이프라인 ATS v2.0 · MOON HR Portfolio</title>
 <style>
+/* ═══ RESET & VARS ═══ */
 *{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --bg:#f2f3f7;--s1:#fff;--s2:#f6f7fb;--s3:#ecedf4;
-  --b1:#dde0ec;--b2:#c8cce0;
-  --ink:#1a1d2e;--ink2:#4a5070;--ink3:#7a809a;--ink4:#b0b4c8;
-  --accent:#1a2fff;--accent-pale:#eef0ff;--accent-dark:#0f1bcc;
-  --ok:#22805a;--ok-bg:#e8f5ee;
-  --warn:#a07828;--warn-bg:#fef8ec;
-  --danger:#c03040;--danger-bg:#fceef0;
-  --purple:#6840b8;--purple-bg:#f0ecf8;
-  --teal:#1880a0;--teal-bg:#e8f4f8;
-  --mono:'DM Mono',monospace;--sans:'Noto Sans KR',sans-serif;--serif:'Libre Baskerville',serif;
-  --r:8px;
+  --bg:#0c1220;--bg2:#111827;--bg3:#1a2332;--bg4:#243044;
+  --card:#161f2e;--card-hover:#1c2738;
+  --border:#1e2d3d;--border2:#2a3a4d;
+  --text:#e2e8f0;--text2:#94a3b8;--text3:#64748b;
+  --accent:#3b82f6;--accent2:#2563eb;--accent-soft:rgba(59,130,246,.12);
+  --green:#22c55e;--green-soft:rgba(34,197,94,.12);
+  --amber:#f59e0b;--amber-soft:rgba(245,158,11,.12);
+  --red:#ef4444;--red-soft:rgba(239,68,68,.12);
+  --purple:#a855f7;--purple-soft:rgba(168,85,247,.12);
+  --cyan:#06b6d4;--cyan-soft:rgba(6,182,212,.12);
+  --mint:#22d3ae;
+  --radius:8px;--radius-lg:12px;
+  --shadow:0 4px 24px rgba(0,0,0,.3);
+  --font:'Pretendard',system-ui,-apple-system,sans-serif;
+  --mono:'JetBrains Mono','Fira Code',monospace;
 }
-html{scroll-behavior:smooth}
-body{font-family:var(--sans);background:var(--bg);color:var(--ink);font-size:13px;min-height:100vh;overflow-x:hidden}
+@import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.min.css');
+body{font-family:var(--font);background:var(--bg);color:var(--text);font-size:13px;line-height:1.5;overflow-x:hidden}
+a{color:var(--accent);text-decoration:none}
+button{font-family:var(--font);cursor:pointer;border:none;outline:none}
+input,select,textarea{font-family:var(--font);background:var(--bg3);border:1px solid var(--border);color:var(--text);border-radius:var(--radius);padding:7px 10px;font-size:12px;outline:none}
+input:focus,select:focus,textarea:focus{border-color:var(--accent)}
+::selection{background:var(--accent);color:#fff}
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:9px}
 
-/* ── HEADER ── */
-.hd{background:#1e2140;padding:0 28px;display:flex;align-items:center;height:44px;gap:16px;position:sticky;top:0;z-index:100}
-.logo{font-size:14px;font-weight:700;color:#fff;letter-spacing:-.3px}
-.logo em{color:#6ea8ff;font-style:normal}
-.hd-sep{width:1px;height:16px;background:rgba(255,255,255,.12)}
-.hd-title{font-size:11px;color:rgba(255,255,255,.45)}
-.hd-right{margin-left:auto;display:flex;gap:8px}
-.hd-badge{font-size:9px;padding:3px 10px;border-radius:20px;background:rgba(255,255,255,.07);color:rgba(255,255,255,.5);font-weight:500;letter-spacing:.3px}
+/* ═══ LAYOUT ═══ */
+.app{display:flex;height:100vh;overflow:hidden}
+.sidebar{width:220px;background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0}
+.sidebar-brand{padding:20px 16px 16px;border-bottom:1px solid var(--border)}
+.sidebar-brand h1{font-size:15px;font-weight:700;letter-spacing:-.3px}
+.sidebar-brand h1 span{color:var(--accent)}
+.sidebar-brand p{font-size:10px;color:var(--text3);margin-top:2px;letter-spacing:.5px;text-transform:uppercase}
+.sidebar-nav{flex:1;padding:12px 8px;overflow-y:auto}
+.nav-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:var(--radius);color:var(--text2);font-size:12px;font-weight:500;cursor:pointer;transition:.15s;margin-bottom:2px}
+.nav-item:hover{background:var(--bg3);color:var(--text)}
+.nav-item.active{background:var(--accent-soft);color:var(--accent)}
+.nav-item .icon{width:18px;text-align:center;font-size:14px;flex-shrink:0}
+.nav-item .badge{margin-left:auto;background:var(--accent);color:#fff;font-size:10px;padding:1px 7px;border-radius:99px;font-weight:600}
+.nav-divider{font-size:10px;color:var(--text3);padding:12px 12px 4px;letter-spacing:.8px;text-transform:uppercase;font-weight:600}
+.sidebar-footer{padding:12px 16px;border-top:1px solid var(--border);font-size:10px;color:var(--text3)}
 
-/* ── TABS ── */
-.tabs{display:flex;gap:0;padding:0 28px;background:var(--s1);border-bottom:1px solid var(--b1)}
-.tab{padding:10px 20px;font-size:11px;font-weight:500;color:var(--ink3);cursor:pointer;border-bottom:2px solid transparent;transition:all .12s}
-.tab:hover{color:var(--ink)}
-.tab.active{color:var(--accent);border-bottom-color:var(--accent)}
-.tab .tab-count{font-family:var(--mono);font-size:10px;background:var(--s2);padding:1px 6px;border-radius:10px;margin-left:5px;color:var(--ink4)}
-.tab.active .tab-count{background:var(--accent-pale);color:var(--accent)}
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden}
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:12px 24px;border-bottom:1px solid var(--border);background:var(--bg2);flex-shrink:0}
+.topbar-left{display:flex;align-items:center;gap:12px}
+.topbar-title{font-size:16px;font-weight:700}
+.topbar-sub{font-size:11px;color:var(--text3)}
+.topbar-actions{display:flex;align-items:center;gap:8px}
 
-/* ── TOOLBAR ── */
-.toolbar{display:flex;align-items:center;gap:10px;padding:12px 28px;background:var(--s1);border-bottom:1px solid var(--b1)}
-.search-box{display:flex;align-items:center;gap:6px;background:var(--s2);border:1px solid var(--b1);border-radius:6px;padding:0 10px;flex:0 0 240px}
-.search-box input{border:none;background:none;padding:7px 0;font-size:12px;font-family:var(--sans);color:var(--ink);width:100%;outline:none}
-.search-box .ico{color:var(--ink4);font-size:13px}
-.filter-group{display:flex;gap:6px;margin-left:8px}
-.filter-btn{padding:5px 12px;border:1px solid var(--b1);border-radius:5px;font-size:11px;font-family:var(--sans);color:var(--ink3);background:var(--s1);cursor:pointer;transition:all .12s;font-weight:500}
-.filter-btn:hover{border-color:var(--accent);color:var(--accent)}
-.filter-btn.active{background:var(--accent-pale);border-color:var(--accent);color:var(--accent)}
-.toolbar-right{margin-left:auto;display:flex;gap:6px;align-items:center}
-.btn{padding:6px 14px;border:none;border-radius:6px;font-size:11px;font-weight:600;font-family:var(--sans);cursor:pointer;transition:all .12s}
-.btn-primary{background:var(--accent);color:#fff}
-.btn-primary:hover{background:var(--accent-dark)}
-.btn-ghost{background:none;border:1px solid var(--b1);color:var(--ink3)}
-.btn-ghost:hover{border-color:var(--accent);color:var(--accent)}
+.content{flex:1;overflow-y:auto;padding:20px 24px}
 
-/* ══════════════════════════════════════════
-   KANBAN VIEW
-══════════════════════════════════════════ */
-.kanban{display:flex;gap:12px;padding:16px 28px;overflow-x:auto;min-height:calc(100vh - 140px);align-items:flex-start}
-.kanban-col{flex:0 0 260px;background:var(--s2);border-radius:var(--r);display:flex;flex-direction:column;max-height:calc(100vh - 160px)}
-.col-header{padding:12px 14px 8px;display:flex;align-items:center;gap:8px;position:sticky;top:0;background:var(--s2);border-radius:var(--r) var(--r) 0 0;z-index:1}
-.col-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
-.col-title{font-size:11px;font-weight:700;color:var(--ink);letter-spacing:.3px}
-.col-count{font-family:var(--mono);font-size:10px;color:var(--ink4);margin-left:auto}
-.col-body{padding:4px 8px 8px;overflow-y:auto;flex:1;display:flex;flex-direction:column;gap:6px}
+/* ═══ BUTTONS ═══ */
+.btn{padding:7px 14px;border-radius:var(--radius);font-size:12px;font-weight:500;transition:.15s;display:inline-flex;align-items:center;gap:6px}
+.btn-primary{background:var(--accent);color:#fff}.btn-primary:hover{background:var(--accent2)}
+.btn-outline{background:transparent;border:1px solid var(--border2);color:var(--text2)}.btn-outline:hover{border-color:var(--accent);color:var(--accent)}
+.btn-success{background:var(--green);color:#fff}
+.btn-danger{background:var(--red-soft);color:var(--red)}.btn-danger:hover{background:var(--red);color:#fff}
+.btn-sm{padding:4px 10px;font-size:11px}
+.btn-icon{width:32px;height:32px;display:flex;align-items:center;justify-content:center;border-radius:var(--radius);background:var(--bg3);color:var(--text2);border:1px solid var(--border)}
+.btn-icon:hover{border-color:var(--accent);color:var(--accent)}
 
-/* CANDIDATE CARD */
-.card{background:var(--s1);border:1px solid var(--b1);border-radius:6px;padding:10px 12px;cursor:pointer;transition:all .15s;position:relative}
-.card:hover{border-color:var(--accent);box-shadow:0 2px 8px rgba(26,47,255,.06)}
-.card-name{font-size:12px;font-weight:600;color:var(--ink);margin-bottom:3px}
-.card-position{font-size:11px;color:var(--ink3);margin-bottom:6px}
-.card-meta{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
-.card-tag{font-size:9px;font-weight:600;padding:2px 6px;border-radius:3px;letter-spacing:.2px}
-.card-tag.ch{background:var(--accent-pale);color:var(--accent)}
-.card-tag.dept{background:var(--s2);color:var(--ink3);border:1px solid var(--b1)}
-.card-tag.urgent{background:var(--danger-bg);color:var(--danger)}
-.card-tag.dday{background:var(--warn-bg);color:var(--warn);font-family:var(--mono)}
-.card-actions{display:flex;gap:4px;margin-top:8px}
-.card-btn{font-size:10px;padding:3px 8px;border:1px solid var(--b1);border-radius:4px;background:none;color:var(--ink3);cursor:pointer;font-family:var(--sans);transition:all .1s}
-.card-btn:hover{border-color:var(--accent);color:var(--accent)}
-.card-btn.pass{border-color:var(--ok);color:var(--ok)}
-.card-btn.pass:hover{background:var(--ok-bg)}
-.card-btn.fail{border-color:var(--danger);color:var(--danger)}
-.card-btn.fail:hover{background:var(--danger-bg)}
+/* ═══ TAGS ═══ */
+.tag{display:inline-block;padding:2px 8px;border-radius:99px;font-size:10px;font-weight:600;letter-spacing:.3px}
+.tag-blue{background:var(--accent-soft);color:var(--accent)}
+.tag-green{background:var(--green-soft);color:var(--green)}
+.tag-amber{background:var(--amber-soft);color:var(--amber)}
+.tag-red{background:var(--red-soft);color:var(--red)}
+.tag-purple{background:var(--purple-soft);color:var(--purple)}
+.tag-cyan{background:var(--cyan-soft);color:var(--cyan)}
 
-/* ══════════════════════════════════════════
-   ANALYTICS VIEW
-══════════════════════════════════════════ */
-.analytics{display:none;padding:24px 28px}
-.ana-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-bottom:24px}
-.ana-card{background:var(--s1);border:1px solid var(--b1);border-radius:var(--r);padding:16px}
-.ana-label{font-size:10px;color:var(--ink4);font-weight:500;letter-spacing:.5px;text-transform:uppercase;margin-bottom:4px}
-.ana-value{font-family:var(--mono);font-size:24px;font-weight:500;color:var(--ink)}
-.ana-value span{font-size:12px;color:var(--ink3);font-weight:400}
-.ana-sub{font-size:11px;color:var(--ink3);margin-top:2px}
+/* ═══ CARDS ═══ */
+.stat-row{display:grid;grid-template-columns:repeat(6,1fr);gap:12px;margin-bottom:20px}
+.stat-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius-lg);padding:16px}
+.stat-card .label{font-size:11px;color:var(--text3);margin-bottom:6px}
+.stat-card .value{font-size:24px;font-weight:700;line-height:1}
+.stat-card .delta{font-size:11px;margin-top:4px}
+.delta-up{color:var(--green)}.delta-down{color:var(--red)}
 
-/* FUNNEL */
-.funnel-section{background:var(--s1);border:1px solid var(--b1);border-radius:var(--r);padding:20px;margin-bottom:20px}
-.funnel-title{font-size:12px;font-weight:700;color:var(--ink);margin-bottom:16px;display:flex;align-items:center;gap:8px}
-.funnel-title::before{content:'';width:3px;height:14px;background:var(--accent);border-radius:2px}
-.funnel{display:flex;flex-direction:column;gap:6px}
-.funnel-row{display:flex;align-items:center;gap:12px}
-.funnel-label{width:80px;font-size:11px;font-weight:500;color:var(--ink2);text-align:right;flex-shrink:0}
-.funnel-bar-wrap{flex:1;height:28px;background:var(--s2);border-radius:4px;overflow:hidden;position:relative}
-.funnel-bar{height:100%;border-radius:4px;transition:width .6s ease;display:flex;align-items:center;padding-left:10px}
-.funnel-bar-num{font-family:var(--mono);font-size:11px;font-weight:500;color:#fff;white-space:nowrap}
-.funnel-rate{width:50px;font-family:var(--mono);font-size:11px;color:var(--ink3);text-align:right;flex-shrink:0}
+/* ═══ VIEW: PIPELINE (KANBAN) ═══ */
+.pipeline-header{display:flex;align-items:center;gap:12px;margin-bottom:16px;flex-wrap:wrap}
+.search-box{position:relative}
+.search-box input{width:220px;padding-left:30px}
+.search-box::before{content:'🔍';position:absolute;left:9px;top:50%;transform:translateY(-50%);font-size:12px}
+.filter-group{display:flex;gap:6px;margin-left:auto}
 
-/* CHANNEL TABLE */
-.ch-table{width:100%;border-collapse:collapse;font-size:12px}
-.ch-table th{text-align:left;font-size:10px;font-weight:600;color:var(--ink4);letter-spacing:.5px;text-transform:uppercase;padding:8px 12px;border-bottom:2px solid var(--b1)}
-.ch-table td{padding:10px 12px;border-bottom:1px solid var(--b1);color:var(--ink2)}
-.ch-table tr:hover td{background:var(--accent-pale)}
-.ch-table .mono{font-family:var(--mono);color:var(--ink)}
-.ch-table .rate{font-family:var(--mono);font-weight:500}
-.ch-table .rate.good{color:var(--ok)}
-.ch-table .rate.mid{color:var(--warn)}
-.ch-table .rate.low{color:var(--danger)}
-.ch-dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px}
+.kanban{display:grid;grid-template-columns:repeat(6,1fr);gap:12px;min-height:400px}
+.kanban-col{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-lg);display:flex;flex-direction:column;min-height:300px}
+.col-header{padding:12px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.col-title{font-size:12px;font-weight:700;display:flex;align-items:center;gap:8px}
+.col-count{background:var(--bg4);color:var(--text2);font-size:10px;padding:2px 8px;border-radius:99px;font-weight:600}
+.col-body{flex:1;padding:8px;overflow-y:auto;display:flex;flex-direction:column;gap:6px}
 
-/* ══════════════════════════════════════════
-   DETAIL MODAL
-══════════════════════════════════════════ */
-.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:200;justify-content:flex-end}
-.modal-overlay.show{display:flex}
-.modal{width:420px;background:var(--s1);height:100vh;overflow-y:auto;box-shadow:-4px 0 24px rgba(0,0,0,.08);padding:24px;animation:slideIn .2s ease}
-@keyframes slideIn{from{transform:translateX(100%)}to{transform:translateX(0)}}
-.modal-close{position:absolute;top:16px;right:16px;width:28px;height:28px;border:none;background:var(--s2);border-radius:50%;cursor:pointer;font-size:14px;color:var(--ink3);display:flex;align-items:center;justify-content:center}
-.modal-close:hover{background:var(--b1)}
-.modal-name{font-size:18px;font-weight:700;color:var(--ink);margin-bottom:2px}
-.modal-position{font-size:13px;color:var(--ink3);margin-bottom:16px}
-.modal-section{margin-bottom:16px}
-.modal-section-title{font-size:10px;font-weight:600;color:var(--ink4);letter-spacing:.8px;text-transform:uppercase;margin-bottom:8px}
-.modal-info{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.modal-info-item{background:var(--s2);border-radius:6px;padding:8px 10px}
-.modal-info-label{font-size:10px;color:var(--ink4);margin-bottom:1px}
-.modal-info-value{font-size:12px;font-weight:500;color:var(--ink)}
-.modal-timeline{display:flex;flex-direction:column;gap:0}
-.tl-item{display:flex;gap:10px;padding:8px 0;border-bottom:1px solid var(--s3)}
-.tl-dot{width:8px;height:8px;border-radius:50%;margin-top:4px;flex-shrink:0}
-.tl-content{flex:1}
-.tl-action{font-size:12px;font-weight:500;color:var(--ink)}
-.tl-date{font-size:10px;color:var(--ink4);font-family:var(--mono)}
-.modal-actions{display:flex;gap:6px;margin-top:20px}
-.modal .btn{flex:1}
+.k-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:10px 12px;cursor:pointer;transition:.15s;position:relative}
+.k-card:hover{border-color:var(--accent);background:var(--card-hover)}
+.k-card.delayed{border-left:3px solid var(--amber)}
+.k-card.critical{border-left:3px solid var(--red)}
+.k-name{font-size:12px;font-weight:600;margin-bottom:3px}
+.k-pos{font-size:11px;color:var(--text2)}
+.k-meta{display:flex;align-items:center;gap:8px;margin-top:6px;font-size:10px;color:var(--text3)}
+.k-channel{font-size:10px;padding:1px 6px;border-radius:99px;background:var(--bg4)}
+.k-dday{font-weight:600}
+.k-dday.warn{color:var(--amber)}
+.k-dday.danger{color:var(--red)}
+.k-score{margin-left:auto;display:flex;align-items:center;gap:2px}
+.k-score .star{color:var(--amber);font-size:10px}
 
-/* ══════════════════════════════════════════
-   PRINT
-══════════════════════════════════════════ */
-@media print{.hd,.tabs,.toolbar,.modal-overlay{display:none!important}.kanban{flex-wrap:wrap}.kanban-col{flex:0 0 48%}}
+/* ═══ DETAIL PANEL (SLIDE) ═══ */
+.panel-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:100;opacity:0;pointer-events:none;transition:.25s}
+.panel-overlay.open{opacity:1;pointer-events:all}
+.detail-panel{position:fixed;top:0;right:-560px;width:560px;height:100vh;background:var(--bg2);border-left:1px solid var(--border);z-index:101;transition:.3s;display:flex;flex-direction:column;box-shadow:-8px 0 40px rgba(0,0,0,.4)}
+.detail-panel.open{right:0}
+.panel-header{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.panel-close{width:28px;height:28px;display:flex;align-items:center;justify-content:center;border-radius:var(--radius);background:var(--bg3);color:var(--text2);cursor:pointer;font-size:16px}
+.panel-close:hover{color:var(--red)}
+.panel-body{flex:1;overflow-y:auto}
+.panel-tabs{display:flex;border-bottom:1px solid var(--border);padding:0 20px}
+.panel-tab{padding:10px 16px;font-size:12px;font-weight:500;color:var(--text3);cursor:pointer;border-bottom:2px solid transparent;transition:.15s}
+.panel-tab:hover{color:var(--text)}
+.panel-tab.active{color:var(--accent);border-color:var(--accent)}
+.panel-content{padding:20px}
+
+/* Profile section */
+.profile-top{display:flex;gap:16px;margin-bottom:20px}
+.avatar{width:56px;height:56px;border-radius:50%;background:var(--accent-soft);display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:700;color:var(--accent);flex-shrink:0}
+.profile-info h3{font-size:16px;font-weight:700;margin-bottom:2px}
+.profile-info .pos{font-size:12px;color:var(--text2)}
+.profile-info .stage-tag{margin-top:4px}
+.info-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px}
+.info-item{background:var(--bg3);border-radius:var(--radius);padding:10px 12px}
+.info-item .il{font-size:10px;color:var(--text3);margin-bottom:3px}
+.info-item .iv{font-size:13px;font-weight:500}
+
+/* Timeline */
+.timeline{position:relative;padding-left:20px}
+.timeline::before{content:'';position:absolute;left:6px;top:0;bottom:0;width:1px;background:var(--border2)}
+.tl-item{position:relative;padding-bottom:16px}
+.tl-item::before{content:'';position:absolute;left:-17px;top:4px;width:9px;height:9px;border-radius:50%;background:var(--accent);border:2px solid var(--bg2)}
+.tl-item.comm::before{background:var(--green)}
+.tl-item.stage::before{background:var(--purple)}
+.tl-item.note::before{background:var(--amber)}
+.tl-date{font-size:10px;color:var(--text3)}
+.tl-text{font-size:12px;margin-top:2px}
+
+/* Scorecard */
+.sc-section{margin-bottom:16px}
+.sc-title{font-size:11px;color:var(--text3);margin-bottom:8px;text-transform:uppercase;letter-spacing:.5px}
+.sc-row{display:flex;align-items:center;gap:12px;padding:8px 0;border-bottom:1px solid var(--border)}
+.sc-label{flex:1;font-size:12px}
+.sc-stars{display:flex;gap:2px}
+.sc-star{width:20px;height:20px;display:flex;align-items:center;justify-content:center;border-radius:4px;cursor:pointer;font-size:12px;background:var(--bg3);color:var(--text3);transition:.15s}
+.sc-star.filled{background:var(--amber-soft);color:var(--amber)}
+.sc-star:hover{background:var(--amber-soft);color:var(--amber)}
+.sc-avg{font-size:20px;font-weight:700;color:var(--accent)}
+.sc-interviewer{font-size:11px;color:var(--text2);margin-bottom:12px}
+
+/* ═══ VIEW: POSTINGS ═══ */
+.posting-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:14px}
+.posting-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius-lg);padding:18px;transition:.15s}
+.posting-card:hover{border-color:var(--accent)}
+.posting-card h3{font-size:14px;font-weight:700;margin-bottom:4px}
+.posting-dept{font-size:11px;color:var(--text2);margin-bottom:10px}
+.posting-meta{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
+.pm-item{font-size:11px}
+.pm-item .pm-l{color:var(--text3)}
+.pm-item .pm-v{font-weight:600}
+.posting-channels{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:10px}
+.posting-pipeline{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text2)}
+.posting-pipeline .pp-bar{flex:1;height:6px;background:var(--bg4);border-radius:99px;overflow:hidden}
+.posting-pipeline .pp-fill{height:100%;background:var(--accent);border-radius:99px;transition:.3s}
+.posting-status{display:inline-block;padding:3px 10px;border-radius:99px;font-size:10px;font-weight:600}
+.ps-open{background:var(--green-soft);color:var(--green)}
+.ps-closed{background:var(--red-soft);color:var(--red)}
+.ps-draft{background:var(--bg4);color:var(--text3)}
+
+/* ═══ VIEW: SCHEDULE ═══ */
+.schedule-week{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-top:12px}
+.day-col{background:var(--card);border:1px solid var(--border);border-radius:var(--radius-lg);min-height:200px}
+.day-header{padding:10px 12px;border-bottom:1px solid var(--border);font-size:12px;font-weight:600;text-align:center}
+.day-header.today{color:var(--accent);background:var(--accent-soft)}
+.day-body{padding:8px}
+.interview-card{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);padding:8px 10px;margin-bottom:6px;font-size:11px}
+.interview-card .iv-time{font-weight:700;color:var(--accent);margin-bottom:2px}
+.interview-card .iv-name{font-weight:600;margin-bottom:2px}
+.interview-card .iv-pos{color:var(--text2);font-size:10px}
+.interview-card .iv-interviewer{color:var(--text3);font-size:10px;margin-top:4px}
+.interview-card.done{opacity:.5;border-left:3px solid var(--green)}
+
+/* ═══ VIEW: TALENT POOL ═══ */
+.pool-table{width:100%;border-collapse:collapse}
+.pool-table th{text-align:left;padding:10px 12px;font-size:11px;color:var(--text3);border-bottom:1px solid var(--border);font-weight:600;text-transform:uppercase;letter-spacing:.5px}
+.pool-table td{padding:10px 12px;font-size:12px;border-bottom:1px solid var(--border)}
+.pool-table tr:hover td{background:var(--bg3)}
+.pool-tags{display:flex;gap:4px;flex-wrap:wrap}
+
+/* ═══ VIEW: REPORTS ═══ */
+.report-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.report-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius-lg);padding:20px}
+.report-card h4{font-size:13px;font-weight:700;margin-bottom:4px}
+.report-card .rc-sub{font-size:11px;color:var(--text3);margin-bottom:16px}
+.chart-container{position:relative;height:180px}
+.funnel-chart{display:flex;flex-direction:column;gap:6px}
+.funnel-row{display:flex;align-items:center;gap:10px}
+.funnel-label{width:70px;font-size:11px;color:var(--text2);text-align:right}
+.funnel-bar-wrap{flex:1;height:24px;background:var(--bg3);border-radius:4px;overflow:hidden}
+.funnel-bar{height:100%;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff;min-width:28px;transition:.5s}
+.funnel-count{width:30px;font-size:12px;font-weight:600;text-align:right}
+
+.metric-row{display:flex;align-items:flex-end;gap:8px;margin-bottom:12px}
+.metric-big{font-size:36px;font-weight:700;line-height:1}
+.metric-unit{font-size:12px;color:var(--text3);padding-bottom:4px}
+.metric-bar{display:flex;gap:4px;margin-top:8px}
+.m-bar{height:32px;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;color:#fff;min-width:40px}
+
+/* Channel performance table */
+.ch-table{width:100%;border-collapse:collapse;font-size:11px}
+.ch-table th{text-align:left;padding:8px 10px;color:var(--text3);border-bottom:1px solid var(--border);font-weight:600}
+.ch-table td{padding:8px 10px;border-bottom:1px solid var(--border)}
+.ch-table .num{text-align:right;font-weight:600;font-family:var(--mono);font-size:11px}
+.ch-bar{height:4px;background:var(--bg4);border-radius:2px;overflow:hidden;min-width:60px}
+.ch-bar-fill{height:100%;border-radius:2px}
+
+/* ═══ MODAL ═══ */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:200;display:none;align-items:center;justify-content:center}
+.modal-overlay.open{display:flex}
+.modal{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-lg);width:500px;max-height:80vh;overflow-y:auto;box-shadow:var(--shadow)}
+.modal-header{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.modal-header h3{font-size:15px;font-weight:700}
+.modal-body{padding:20px}
+.form-group{margin-bottom:14px}
+.form-group label{display:block;font-size:11px;color:var(--text3);margin-bottom:4px;font-weight:600;text-transform:uppercase;letter-spacing:.5px}
+.form-group input,.form-group select,.form-group textarea{width:100%}
+.form-group textarea{min-height:80px;resize:vertical}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.form-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:16px}
+
+/* ═══ ONBOARDING ═══ */
+.onboard-list{display:flex;flex-direction:column;gap:6px}
+.onboard-item{display:flex;align-items:center;gap:10px;padding:8px 12px;background:var(--bg3);border-radius:var(--radius);font-size:12px}
+.onboard-check{width:18px;height:18px;border-radius:4px;border:2px solid var(--border2);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:.15s}
+.onboard-check.done{background:var(--green);border-color:var(--green);color:#fff;font-size:10px}
+
+/* ═══ EMPTY STATE ═══ */
+.empty-state{text-align:center;padding:40px;color:var(--text3)}
+.empty-state .es-icon{font-size:40px;margin-bottom:12px}
+.empty-state p{font-size:13px}
+
+/* ═══ PORTFOLIO BADGE ═══ */
+.port-badge{position:fixed;bottom:16px;right:16px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:6px 14px;font-size:10px;color:var(--text3);z-index:50;display:flex;align-items:center;gap:8px}
+.port-badge a{color:var(--accent);font-weight:600}
+
+/* ═══ RESPONSIVE ═══ */
+@media(max-width:1200px){.kanban{grid-template-columns:repeat(3,1fr)}.stat-row{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:900px){.sidebar{display:none}.kanban{grid-template-columns:repeat(2,1fr)}.stat-row{grid-template-columns:repeat(2,1fr)}.report-grid{grid-template-columns:1fr}.schedule-week{grid-template-columns:repeat(3,1fr)}}
 </style>
 </head>
 <body>
 
-<!-- HEADER -->
-<div class="hd">
-  <div class="logo">HR <em>SaaS</em></div>
-  <div class="hd-sep"></div>
-  <div class="hd-title">채용 파이프라인 ATS</div>
-  <div class="hd-right">
-    <div class="hd-badge">M1 · 채용+온보딩</div>
-    <div class="hd-badge">Portfolio Demo</div>
+<div class="app">
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <div class="sidebar-brand">
+      <h1>MOON <span>ATS</span></h1>
+      <p>Applicant Tracking System</p>
+    </div>
+    <div class="sidebar-nav">
+      <div class="nav-divider">채용 운영</div>
+      <div class="nav-item active" onclick="switchView('pipeline')">
+        <span class="icon">📋</span> 파이프라인
+        <span class="badge" id="nav-pipe-count">0</span>
+      </div>
+      <div class="nav-item" onclick="switchView('postings')">
+        <span class="icon">📢</span> 공고 관리
+      </div>
+      <div class="nav-item" onclick="switchView('schedule')">
+        <span class="icon">📅</span> 면접 일정
+        <span class="badge" id="nav-schedule-count" style="background:var(--amber)">0</span>
+      </div>
+      <div class="nav-divider">인재 관리</div>
+      <div class="nav-item" onclick="switchView('pool')">
+        <span class="icon">💎</span> 탈렌트 풀
+      </div>
+      <div class="nav-divider">분석</div>
+      <div class="nav-item" onclick="switchView('reports')">
+        <span class="icon">📊</span> 리포트
+      </div>
+    </div>
+    <div class="sidebar-footer">
+      Portfolio Demo · 더미 데이터 기반<br>
+      © 2026 MOON HR
+    </div>
+  </div>
+
+  <!-- MAIN -->
+  <div class="main">
+    <div class="topbar">
+      <div class="topbar-left">
+        <div>
+          <div class="topbar-title" id="view-title">파이프라인</div>
+          <div class="topbar-sub" id="view-sub">전형 단계별 지원자 현황</div>
+        </div>
+      </div>
+      <div class="topbar-actions">
+        <button class="btn btn-outline btn-sm" onclick="resetDemo()">🔄 데모 리셋</button>
+        <button class="btn btn-primary btn-sm" onclick="openAddCandidate()">+ 지원자 등록</button>
+      </div>
+    </div>
+
+    <div class="content" id="content">
+      <!-- Views rendered by JS -->
+    </div>
   </div>
 </div>
 
-<!-- TABS -->
-<div class="tabs">
-  <div class="tab active" onclick="switchView('kanban')">파이프라인 <span class="tab-count" id="totalCount">0</span></div>
-  <div class="tab" onclick="switchView('analytics')">채널 분석</div>
+<!-- DETAIL PANEL -->
+<div class="panel-overlay" id="panelOverlay" onclick="closePanel()"></div>
+<div class="detail-panel" id="detailPanel">
+  <div class="panel-header">
+    <div style="font-size:14px;font-weight:700" id="panel-name">-</div>
+    <div class="panel-close" onclick="closePanel()">✕</div>
+  </div>
+  <div class="panel-tabs">
+    <div class="panel-tab active" onclick="switchPanelTab('profile',this)">프로필</div>
+    <div class="panel-tab" onclick="switchPanelTab('scorecard',this)">평가</div>
+    <div class="panel-tab" onclick="switchPanelTab('timeline',this)">타임라인</div>
+    <div class="panel-tab" onclick="switchPanelTab('onboarding',this)">온보딩</div>
+  </div>
+  <div class="panel-body">
+    <div class="panel-content" id="panel-content"></div>
+  </div>
 </div>
 
-<!-- TOOLBAR -->
-<div class="toolbar">
-  <div class="search-box">
-    <span class="ico">🔍</span>
-    <input type="text" id="searchInput" placeholder="이름·포지션·채널 검색" oninput="filterCards()">
-  </div>
-  <div class="filter-group" id="deptFilters"></div>
-  <div class="toolbar-right">
-    <button class="btn btn-ghost" onclick="loadDemoData()">데모 데이터 로드</button>
-    <button class="btn btn-primary" onclick="addCandidate()">+ 지원자 추가</button>
+<!-- ADD CANDIDATE MODAL -->
+<div class="modal-overlay" id="addModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>지원자 등록</h3>
+      <div class="panel-close" onclick="closeModal()">✕</div>
+    </div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="form-group"><label>이름</label><input id="f-name" placeholder="홍길동"></div>
+        <div class="form-group"><label>포지션</label>
+          <select id="f-position">
+            <option>백엔드 개발</option><option>프론트엔드 개발</option><option>풀스택 개발</option>
+            <option>PM/PO</option><option>디자이너(UI/UX)</option><option>데이터 엔지니어</option>
+            <option>QA 엔지니어</option><option>DevOps</option><option>마케팅</option><option>경영지원</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>지원 채널</label>
+          <select id="f-channel">
+            <option>사람인</option><option>잡코리아</option><option>원티드</option>
+            <option>링크드인</option><option>헤드헌팅</option><option>내부추천</option>
+          </select>
+        </div>
+        <div class="form-group"><label>부서</label>
+          <select id="f-dept">
+            <option>개발팀</option><option>기획팀</option><option>디자인팀</option>
+            <option>마케팅팀</option><option>경영지원팀</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>연락처</label><input id="f-phone" placeholder="010-0000-0000"></div>
+        <div class="form-group"><label>이메일</label><input id="f-email" placeholder="email@example.com"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>현재 연봉 (만원)</label><input id="f-curSalary" type="number" placeholder="4000"></div>
+        <div class="form-group"><label>희망 연봉 (만원)</label><input id="f-expSalary" type="number" placeholder="5000"></div>
+      </div>
+      <div class="form-group"><label>경력 요약</label><textarea id="f-career" placeholder="주요 경력을 간단히 작성해주세요"></textarea></div>
+      <div class="form-row">
+        <div class="form-group"><label>이력서 링크</label><input id="f-resume" placeholder="URL"></div>
+        <div class="form-group"><label>포트폴리오 링크</label><input id="f-portfolio" placeholder="URL"></div>
+      </div>
+      <div class="form-actions">
+        <button class="btn btn-outline" onclick="closeModal()">취소</button>
+        <button class="btn btn-primary" onclick="addCandidate()">등록</button>
+      </div>
+    </div>
   </div>
 </div>
 
-<!-- KANBAN VIEW -->
-<div class="kanban" id="kanbanView"></div>
+<!-- ADD COMM LOG MODAL -->
+<div class="modal-overlay" id="commModal">
+  <div class="modal">
+    <div class="modal-header"><h3>커뮤니케이션 기록</h3><div class="panel-close" onclick="closeCommModal()">✕</div></div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="form-group"><label>유형</label>
+          <select id="cm-type">
+            <option>📧 이메일 발송</option><option>📞 전화</option><option>💬 문자/카톡</option><option>📝 메모</option>
+          </select>
+        </div>
+        <div class="form-group"><label>날짜</label><input id="cm-date" type="date"></div>
+      </div>
+      <div class="form-group"><label>내용</label><textarea id="cm-content" placeholder="커뮤니케이션 내용을 기록하세요"></textarea></div>
+      <div class="form-actions">
+        <button class="btn btn-outline" onclick="closeCommModal()">취소</button>
+        <button class="btn btn-primary" onclick="saveComm()">저장</button>
+      </div>
+    </div>
+  </div>
+</div>
 
-<!-- ANALYTICS VIEW -->
-<div class="analytics" id="analyticsView"></div>
-
-<!-- DETAIL MODAL -->
-<div class="modal-overlay" id="modalOverlay" onclick="if(event.target===this)closeModal()">
-  <div class="modal" id="modalContent"></div>
+<div class="port-badge">
+  ✦ MOON HR · Portfolio Demo
+  <a href="https://moonjeah0515-dotcom.github.io/HR_-/" target="_blank">GitHub →</a>
 </div>
 
 <script>
-/* ═══ DATA ═══ */
-const STAGES = [
-  {id:'apply',   label:'접수',     color:'var(--ink4)',   bg:'var(--s2)'},
-  {id:'screen',  label:'서류심사',  color:'var(--teal)',   bg:'var(--teal-bg)'},
-  {id:'int1',    label:'1차 면접',  color:'var(--accent)', bg:'var(--accent-pale)'},
-  {id:'int2',    label:'2차 면접',  color:'var(--purple)', bg:'var(--purple-bg)'},
-  {id:'offer',   label:'오퍼',     color:'var(--warn)',   bg:'var(--warn-bg)'},
-  {id:'hired',   label:'입사 확정', color:'var(--ok)',     bg:'var(--ok-bg)'},
-];
+// ═══════════════════════════════════════════════════════════
+// DATA LAYER
+// ═══════════════════════════════════════════════════════════
+const STAGES=['접수','서류심사','1차면접','2차면접','오퍼','입사확정'];
+const STAGE_COLORS=['#3b82f6','#8b5cf6','#06b6d4','#f59e0b','#22c55e','#10b981'];
+const CHANNELS=['사람인','잡코리아','원티드','링크드인','헤드헌팅','내부추천'];
+const CH_COLORS=['#3b82f6','#ef4444','#22c55e','#0077b5','#a855f7','#f59e0b'];
+const DEPTS=['개발팀','기획팀','디자인팀','마케팅팀','경영지원팀'];
+const POSITIONS=['백엔드 개발','프론트엔드 개발','풀스택 개발','PM/PO','디자이너(UI/UX)','데이터 엔지니어','QA 엔지니어','DevOps','마케팅','경영지원'];
+const SC_ITEMS=['기술 역량','문제 해결력','커뮤니케이션','문화 적합도'];
+const NAMES=['김민준','이서윤','박지호','최수아','정현우','강다은','조예준','윤하린','장도윤','한채은','임시우','배유나','신동현','오지민','서태양','문서현','황민서','송지안','전하준','홍예린','양승우','권소율','류지혁','남가을','고은호','백세아','구태민','차아린','진현서','염소희'];
 
-const CHANNELS = ['사람인','잡코리아','원티드','링크드인','헤드헌팅','내부추천'];
-const CH_COLORS = ['#ff6b35','#4a90d9','#258bf5','#0077b5','#8b5cf6','#22805a'];
-const DEPTS = ['개발1팀','개발2팀','기획팀','인프라팀','경영지원'];
-const POSITIONS = [
-  '백엔드 개발자','프론트엔드 개발자','풀스택 개발자','DevOps 엔지니어',
-  'PM/PO','서비스 기획자','UI/UX 디자이너','데이터 엔지니어',
-  '인프라 운영','경영지원 매니저','QA 엔지니어','클라우드 아키텍트'
-];
+let DB = {candidates:[],postings:[],pool:[],interviews:[]};
+let currentView='pipeline';
+let selectedCandidate=null;
 
-let candidates = [];
-let activeFilters = {dept: null, search: ''};
+function generateDemoData(){
+  const now=Date.now();
+  const day=86400000;
+  // Candidates
+  const cands=[];
+  for(let i=0;i<28;i++){
+    const stage=i<4?0:i<7?1:i<12?2:i<17?3:i<21?4:i<24?5:Math.floor(Math.random()*6);
+    const applyDate=new Date(now - (Math.random()*60+5)*day);
+    const ch=CHANNELS[Math.floor(Math.random()*CHANNELS.length)];
+    const dept=DEPTS[Math.floor(Math.random()*DEPTS.length)];
+    const pos=POSITIONS[Math.floor(Math.random()*POSITIONS.length)];
+    const curSalary=Math.floor(Math.random()*3000+3000);
+    const expSalary=curSalary+Math.floor(Math.random()*1000+500);
+    const scores=stage>=2?SC_ITEMS.map(()=>Math.floor(Math.random()*3+3)):[];
+    
+    const timeline=[{date:fmt(applyDate),type:'stage',text:`지원서 접수 (${ch})`}];
+    if(stage>=1) timeline.push({date:fmt(new Date(applyDate.getTime()+3*day)),type:'stage',text:'서류심사 통과'});
+    if(stage>=1) timeline.push({date:fmt(new Date(applyDate.getTime()+4*day)),type:'comm',text:'서류 합격 안내 메일 발송'});
+    if(stage>=2) timeline.push({date:fmt(new Date(applyDate.getTime()+7*day)),type:'stage',text:'1차 면접 진행'});
+    if(stage>=2) timeline.push({date:fmt(new Date(applyDate.getTime()+8*day)),type:'comm',text:'1차 면접 결과 안내 메일'});
+    if(stage>=3) timeline.push({date:fmt(new Date(applyDate.getTime()+14*day)),type:'stage',text:'2차 면접 진행'});
+    if(stage>=4) timeline.push({date:fmt(new Date(applyDate.getTime()+18*day)),type:'stage',text:'오퍼 제안'});
+    if(stage>=4) timeline.push({date:fmt(new Date(applyDate.getTime()+18*day)),type:'comm',text:'처우 협의 전화 통화'});
+    if(stage>=5) timeline.push({date:fmt(new Date(applyDate.getTime()+22*day)),type:'stage',text:'입사 확정'});
 
-/* ═══ DEMO DATA ═══ */
-function loadDemoData(){
-  const NAMES = ['지원자A','지원자B','지원자C','지원자D','지원자E','지원자F',
-    '지원자G','지원자H','지원자I','지원자J','지원자K','지원자L',
-    '지원자M','지원자N','지원자O','지원자P','지원자Q','지원자R','지원자S','지원자T'];
+    cands.push({
+      id:'c'+i, name:NAMES[i%NAMES.length], position:pos, channel:ch, dept:dept,
+      stage:stage, applyDate:fmt(applyDate),
+      phone:`010-${String(Math.floor(Math.random()*9000+1000))}-${String(Math.floor(Math.random()*9000+1000))}`,
+      email:`${NAMES[i%NAMES.length].replace(/[^a-z]/gi,'')}${i}@example.com`,
+      curSalary, expSalary,
+      career:`${pos} ${Math.floor(Math.random()*5+1)}년 경력. ${['스타트업','중견기업','대기업'][Math.floor(Math.random()*3)]} 출신.`,
+      resume:'https://example.com/resume',
+      portfolio:Math.random()>.5?'https://example.com/portfolio':'',
+      scores, timeline,
+      onboarding: stage===5 ? [
+        {text:'장비(노트북/모니터) 준비',done:Math.random()>.3},
+        {text:'사내 계정 생성 (이메일/Slack/Jira)',done:Math.random()>.4},
+        {text:'취업규칙 서명',done:Math.random()>.5},
+        {text:'근로계약서 발급',done:Math.random()>.5},
+        {text:'팀 소개 미팅 일정',done:Math.random()>.6},
+        {text:'보안 교육 수료',done:false},
+        {text:'첫 주 OJT 일정 공유',done:false}
+      ] : []
+    });
+  }
+  DB.candidates=cands;
 
-  const stageWeights = [5,4,4,3,2,2]; // 접수 쪽에 더 많이
+  // Postings
+  DB.postings=[
+    {id:'p1',title:'시니어 백엔드 개발자',dept:'개발팀',status:'open',channels:['원티드','링크드인','헤드헌팅'],openDate:'2026-04-01',closeDate:'2026-05-15',headcount:2,jd:'Java/Kotlin 기반 백엔드 개발 5년 이상. MSA 아키텍처 경험 필수.'},
+    {id:'p2',title:'프론트엔드 개발자',dept:'개발팀',status:'open',channels:['사람인','원티드','내부추천'],openDate:'2026-04-10',closeDate:'2026-05-20',headcount:1,jd:'React/TypeScript 3년 이상. 디자인 시스템 구축 경험 우대.'},
+    {id:'p3',title:'PM/PO',dept:'기획팀',status:'open',channels:['잡코리아','원티드','링크드인'],openDate:'2026-03-20',closeDate:'2026-05-10',headcount:1,jd:'IT 서비스 기획 3년 이상. 데이터 기반 의사결정 역량.'},
+    {id:'p4',title:'UI/UX 디자이너',dept:'디자인팀',status:'closed',channels:['사람인','원티드'],openDate:'2026-02-01',closeDate:'2026-03-30',headcount:1,jd:'Figma 능숙. B2B SaaS 디자인 경험 우대.'},
+    {id:'p5',title:'DevOps 엔지니어',dept:'개발팀',status:'draft',channels:[],openDate:'',closeDate:'',headcount:1,jd:'AWS/GCP 인프라 운영 경험. CI/CD 파이프라인 구축.'},
+  ];
 
-  candidates = NAMES.map((name, i) => {
-    const stageIdx = weightedRandom(stageWeights);
-    const chIdx = Math.floor(Math.random()*CHANNELS.length);
-    const deptIdx = Math.floor(Math.random()*DEPTS.length);
-    const posIdx = Math.floor(Math.random()*POSITIONS.length);
-    const applyDate = new Date(2026, 2 + Math.floor(Math.random()*2), 1 + Math.floor(Math.random()*25));
-    const daysAgo = Math.floor((Date.now() - applyDate) / 86400000);
+  // Talent Pool
+  DB.pool=[
+    {id:'t1',name:'최영호',position:'백엔드 개발',tags:['시니어','Java','서울'],source:'원티드',addedDate:'2026-03-15',note:'이번 라운드는 연봉 gap으로 불합격, 역량은 우수'},
+    {id:'t2',name:'박소미',position:'디자이너(UI/UX)',tags:['주니어','Figma','포트폴리오 우수'],source:'사람인',addedDate:'2026-02-20',note:'현재 공고 마감으로 보류. 다음 디자인 포지션 오픈 시 우선 연락'},
+    {id:'t3',name:'김태현',position:'프론트엔드 개발',tags:['미드레벨','React','리모트 희망'],source:'링크드인',addedDate:'2026-04-01',note:'기술 역량 Good. 출근 조건 불일치로 보류'},
+    {id:'t4',name:'이가은',position:'PM/PO',tags:['시니어','B2B','SaaS'],source:'헤드헌팅',addedDate:'2026-01-10',note:'연봉 7000 이상 기대. 예산 확보 시 재접근'},
+    {id:'t5',name:'정우성',position:'데이터 엔지니어',tags:['미드레벨','Python','Spark'],source:'내부추천',addedDate:'2026-03-28',note:'팀장 추천. 현재 포지션 미오픈, 하반기 채용 시 1순위'},
+  ];
 
-    const timeline = [];
-    for(let s = 0; s <= stageIdx; s++){
-      const d = new Date(applyDate);
-      d.setDate(d.getDate() + s * (2 + Math.floor(Math.random()*5)));
-      timeline.push({stage: STAGES[s].id, date: fmtDate(d), label: STAGES[s].label});
+  // Interviews
+  const today=new Date();
+  const mon=new Date(today);mon.setDate(today.getDate()-today.getDay()+1);
+  DB.interviews=[];
+  const ivNames=['박지호','정현우','조예준','장도윤','강다은','임시우','신동현'];
+  const interviewers=['김팀장','이CTO','박리드','최PM'];
+  for(let d=0;d<5;d++){
+    const cnt=Math.floor(Math.random()*3);
+    for(let j=0;j<cnt;j++){
+      const dt=new Date(mon);dt.setDate(mon.getDate()+d);
+      const hour=10+Math.floor(Math.random()*6);
+      DB.interviews.push({
+        id:'iv'+d+j,
+        candidateName:ivNames[Math.floor(Math.random()*ivNames.length)],
+        position:POSITIONS[Math.floor(Math.random()*POSITIONS.length)],
+        date:fmt(dt),
+        time:`${hour}:00`,
+        interviewer:interviewers[Math.floor(Math.random()*interviewers.length)],
+        type:Math.random()>.5?'1차 기술면접':'2차 임원면접',
+        location:Math.random()>.5?'회의실 A':'Zoom',
+        done:d<today.getDay()-1
+      });
     }
+  }
+  saveDB();
+}
 
-    return {
-      id: i+1, name, position: POSITIONS[posIdx], dept: DEPTS[deptIdx],
-      channel: CHANNELS[chIdx], channelIdx: chIdx,
-      stage: STAGES[stageIdx].id, stageIdx,
-      applyDate: fmtDate(applyDate), daysAgo,
-      phone: `010-${rnd4()}-${rnd4()}`,
-      email: `applicant${String.fromCharCode(97+i)}@email.com`,
-      salary: (2800 + Math.floor(Math.random()*3200)) + '만원',
-      timeline,
-      note: ''
-    };
+function fmt(d){return d.toISOString().split('T')[0]}
+function daysBetween(a,b){return Math.floor((new Date(b)-new Date(a))/86400000)}
+function saveDB(){try{localStorage.setItem('moon_ats_v2',JSON.stringify(DB))}catch(e){}}
+function loadDB(){try{const d=localStorage.getItem('moon_ats_v2');if(d){DB=JSON.parse(d);return true}}catch(e){}return false}
+function resetDemo(){localStorage.removeItem('moon_ats_v2');generateDemoData();render()}
+
+// ═══════════════════════════════════════════════════════════
+// VIEWS
+// ═══════════════════════════════════════════════════════════
+function switchView(v){
+  currentView=v;
+  document.querySelectorAll('.nav-item').forEach((el,i)=>{
+    const views=['pipeline','postings','schedule','pool','reports'];
+    el.classList.toggle('active',views[i]===v);
   });
-
-  renderAll();
+  const titles={pipeline:['파이프라인','전형 단계별 지원자 현황'],postings:['공고 관리','포지션별 채용 공고 현황'],schedule:['면접 일정','이번 주 면접 스케줄'],pool:['탈렌트 풀','보류 후보자 관리'],reports:['리포트','채용 핵심 지표 분석']};
+  document.getElementById('view-title').textContent=titles[v][0];
+  document.getElementById('view-sub').textContent=titles[v][1];
+  render();
 }
 
-function weightedRandom(weights){
-  const total = weights.reduce((a,b)=>a+b,0);
-  let r = Math.random()*total;
-  for(let i=0;i<weights.length;i++){r-=weights[i];if(r<=0)return i;}
-  return weights.length-1;
-}
-function rnd4(){return String(1000+Math.floor(Math.random()*9000));}
-function fmtDate(d){return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;}
-
-/* ═══ RENDER ═══ */
-function renderAll(){
-  renderKanban();
-  renderFilters();
-  renderAnalytics();
-  document.getElementById('totalCount').textContent = candidates.length;
+function render(){
+  const c=document.getElementById('content');
+  switch(currentView){
+    case 'pipeline': renderPipeline(c);break;
+    case 'postings': renderPostings(c);break;
+    case 'schedule': renderSchedule(c);break;
+    case 'pool': renderPool(c);break;
+    case 'reports': renderReports(c);break;
+  }
+  // Nav badges
+  document.getElementById('nav-pipe-count').textContent=DB.candidates.filter(c=>c.stage<5).length;
+  document.getElementById('nav-schedule-count').textContent=DB.interviews.filter(iv=>!iv.done).length;
 }
 
-function renderKanban(){
-  const kanban = document.getElementById('kanbanView');
-  const filtered = getFiltered();
+// ─── PIPELINE VIEW ───
+function renderPipeline(el){
+  const today=fmt(new Date());
+  const counts=STAGES.map((_,i)=>DB.candidates.filter(c=>c.stage===i).length);
+  const total=DB.candidates.length;
+  const active=DB.candidates.filter(c=>c.stage<5).length;
+  const hired=DB.candidates.filter(c=>c.stage===5).length;
+  const delayed=DB.candidates.filter(c=>{const d=daysBetween(c.applyDate,today);return c.stage<5&&d>14}).length;
+  const avgDays=Math.round(DB.candidates.filter(c=>c.stage===5).reduce((s,c)=>s+daysBetween(c.applyDate,today),0)/(hired||1));
+  const offerRate=total?Math.round(DB.candidates.filter(c=>c.stage>=4).length/total*100):0;
 
-  kanban.innerHTML = STAGES.map(stage => {
-    const cards = filtered.filter(c => c.stage === stage.id);
-    return `<div class="kanban-col">
-      <div class="col-header">
-        <div class="col-dot" style="background:${stage.color}"></div>
-        <div class="col-title">${stage.label}</div>
-        <div class="col-count">${cards.length}</div>
-      </div>
-      <div class="col-body">${cards.map(c => renderCard(c, stage)).join('')}</div>
-    </div>`;
-  }).join('');
-}
-
-function renderCard(c, stage){
-  const isUrgent = c.daysAgo > 14 && c.stageIdx < 3;
-  const nextStage = c.stageIdx < STAGES.length - 1 ? STAGES[c.stageIdx + 1] : null;
-
-  return `<div class="card" onclick="openModal(${c.id})">
-    <div class="card-name">${c.name}</div>
-    <div class="card-position">${c.position}</div>
-    <div class="card-meta">
-      <span class="card-tag ch" style="background:${CH_COLORS[c.channelIdx]}15;color:${CH_COLORS[c.channelIdx]}">${c.channel}</span>
-      <span class="card-tag dept">${c.dept}</span>
-      ${isUrgent ? '<span class="card-tag urgent">지연</span>' : ''}
-      <span class="card-tag dday">D+${c.daysAgo}</span>
+  el.innerHTML=`
+    <div class="stat-row">
+      <div class="stat-card"><div class="label">전체 지원자</div><div class="value">${total}</div><div class="delta delta-up">명</div></div>
+      <div class="stat-card"><div class="label">진행중</div><div class="value" style="color:var(--accent)">${active}</div><div class="delta">명</div></div>
+      <div class="stat-card"><div class="label">입사 확정</div><div class="value" style="color:var(--green)">${hired}</div><div class="delta delta-up">명</div></div>
+      <div class="stat-card"><div class="label">지연 건수</div><div class="value" style="color:${delayed>0?'var(--amber)':'var(--text)'}">${delayed}</div><div class="delta ${delayed>0?'delta-down':''}">D+14 초과</div></div>
+      <div class="stat-card"><div class="label">평균 채용 소요</div><div class="value">${avgDays}</div><div class="delta">일</div></div>
+      <div class="stat-card"><div class="label">오퍼 전환율</div><div class="value">${offerRate}%</div><div class="delta">접수 대비</div></div>
     </div>
-    <div class="card-actions">
-      ${nextStage ? `<button class="card-btn pass" onclick="event.stopPropagation();moveStage(${c.id},'next')">→ ${nextStage.label}</button>` : ''}
-      ${c.stageIdx < 5 ? `<button class="card-btn fail" onclick="event.stopPropagation();dropCandidate(${c.id})">탈락</button>` : ''}
+    <div class="pipeline-header">
+      <div class="search-box"><input placeholder="이름 · 포지션 검색" oninput="filterPipeline(this.value)"></div>
+      <div class="filter-group">
+        <select onchange="filterByDept(this.value)" style="font-size:11px;padding:5px 8px"><option value="">전체 부서</option>${DEPTS.map(d=>`<option>${d}</option>`).join('')}</select>
+        <select onchange="filterByChannel(this.value)" style="font-size:11px;padding:5px 8px"><option value="">전체 채널</option>${CHANNELS.map(c=>`<option>${c}</option>`).join('')}</select>
+      </div>
+    </div>
+    <div class="kanban" id="kanban">
+      ${STAGES.map((s,i)=>`
+        <div class="kanban-col" data-stage="${i}">
+          <div class="col-header">
+            <div class="col-title"><span style="color:${STAGE_COLORS[i]}">●</span> ${s} <span class="col-count">${counts[i]}</span></div>
+          </div>
+          <div class="col-body" id="col-${i}">
+            ${DB.candidates.filter(c=>c.stage===i).map(c=>renderKCard(c,today)).join('')}
+          </div>
+        </div>
+      `).join('')}
+    </div>`;
+}
+
+function renderKCard(c,today){
+  const d=daysBetween(c.applyDate,today||fmt(new Date()));
+  const delayed=d>14&&c.stage<5;
+  const critical=d>30&&c.stage<5;
+  const avgScore=c.scores.length?((c.scores.reduce((a,b)=>a+b,0)/c.scores.length).toFixed(1)):'';
+  return `<div class="k-card ${critical?'critical':delayed?'delayed':''}" onclick="openDetail('${c.id}')">
+    <div class="k-name">${c.name}</div>
+    <div class="k-pos">${c.position}</div>
+    <div class="k-meta">
+      <span class="k-channel">${c.channel}</span>
+      <span class="k-dday ${critical?'danger':delayed?'warn':''}">D+${d}</span>
+      ${avgScore?`<span class="k-score"><span class="star">★</span>${avgScore}</span>`:''}
     </div>
   </div>`;
 }
 
-function renderFilters(){
-  const depts = [...new Set(candidates.map(c=>c.dept))];
-  document.getElementById('deptFilters').innerHTML =
-    `<button class="filter-btn ${!activeFilters.dept?'active':''}" onclick="setDeptFilter(null)">전체</button>` +
-    depts.map(d => `<button class="filter-btn ${activeFilters.dept===d?'active':''}" onclick="setDeptFilter('${d}')">${d}</button>`).join('');
-}
-
-/* ═══ ANALYTICS ═══ */
-function renderAnalytics(){
-  const el = document.getElementById('analyticsView');
-  if(!candidates.length){el.innerHTML='<p style="color:var(--ink3);padding:40px;text-align:center">데모 데이터를 먼저 로드해주세요.</p>';return;}
-
-  const total = candidates.length;
-  const hired = candidates.filter(c=>c.stage==='hired').length;
-  const avgDays = Math.round(candidates.reduce((s,c)=>s+c.daysAgo,0)/total);
-  const inProcess = candidates.filter(c=>!['hired'].includes(c.stage)).length;
-  const delayed = candidates.filter(c=>c.daysAgo>14 && c.stageIdx<3).length;
-
-  // Funnel
-  const funnelData = STAGES.map(s => ({...s, count: candidates.filter(c=>c.stageIdx >= STAGES.indexOf(s)).length}));
-  const funnelColors = ['#7a809a','#1880a0','#1a2fff','#6840b8','#a07828','#22805a'];
-
-  // Channel stats
-  const chStats = CHANNELS.map((ch, i) => {
-    const all = candidates.filter(c=>c.channelIdx===i);
-    const h = all.filter(c=>c.stage==='hired').length;
-    const int = all.filter(c=>c.stageIdx>=2).length;
-    return {name:ch, color:CH_COLORS[i], total:all.length, interview:int, hired:h,
-      intRate: all.length ? Math.round(int/all.length*100) : 0,
-      hireRate: all.length ? Math.round(h/all.length*100) : 0};
-  }).filter(c=>c.total>0);
-
-  el.innerHTML = `
-    <div class="ana-grid">
-      <div class="ana-card"><div class="ana-label">전체 지원자</div><div class="ana-value">${total}<span>명</span></div></div>
-      <div class="ana-card"><div class="ana-label">진행 중</div><div class="ana-value">${inProcess}<span>명</span></div></div>
-      <div class="ana-card"><div class="ana-label">입사 확정</div><div class="ana-value" style="color:var(--ok)">${hired}<span>명</span></div></div>
-      <div class="ana-card"><div class="ana-label">평균 소요일</div><div class="ana-value">${avgDays}<span>일</span></div></div>
-      <div class="ana-card"><div class="ana-label">지연 건수</div><div class="ana-value" style="color:${delayed?'var(--danger)':'var(--ok)'}">${delayed}<span>건</span></div>${delayed?'<div class="ana-sub">D+14 초과 서류~면접 단계</div>':''}</div>
-    </div>
-
-    <div class="funnel-section">
-      <div class="funnel-title">채용 퍼널 전환율</div>
-      <div class="funnel">
-        ${funnelData.map((f,i) => {
-          const pct = Math.round(f.count / total * 100);
-          return `<div class="funnel-row">
-            <div class="funnel-label">${f.label}</div>
-            <div class="funnel-bar-wrap">
-              <div class="funnel-bar" style="width:${pct}%;background:${funnelColors[i]}">
-                <span class="funnel-bar-num">${f.count}명</span>
-              </div>
-            </div>
-            <div class="funnel-rate">${pct}%</div>
-          </div>`;
-        }).join('')}
-      </div>
-    </div>
-
-    <div class="funnel-section">
-      <div class="funnel-title">채널별 성과</div>
-      <table class="ch-table">
-        <tr><th>채널</th><th>지원</th><th>면접 진출</th><th>면접 전환율</th><th>입사</th><th>최종 전환율</th></tr>
-        ${chStats.map(ch => `<tr>
-          <td><span class="ch-dot" style="background:${ch.color}"></span>${ch.name}</td>
-          <td class="mono">${ch.total}</td>
-          <td class="mono">${ch.interview}</td>
-          <td class="rate ${ch.intRate>=50?'good':ch.intRate>=30?'mid':'low'}">${ch.intRate}%</td>
-          <td class="mono">${ch.hired}</td>
-          <td class="rate ${ch.hireRate>=20?'good':ch.hireRate>=10?'mid':'low'}">${ch.hireRate}%</td>
-        </tr>`).join('')}
-      </table>
-    </div>
-  `;
-}
-
-/* ═══ ACTIONS ═══ */
-function moveStage(id, dir){
-  const c = candidates.find(x=>x.id===id);
-  if(!c) return;
-  if(dir==='next' && c.stageIdx < STAGES.length-1){
-    c.stageIdx++;
-    c.stage = STAGES[c.stageIdx].id;
-    c.timeline.push({stage:c.stage, date:fmtDate(new Date()), label:STAGES[c.stageIdx].label});
-  }
-  renderAll();
-}
-
-function dropCandidate(id){
-  candidates = candidates.filter(c=>c.id!==id);
-  renderAll();
-}
-
-function addCandidate(){
-  const id = candidates.length ? Math.max(...candidates.map(c=>c.id))+1 : 1;
-  const chIdx = Math.floor(Math.random()*CHANNELS.length);
-  const c = {
-    id, name:`신규 지원자`, position:'포지션 미정', dept:DEPTS[0],
-    channel:CHANNELS[chIdx], channelIdx:chIdx,
-    stage:'apply', stageIdx:0,
-    applyDate:fmtDate(new Date()), daysAgo:0,
-    phone:'010-0000-0000', email:'new@email.com',
-    salary:'협의', timeline:[{stage:'apply',date:fmtDate(new Date()),label:'접수'}], note:''
-  };
-  candidates.unshift(c);
-  renderAll();
-  openModal(c.id);
-}
-
-/* ═══ FILTER ═══ */
-function setDeptFilter(dept){
-  activeFilters.dept = dept;
-  renderAll();
-}
-function filterCards(){
-  activeFilters.search = document.getElementById('searchInput').value.toLowerCase();
-  renderKanban();
-}
-function getFiltered(){
-  return candidates.filter(c => {
-    if(activeFilters.dept && c.dept !== activeFilters.dept) return false;
-    if(activeFilters.search){
-      const q = activeFilters.search;
-      if(!c.name.toLowerCase().includes(q) && !c.position.toLowerCase().includes(q) && !c.channel.toLowerCase().includes(q)) return false;
-    }
-    return true;
+let pipeFilter={search:'',dept:'',channel:''};
+function filterPipeline(v){pipeFilter.search=v.toLowerCase();applyPipeFilter()}
+function filterByDept(v){pipeFilter.dept=v;applyPipeFilter()}
+function filterByChannel(v){pipeFilter.channel=v;applyPipeFilter()}
+function applyPipeFilter(){
+  const today=fmt(new Date());
+  STAGES.forEach((_,i)=>{
+    const col=document.getElementById('col-'+i);
+    if(!col)return;
+    const filtered=DB.candidates.filter(c=>{
+      if(c.stage!==i)return false;
+      if(pipeFilter.search&&!c.name.includes(pipeFilter.search)&&!c.position.toLowerCase().includes(pipeFilter.search))return false;
+      if(pipeFilter.dept&&c.dept!==pipeFilter.dept)return false;
+      if(pipeFilter.channel&&c.channel!==pipeFilter.channel)return false;
+      return true;
+    });
+    col.innerHTML=filtered.map(c=>renderKCard(c,today)).join('')||'<div class="empty-state" style="padding:20px"><p style="font-size:11px;color:var(--text3)">해당 없음</p></div>';
+    col.previousElementSibling.querySelector('.col-count').textContent=filtered.length;
   });
 }
 
-/* ═══ MODAL ═══ */
-function openModal(id){
-  const c = candidates.find(x=>x.id===id);
-  if(!c) return;
-  const stage = STAGES[c.stageIdx];
-  const nextStage = c.stageIdx < STAGES.length-1 ? STAGES[c.stageIdx+1] : null;
+// ─── DETAIL PANEL ───
+function openDetail(id){
+  selectedCandidate=DB.candidates.find(c=>c.id===id);
+  if(!selectedCandidate)return;
+  document.getElementById('panel-name').textContent=selectedCandidate.name+' · '+selectedCandidate.position;
+  document.getElementById('panelOverlay').classList.add('open');
+  document.getElementById('detailPanel').classList.add('open');
+  switchPanelTab('profile',document.querySelector('.panel-tab'));
+}
+function closePanel(){
+  document.getElementById('panelOverlay').classList.remove('open');
+  document.getElementById('detailPanel').classList.remove('open');
+}
 
-  document.getElementById('modalContent').innerHTML = `
-    <button class="modal-close" onclick="closeModal()">✕</button>
-    <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
-      <span class="card-tag" style="background:${stage.bg};color:${stage.color};font-size:10px;font-weight:600">${stage.label}</span>
-      <span class="card-tag dday" style="font-size:10px">D+${c.daysAgo}</span>
-    </div>
-    <div class="modal-name">${c.name}</div>
-    <div class="modal-position">${c.position} · ${c.dept}</div>
+function switchPanelTab(tab,el){
+  document.querySelectorAll('.panel-tab').forEach(t=>t.classList.remove('active'));
+  if(el)el.classList.add('active');
+  const pc=document.getElementById('panel-content');
+  const c=selectedCandidate;
+  if(!c)return;
+  const today=fmt(new Date());
+  const d=daysBetween(c.applyDate,today);
 
-    <div class="modal-section">
-      <div class="modal-section-title">지원 정보</div>
-      <div class="modal-info">
-        <div class="modal-info-item"><div class="modal-info-label">채널</div><div class="modal-info-value">${c.channel}</div></div>
-        <div class="modal-info-item"><div class="modal-info-label">지원일</div><div class="modal-info-value" style="font-family:var(--mono)">${c.applyDate}</div></div>
-        <div class="modal-info-item"><div class="modal-info-label">연락처</div><div class="modal-info-value">${c.phone}</div></div>
-        <div class="modal-info-item"><div class="modal-info-label">이메일</div><div class="modal-info-value" style="font-size:11px">${c.email}</div></div>
-        <div class="modal-info-item"><div class="modal-info-label">희망 연봉</div><div class="modal-info-value">${c.salary}</div></div>
-        <div class="modal-info-item"><div class="modal-info-label">소요일</div><div class="modal-info-value" style="font-family:var(--mono)">${c.daysAgo}일</div></div>
-      </div>
-    </div>
-
-    <div class="modal-section">
-      <div class="modal-section-title">전형 이력</div>
-      <div class="modal-timeline">
-        ${c.timeline.map(t => {
-          const s = STAGES.find(x=>x.id===t.stage);
-          return `<div class="tl-item">
-            <div class="tl-dot" style="background:${s?s.color:'var(--ink4)'}"></div>
-            <div class="tl-content">
-              <div class="tl-action">${t.label}</div>
-              <div class="tl-date">${t.date}</div>
+  switch(tab){
+    case 'profile':
+      pc.innerHTML=`
+        <div class="profile-top">
+          <div class="avatar">${c.name[0]}</div>
+          <div class="profile-info">
+            <h3>${c.name}</h3>
+            <div class="pos">${c.position} · ${c.dept}</div>
+            <div class="stage-tag" style="margin-top:6px">
+              <span class="tag tag-blue">${STAGES[c.stage]}</span>
+              <span class="tag ${d>30?'tag-red':d>14?'tag-amber':'tag-green'}" style="margin-left:4px">D+${d}</span>
             </div>
-          </div>`;
-        }).join('')}
+          </div>
+        </div>
+        <div class="info-grid">
+          <div class="info-item"><div class="il">연락처</div><div class="iv">${c.phone}</div></div>
+          <div class="info-item"><div class="il">이메일</div><div class="iv" style="font-size:11px">${c.email}</div></div>
+          <div class="info-item"><div class="il">지원 채널</div><div class="iv">${c.channel}</div></div>
+          <div class="info-item"><div class="il">지원일</div><div class="iv">${c.applyDate}</div></div>
+          <div class="info-item"><div class="il">현재 연봉</div><div class="iv">${c.curSalary.toLocaleString()}만원</div></div>
+          <div class="info-item"><div class="il">희망 연봉</div><div class="iv">${c.expSalary.toLocaleString()}만원</div></div>
+        </div>
+        <div style="margin-bottom:16px">
+          <div style="font-size:11px;color:var(--text3);margin-bottom:6px;font-weight:600">경력 요약</div>
+          <div style="background:var(--bg3);padding:12px;border-radius:var(--radius);font-size:12px">${c.career}</div>
+        </div>
+        <div style="display:flex;gap:8px;margin-bottom:16px">
+          ${c.resume?`<a href="${c.resume}" target="_blank" class="btn btn-outline btn-sm">📄 이력서</a>`:''}
+          ${c.portfolio?`<a href="${c.portfolio}" target="_blank" class="btn btn-outline btn-sm">🔗 포트폴리오</a>`:''}
+        </div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap">
+          ${c.stage<5?`<button class="btn btn-primary btn-sm" onclick="moveStage('${c.id}',1)">→ 다음 단계</button>`:''}
+          ${c.stage>0&&c.stage<5?`<button class="btn btn-outline btn-sm" onclick="moveStage('${c.id}',-1)">← 이전 단계</button>`:''}
+          ${c.stage<5?`<button class="btn btn-danger btn-sm" onclick="dropCandidate('${c.id}')">탈락 처리</button>`:''}
+          ${c.stage<5?`<button class="btn btn-outline btn-sm" onclick="moveToPool('${c.id}')">💎 탈렌트 풀로</button>`:''}
+        </div>`;
+      break;
+
+    case 'scorecard':
+      const avgScore=c.scores.length?(c.scores.reduce((a,b)=>a+b,0)/c.scores.length).toFixed(1):'—';
+      pc.innerHTML=`
+        <div style="display:flex;align-items:center;gap:16px;margin-bottom:20px">
+          <div class="sc-avg">${avgScore}</div>
+          <div>
+            <div style="font-size:13px;font-weight:600">종합 평가 점수</div>
+            <div class="sc-interviewer">${c.stage>=2?'면접관: 김팀장, 이CTO':'면접 전 단계'}</div>
+          </div>
+        </div>
+        <div class="sc-section">
+          <div class="sc-title">평가 항목 (5점 만점)</div>
+          ${SC_ITEMS.map((item,idx)=>`
+            <div class="sc-row">
+              <div class="sc-label">${item}</div>
+              <div class="sc-stars">
+                ${[1,2,3,4,5].map(s=>`<div class="sc-star ${(c.scores[idx]||0)>=s?'filled':''}" onclick="setScore('${c.id}',${idx},${s})">★</div>`).join('')}
+              </div>
+              <div style="width:24px;text-align:right;font-size:12px;font-weight:600;color:var(--accent)">${c.scores[idx]||'—'}</div>
+            </div>
+          `).join('')}
+        </div>
+        <div style="margin-top:16px">
+          <div class="sc-title">면접 코멘트</div>
+          <textarea style="width:100%;min-height:80px;font-size:12px" placeholder="면접 후 종합 코멘트를 남겨주세요...">${c.comment||''}</textarea>
+          <button class="btn btn-primary btn-sm" style="margin-top:8px" onclick="saveComment('${c.id}')">코멘트 저장</button>
+        </div>`;
+      break;
+
+    case 'timeline':
+      pc.innerHTML=`
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+          <div style="font-size:12px;font-weight:600">커뮤니케이션 & 전형 이력</div>
+          <button class="btn btn-outline btn-sm" onclick="openCommModal('${c.id}')">+ 기록 추가</button>
+        </div>
+        <div class="timeline">
+          ${(c.timeline||[]).slice().reverse().map(t=>`
+            <div class="tl-item ${t.type}">
+              <div class="tl-date">${t.date}</div>
+              <div class="tl-text">${t.text}</div>
+            </div>
+          `).join('')}
+        </div>`;
+      break;
+
+    case 'onboarding':
+      if(c.stage!==5){
+        pc.innerHTML=`<div class="empty-state"><div class="es-icon">🚀</div><p>입사 확정 단계에서 온보딩 체크리스트가 활성화됩니다.</p></div>`;
+        return;
+      }
+      const done=c.onboarding.filter(o=>o.done).length;
+      const total=c.onboarding.length;
+      pc.innerHTML=`
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
+          <div style="font-size:20px;font-weight:700;color:var(--green)">${Math.round(done/total*100)}%</div>
+          <div>
+            <div style="font-size:12px;font-weight:600">온보딩 진행률</div>
+            <div style="font-size:11px;color:var(--text3)">${done}/${total} 완료</div>
+          </div>
+        </div>
+        <div style="height:6px;background:var(--bg4);border-radius:99px;margin-bottom:20px;overflow:hidden">
+          <div style="height:100%;width:${done/total*100}%;background:var(--green);border-radius:99px;transition:.3s"></div>
+        </div>
+        <div class="onboard-list">
+          ${c.onboarding.map((o,i)=>`
+            <div class="onboard-item">
+              <div class="onboard-check ${o.done?'done':''}" onclick="toggleOnboard('${c.id}',${i})">${o.done?'✓':''}</div>
+              <span style="${o.done?'text-decoration:line-through;color:var(--text3)':''}">${o.text}</span>
+            </div>
+          `).join('')}
+        </div>`;
+      break;
+  }
+}
+
+// ─── POSTINGS VIEW ───
+function renderPostings(el){
+  el.innerHTML=`
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+      <div style="font-size:12px;color:var(--text2)">총 ${DB.postings.length}건의 공고</div>
+      <button class="btn btn-primary btn-sm" onclick="openAddPosting()">+ 공고 등록</button>
+    </div>
+    <div class="posting-grid">
+      ${DB.postings.map(p=>{
+        const pipeCount=DB.candidates.filter(c=>c.position.includes(p.title.split(' ')[0])||c.dept===p.dept).length;
+        const progress=p.headcount?Math.min(pipeCount/p.headcount*100/6,100):0;
+        return `
+        <div class="posting-card">
+          <div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:8px">
+            <h3>${p.title}</h3>
+            <span class="posting-status ${p.status==='open'?'ps-open':p.status==='closed'?'ps-closed':'ps-draft'}">
+              ${p.status==='open'?'모집중':p.status==='closed'?'마감':'초안'}
+            </span>
+          </div>
+          <div class="posting-dept">${p.dept}</div>
+          <div class="posting-meta">
+            <div class="pm-item"><span class="pm-l">모집 인원</span><br><span class="pm-v">${p.headcount}명</span></div>
+            <div class="pm-item"><span class="pm-l">파이프라인</span><br><span class="pm-v">${pipeCount}명 진행중</span></div>
+            <div class="pm-item"><span class="pm-l">게시일</span><br><span class="pm-v">${p.openDate||'-'}</span></div>
+            <div class="pm-item"><span class="pm-l">마감일</span><br><span class="pm-v">${p.closeDate||'-'}</span></div>
+          </div>
+          <div class="posting-channels">
+            ${p.channels.map(ch=>`<span class="tag tag-blue">${ch}</span>`).join('')}
+          </div>
+          <div style="font-size:11px;color:var(--text3);margin-top:8px;line-height:1.5">${p.jd}</div>
+        </div>`;
+      }).join('')}
+    </div>`;
+}
+
+// ─── SCHEDULE VIEW ───
+function renderSchedule(el){
+  const today=new Date();
+  const mon=new Date(today);mon.setDate(today.getDate()-today.getDay()+1);
+  const days=['월','화','수','목','금'];
+
+  el.innerHTML=`
+    <div class="stat-row" style="grid-template-columns:repeat(4,1fr)">
+      <div class="stat-card"><div class="label">이번 주 면접</div><div class="value">${DB.interviews.length}</div><div class="delta">건</div></div>
+      <div class="stat-card"><div class="label">완료</div><div class="value" style="color:var(--green)">${DB.interviews.filter(iv=>iv.done).length}</div><div class="delta">건</div></div>
+      <div class="stat-card"><div class="label">예정</div><div class="value" style="color:var(--amber)">${DB.interviews.filter(iv=>!iv.done).length}</div><div class="delta">건</div></div>
+      <div class="stat-card"><div class="label">면접관</div><div class="value">${[...new Set(DB.interviews.map(iv=>iv.interviewer))].length}</div><div class="delta">명 참여</div></div>
+    </div>
+    <div class="schedule-week">
+      ${days.map((day,i)=>{
+        const dt=new Date(mon);dt.setDate(mon.getDate()+i);
+        const dateStr=fmt(dt);
+        const isToday=dateStr===fmt(today);
+        const dayIvs=DB.interviews.filter(iv=>iv.date===dateStr).sort((a,b)=>a.time.localeCompare(b.time));
+        return `
+        <div class="day-col">
+          <div class="day-header ${isToday?'today':''}">${day} ${dt.getMonth()+1}/${dt.getDate()}</div>
+          <div class="day-body">
+            ${dayIvs.length?dayIvs.map(iv=>`
+              <div class="interview-card ${iv.done?'done':''}">
+                <div class="iv-time">${iv.time}</div>
+                <div class="iv-name">${iv.candidateName}</div>
+                <div class="iv-pos">${iv.position}</div>
+                <div style="margin-top:4px"><span class="tag tag-purple" style="font-size:9px">${iv.type}</span></div>
+                <div class="iv-interviewer">👤 ${iv.interviewer} · ${iv.location}</div>
+              </div>
+            `).join(''):'<div style="text-align:center;padding:20px;color:var(--text3);font-size:11px">면접 없음</div>'}
+          </div>
+        </div>`;
+      }).join('')}
+    </div>`;
+}
+
+// ─── TALENT POOL VIEW ───
+function renderPool(el){
+  el.innerHTML=`
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+      <div style="font-size:12px;color:var(--text2)">${DB.pool.length}명의 잠재 후보</div>
+    </div>
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden">
+    <table class="pool-table">
+      <thead><tr><th>이름</th><th>포지션</th><th>태그</th><th>소스</th><th>등록일</th><th>메모</th></tr></thead>
+      <tbody>
+        ${DB.pool.map(p=>`
+          <tr>
+            <td style="font-weight:600">${p.name}</td>
+            <td>${p.position}</td>
+            <td><div class="pool-tags">${p.tags.map(t=>`<span class="tag tag-cyan">${t}</span>`).join('')}</div></td>
+            <td>${p.source}</td>
+            <td style="color:var(--text3)">${p.addedDate}</td>
+            <td style="font-size:11px;color:var(--text2);max-width:200px">${p.note}</td>
+          </tr>
+        `).join('')}
+      </tbody>
+    </table>
+    </div>`;
+}
+
+// ─── REPORTS VIEW ───
+function renderReports(el){
+  const total=DB.candidates.length;
+  const hired=DB.candidates.filter(c=>c.stage===5).length;
+  const offered=DB.candidates.filter(c=>c.stage>=4).length;
+  const today=fmt(new Date());
+
+  // Time-to-hire
+  const hiredCands=DB.candidates.filter(c=>c.stage===5);
+  const avgTTH=hiredCands.length?Math.round(hiredCands.reduce((s,c)=>s+daysBetween(c.applyDate,today),0)/hiredCands.length):0;
+
+  // Funnel
+  const funnelData=STAGES.map((_,i)=>DB.candidates.filter(c=>c.stage>=i).length);
+
+  // Channel performance
+  const chPerf=CHANNELS.map(ch=>{
+    const all=DB.candidates.filter(c=>c.channel===ch);
+    const ivd=all.filter(c=>c.stage>=2);
+    const hrd=all.filter(c=>c.stage>=5);
+    return {ch,total:all.length,interview:ivd.length,hired:hrd.length,
+      ivRate:all.length?Math.round(ivd.length/all.length*100):0,
+      hireRate:all.length?Math.round(hrd.length/all.length*100):0};
+  }).sort((a,b)=>b.total-a.total);
+
+  // Cost per hire (simulated)
+  const costPerHire=hired?Math.round(1200/hired):0;
+
+  // Offer acceptance
+  const offerAccept=offered?Math.round(hired/offered*100):0;
+
+  el.innerHTML=`
+    <div class="stat-row" style="grid-template-columns:repeat(5,1fr)">
+      <div class="stat-card"><div class="label">Time-to-Hire</div><div class="value">${avgTTH}</div><div class="delta">일 (평균)</div></div>
+      <div class="stat-card"><div class="label">Cost-per-Hire</div><div class="value">${costPerHire}</div><div class="delta">만원 / 인</div></div>
+      <div class="stat-card"><div class="label">오퍼 수락률</div><div class="value" style="color:var(--green)">${offerAccept}%</div><div class="delta">${hired}/${offered} 수락</div></div>
+      <div class="stat-card"><div class="label">총 채용 비용</div><div class="value">1,200</div><div class="delta">만원 (누적)</div></div>
+      <div class="stat-card"><div class="label">입사 전환율</div><div class="value">${total?Math.round(hired/total*100):0}%</div><div class="delta">접수 대비</div></div>
+    </div>
+    <div class="report-grid">
+      <div class="report-card">
+        <h4>채용 퍼널</h4>
+        <div class="rc-sub">단계별 도달 인원</div>
+        <div class="funnel-chart">
+          ${STAGES.map((s,i)=>{
+            const pct=total?Math.round(funnelData[i]/total*100):0;
+            return `<div class="funnel-row">
+              <div class="funnel-label">${s}</div>
+              <div class="funnel-bar-wrap"><div class="funnel-bar" style="width:${pct}%;background:${STAGE_COLORS[i]}">${pct}%</div></div>
+              <div class="funnel-count">${funnelData[i]}</div>
+            </div>`;
+          }).join('')}
+        </div>
       </div>
-    </div>
 
-    <div class="modal-actions">
-      ${nextStage ? `<button class="btn btn-primary" onclick="moveStage(${c.id},'next');openModal(${c.id})">→ ${nextStage.label} 전환</button>` : '<button class="btn btn-primary" disabled>최종 단계</button>'}
-      <button class="btn btn-ghost" style="border-color:var(--danger);color:var(--danger)" onclick="dropCandidate(${c.id});closeModal()">탈락 처리</button>
-    </div>
-  `;
-  document.getElementById('modalOverlay').classList.add('show');
+      <div class="report-card">
+        <h4>채널별 성과</h4>
+        <div class="rc-sub">채널별 지원·면접·합격 현황</div>
+        <table class="ch-table">
+          <thead><tr><th>채널</th><th class="num">지원</th><th class="num">면접</th><th class="num">합격</th><th>면접 전환</th><th>최종 전환</th></tr></thead>
+          <tbody>
+            ${chPerf.map(c=>`
+              <tr>
+                <td style="font-weight:600">${c.ch}</td>
+                <td class="num">${c.total}</td>
+                <td class="num">${c.interview}</td>
+                <td class="num">${c.hired}</td>
+                <td><div class="ch-bar"><div class="ch-bar-fill" style="width:${c.ivRate}%;background:var(--accent)"></div></div> <span style="font-size:10px;color:var(--text3)">${c.ivRate}%</span></td>
+                <td><div class="ch-bar"><div class="ch-bar-fill" style="width:${c.hireRate}%;background:var(--green)"></div></div> <span style="font-size:10px;color:var(--text3)">${c.hireRate}%</span></td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+      </div>
+
+      <div class="report-card">
+        <h4>부서별 채용 현황</h4>
+        <div class="rc-sub">부서별 파이프라인 분포</div>
+        <div style="display:flex;flex-direction:column;gap:10px">
+          ${DEPTS.map((dept,i)=>{
+            const cnt=DB.candidates.filter(c=>c.dept===dept).length;
+            const hiredCnt=DB.candidates.filter(c=>c.dept===dept&&c.stage===5).length;
+            const pct=total?Math.round(cnt/total*100):0;
+            const colors=['#3b82f6','#a855f7','#06b6d4','#f59e0b','#22c55e'];
+            return `<div>
+              <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:4px">
+                <span style="font-weight:600">${dept}</span>
+                <span style="color:var(--text3)">${cnt}명 (입사 ${hiredCnt})</span>
+              </div>
+              <div style="height:8px;background:var(--bg4);border-radius:4px;overflow:hidden">
+                <div style="height:100%;width:${pct}%;background:${colors[i]};border-radius:4px"></div>
+              </div>
+            </div>`;
+          }).join('')}
+        </div>
+      </div>
+
+      <div class="report-card">
+        <h4>Source Quality 지수</h4>
+        <div class="rc-sub">채널별 최종 전환율 비교</div>
+        <div style="display:flex;flex-direction:column;gap:8px;margin-top:12px">
+          ${chPerf.sort((a,b)=>b.hireRate-a.hireRate).map((c,i)=>{
+            const rank=i===0?'🥇':i===1?'🥈':i===2?'🥉':'';
+            return `<div style="display:flex;align-items:center;gap:10px">
+              <span style="width:20px;text-align:center">${rank}</span>
+              <span style="width:60px;font-size:11px;font-weight:600">${c.ch}</span>
+              <div style="flex:1;height:20px;background:var(--bg4);border-radius:4px;overflow:hidden">
+                <div style="height:100%;width:${c.hireRate}%;background:${CH_COLORS[CHANNELS.indexOf(c.ch)]};border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff;min-width:30px">${c.hireRate}%</div>
+              </div>
+              <span style="width:40px;text-align:right;font-size:11px;color:var(--text3)">${c.total}명</span>
+            </div>`;
+          }).join('')}
+        </div>
+      </div>
+    </div>`;
 }
-function closeModal(){document.getElementById('modalOverlay').classList.remove('show');}
 
-/* ═══ VIEW SWITCH ═══ */
-function switchView(view){
-  document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('active',i===(view==='kanban'?0:1)));
-  document.getElementById('kanbanView').style.display = view==='kanban'?'flex':'none';
-  document.getElementById('analyticsView').style.display = view==='analytics'?'block':'none';
-  if(view==='analytics') renderAnalytics();
+// ═══════════════════════════════════════════════════════════
+// ACTIONS
+// ═══════════════════════════════════════════════════════════
+function moveStage(id,dir){
+  const c=DB.candidates.find(x=>x.id===id);
+  if(!c)return;
+  const newStage=c.stage+dir;
+  if(newStage<0||newStage>5)return;
+  c.stage=newStage;
+  c.timeline.push({date:fmt(new Date()),type:'stage',text:`${STAGES[newStage]} 단계로 ${dir>0?'전환':'복귀'}`});
+  if(newStage===5&&!c.onboarding.length){
+    c.onboarding=[
+      {text:'장비(노트북/모니터) 준비',done:false},
+      {text:'사내 계정 생성 (이메일/Slack/Jira)',done:false},
+      {text:'취업규칙 서명',done:false},
+      {text:'근로계약서 발급',done:false},
+      {text:'팀 소개 미팅 일정',done:false},
+      {text:'보안 교육 수료',done:false},
+      {text:'첫 주 OJT 일정 공유',done:false}
+    ];
+  }
+  saveDB();render();
+  openDetail(id);
 }
 
-/* ═══ INIT ═══ */
-loadDemoData();
+function dropCandidate(id){
+  const c=DB.candidates.find(x=>x.id===id);
+  if(!c||!confirm(`${c.name}님을 탈락 처리하시겠습니까?`))return;
+  DB.candidates=DB.candidates.filter(x=>x.id!==id);
+  saveDB();closePanel();render();
+}
+
+function moveToPool(id){
+  const c=DB.candidates.find(x=>x.id===id);
+  if(!c)return;
+  DB.pool.push({
+    id:'t'+Date.now(),name:c.name,position:c.position,
+    tags:[c.stage>=2?'면접경험':'서류단계',c.dept],
+    source:c.channel,addedDate:fmt(new Date()),
+    note:`${STAGES[c.stage]} 단계에서 보류. 역량 재검토 대상.`
+  });
+  DB.candidates=DB.candidates.filter(x=>x.id!==id);
+  saveDB();closePanel();render();
+  alert(`${c.name}님이 탈렌트 풀에 추가되었습니다.`);
+}
+
+function setScore(id,idx,val){
+  const c=DB.candidates.find(x=>x.id===id);
+  if(!c)return;
+  while(c.scores.length<=idx)c.scores.push(0);
+  c.scores[idx]=val;
+  saveDB();
+  switchPanelTab('scorecard',document.querySelectorAll('.panel-tab')[1]);
+}
+
+function saveComment(id){
+  const c=DB.candidates.find(x=>x.id===id);
+  if(!c)return;
+  const ta=document.querySelector('.panel-content textarea');
+  if(ta)c.comment=ta.value;
+  saveDB();
+}
+
+function toggleOnboard(id,idx){
+  const c=DB.candidates.find(x=>x.id===id);
+  if(!c||!c.onboarding[idx])return;
+  c.onboarding[idx].done=!c.onboarding[idx].done;
+  saveDB();
+  switchPanelTab('onboarding',document.querySelectorAll('.panel-tab')[3]);
+}
+
+// ─── MODALS ───
+function openAddCandidate(){document.getElementById('addModal').classList.add('open')}
+function closeModal(){document.getElementById('addModal').classList.remove('open')}
+function addCandidate(){
+  const name=document.getElementById('f-name').value.trim();
+  if(!name){alert('이름을 입력해주세요');return}
+  DB.candidates.push({
+    id:'c'+Date.now(),name,
+    position:document.getElementById('f-position').value,
+    channel:document.getElementById('f-channel').value,
+    dept:document.getElementById('f-dept').value,
+    stage:0,applyDate:fmt(new Date()),
+    phone:document.getElementById('f-phone').value||'미입력',
+    email:document.getElementById('f-email').value||'미입력',
+    curSalary:parseInt(document.getElementById('f-curSalary').value)||0,
+    expSalary:parseInt(document.getElementById('f-expSalary').value)||0,
+    career:document.getElementById('f-career').value||'',
+    resume:document.getElementById('f-resume').value||'',
+    portfolio:document.getElementById('f-portfolio').value||'',
+    scores:[],timeline:[{date:fmt(new Date()),type:'stage',text:'지원서 접수'}],
+    onboarding:[]
+  });
+  saveDB();closeModal();render();
+  // Reset form
+  ['f-name','f-phone','f-email','f-curSalary','f-expSalary','f-career','f-resume','f-portfolio'].forEach(id=>document.getElementById(id).value='');
+}
+
+let commTargetId=null;
+function openCommModal(id){commTargetId=id;document.getElementById('cm-date').value=fmt(new Date());document.getElementById('commModal').classList.add('open')}
+function closeCommModal(){document.getElementById('commModal').classList.remove('open')}
+function saveComm(){
+  const c=DB.candidates.find(x=>x.id===commTargetId);
+  if(!c)return;
+  c.timeline.push({
+    date:document.getElementById('cm-date').value,
+    type:'comm',
+    text:document.getElementById('cm-type').value+' — '+document.getElementById('cm-content').value
+  });
+  saveDB();closeCommModal();
+  switchPanelTab('timeline',document.querySelectorAll('.panel-tab')[2]);
+}
+
+function openAddPosting(){alert('공고 등록 폼 (데모에서는 미리 세팅된 공고를 사용합니다)')}
+
+// ═══ INIT ═══
+if(!loadDB()) generateDemoData();
+render();
 </script>
 </body>
 </html>
